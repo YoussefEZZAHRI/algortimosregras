@@ -48,7 +48,7 @@ public class VotacaoConfidenceLaplaceOrdenacao extends Votacao {
 		
 		positivo = votarConfidenceMedia(regrasVotacaoPositiva, k);
 		negativo = votarConfidenceMedia(regrasVotacaoNegativa, k);
-		
+
 		return positivo-negativo;
 	}
 

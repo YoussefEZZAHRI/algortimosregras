@@ -64,7 +64,7 @@ public class UCItoARFF {
 	}
 	
 	public void carregarDados(BufferedReader buff, String divisor) throws Exception{
-		
+
 		while(buff.ready()){
 			String linha = buff.readLine();
 			String atributos[] = linha.split(divisor);
@@ -72,34 +72,28 @@ public class UCItoARFF {
 			exemplo.setDataset(dados);
 			for (int i = 0; i < atributos.length; i++) {
 				String valor = atributos[i].trim();
-				
+
 				Attribute att = dados.attribute(i);
 				try{
-				if(att.isNumeric()){
-					exemplo.setValue(i,new Double(valor));
-				} 		
-				else{
-					if(att.isString())
-						exemplo.setValue(i,valor);
-					else{						
-						if(i == atributos.length-1){
-							if(valor.equals("2"))
-								exemplo.setValue(i,"positive");
-							else
-								exemplo.setValue(i,"negative");
-						} else{
+					if(att.isNumeric()){
+						exemplo.setValue(i,new Double(valor));
+					} 		
+					else{
+						if(att.isString())
 							exemplo.setValue(i,valor);
-						}
-				}
-			}
-				} catch(IllegalArgumentException ex){
+						else						
+							exemplo.setValue(i,valor);
+
+					}
+				}	 catch(IllegalArgumentException ex){
 					ex.printStackTrace();
 				}
-				
-		}
+
+			}
 			dados.add(exemplo);
 		}	
 	}
+	
 	public static void main(String[] args) {
 		try{
 			UCItoARFF gerador = new UCItoARFF();

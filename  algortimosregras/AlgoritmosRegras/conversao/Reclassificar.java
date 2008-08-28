@@ -13,14 +13,14 @@ import weka.core.Instances;
 
 public class Reclassificar {
 	
-	public Instances reclassificar(Instances dadosEntrada, String classe1, String classe2){
+	public Instances reclassificar(Instances dadosEntrada, String classe1, String classe2, String classePositiva){
 		
 		Instances dadosSaida = new Instances(dadosEntrada,1);
 		dadosSaida.deleteAttributeAt(dadosSaida.numAttributes()-1);
 		FastVector nominal_values = new FastVector(2);
 		nominal_values.addElement(classe1);
 		nominal_values.addElement(classe2);
-		Attribute sev = new Attribute("SEVERITY", nominal_values);
+		Attribute sev = new Attribute("class", nominal_values);
 		dadosSaida.insertAttributeAt(sev,dadosEntrada.numAttributes()-1);
 		dadosSaida.setClassIndex(dadosSaida.numAttributes()-1);
 		for (int i = 0; i < dadosEntrada.numInstances(); i++) {
@@ -30,7 +30,7 @@ public class Reclassificar {
 			for (int j = 0; j < exemploEntrada.numAttributes(); j++) {
 				if(j == exemploEntrada.numAttributes()-1){
 					String valor = exemploEntrada.stringValue(j);
-					if(valor.equals("5"))
+					if(valor.equals(classePositiva))
 						exemploSaida.setValue(dadosSaida.attribute(j), classe1);
 					else
 						exemploSaida.setValue(dadosSaida.attribute(j), classe2);
@@ -54,7 +54,7 @@ public class Reclassificar {
 			String arquivoARFF = caminhoBase + nomebase + ".arff";
 			Reader reader = new FileReader(arquivoARFF);
 			Instances dados = new Instances(reader);
-			Instances saida = rec.reclassificar(dados, "SEV_5", "NOT_SEV_5");
+			Instances saida = rec.reclassificar(dados, "SEV_5", "NOT_SEV_5", "5");
 			String arquivoSaida = caminhoBase + nomebase + "_5.arff";
 			PrintStream ps = new PrintStream(arquivoSaida);
 			System.out.println(saida);
