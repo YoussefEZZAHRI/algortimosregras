@@ -27,7 +27,7 @@ public class MatrizConfusao {
 		if(temp == 0)
 			return 0;
 		else{
-			precisaop = tp/(tp+fn);
+			precisaop = tp/(temp);
 			return precisaop;
 		}
 	}
@@ -37,7 +37,7 @@ public class MatrizConfusao {
 		if(temp == 0)
 			return 0;
 		else{
-			precisaon = tn/(fp+tn);
+			precisaon = tn/(temp);
 			return precisaon;
 		}
 	}
