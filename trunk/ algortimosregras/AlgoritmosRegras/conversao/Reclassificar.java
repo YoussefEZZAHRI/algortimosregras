@@ -35,8 +35,12 @@ public class Reclassificar {
 					else
 						exemploSaida.setValue(dadosSaida.attribute(j), classe2);
 				}
-				else	
-					exemploSaida.setValue(dadosSaida.attribute(j), exemploEntrada.stringValue(j));
+				else{
+					if(dadosSaida.attribute(j).isNominal() || dadosSaida.attribute(j).isString() || dadosSaida.attribute(j).isDate())
+						exemploSaida.setValue(dadosSaida.attribute(j), exemploEntrada.stringValue(j));
+					else
+						exemploSaida.setValue(dadosSaida.attribute(j), exemploEntrada.value(j));
+				}
 			}
 			dadosSaida.add(exemploSaida);
 		}
@@ -47,15 +51,15 @@ public class Reclassificar {
 	public static void main(String[] args) {
 		Reclassificar rec = new Reclassificar();
 		try{
-			String nomebase = "kc3_modules_severity";
-			String caminhoBase = "C:\\Andre\\Mestrado\\oficina - ES\\Bases\\NASA\\kc3_modules_severity\\";
+			String nomebase = "ecoli_numerico";
+			String caminhoBase = "C:\\Andre\\bases\\UCI\\ecoli_numerico\\";
 			//String caminhoBase = "/home/andre/mestrado/weka-3-5-5/data/";
 			//String arquivoARFF = caminhoBase + nomebase + "/it0/" + nomebase + "_data.arff";
 			String arquivoARFF = caminhoBase + nomebase + ".arff";
 			Reader reader = new FileReader(arquivoARFF);
 			Instances dados = new Instances(reader);
-			Instances saida = rec.reclassificar(dados, "SEV_5", "NOT_SEV_5", "5");
-			String arquivoSaida = caminhoBase + nomebase + "_5.arff";
+			Instances saida = rec.reclassificar(dados, "positive", "negative", "cp");
+			String arquivoSaida = caminhoBase + nomebase + "_novo.arff";
 			PrintStream ps = new PrintStream(arquivoSaida);
 			System.out.println(saida);
 			ps.println(saida);
