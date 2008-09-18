@@ -4,38 +4,31 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-
-import classificadores.MetodoDefeito;
-
-import com.sun.corba.se.impl.interceptors.PINoOpHandlerImpl;
-
-import regra.Regra;
 
 import nuvemparticulas.NuvemParticulas;
 import kernel.ObterRegras;
 import apriori.ObterRegrasApriori;
 
-public class Principal {
+public class PrincipalAntigo {
 	
 	public String metodo = null;
 	public String caminhoBase = null;
 	public String nomeBase = null;
 	
-	public int numExec = 0;
-	public int numFolds = 0;
+	public int numExec = 1;
+	public int numFolds = 1;
+	public int numParticoes = 1;
 	public int classePositiva = 0;
 	public int classeNegativa = 1;
-	public boolean auc;
-	public int numParticoes = 1;
+	public boolean auc = true;
+	public boolean verbose = true;
 	
-	public boolean verbose = false;
-	public String votacao = "ordenacao";
-	public boolean fronteiraApriori = true;
+	public String votacao = "confidence";
 	public boolean selecaoVotacao = false;
+	public boolean fronteiraApriori = true;
 	
-	public int geracoes = 0;
-	public int populacao = 0;
+	public int geracoes = 50;
+	public int populacao = 500;
 	
 	public int numRegras = 0;
 	public double minSuporte = 0;
@@ -48,19 +41,58 @@ public class Principal {
 	ObterRegras algoritmo = null;
 	
 	public static void main(String[] args) {	
-		Principal principal = new Principal();
+		PrincipalAntigo principal = new PrincipalAntigo();
 		try{			
-			principal.carregarArquivoConf(args[0]);
-			if(principal.metodo.equals("pso"))
-				principal.algoritmo = new NuvemParticulas(principal.geracoes,principal.populacao, principal.objetivos);
-			else
-				principal.algoritmo = new ObterRegrasApriori(principal.numRegras, principal.confianca, principal.minSuporte, principal.maxSuporte, principal.delta, principal.fronteiraApriori, principal.objetivos);					
-
-			if(principal.numParticoes == 1)
+			if(args.length==1){
+				principal.carregarArquivoConf(args[0]);
+				if(principal.metodo.equals("pso"))
+					principal.algoritmo = new NuvemParticulas(principal.geracoes,principal.populacao, principal.objetivos);
+				else
+					principal.algoritmo = new ObterRegrasApriori(principal.numRegras, principal.confianca, principal.minSuporte, principal.maxSuporte, principal.delta, principal.fronteiraApriori, principal.objetivos);					
+			}	
+			else{
+				principal.metodo = args[0];
+				principal.nomeBase = args[1];
+				principal.caminhoBase = args[2];
+				principal.numFolds = 10;
+				principal.classePositiva = 0;
+				principal.classeNegativa = 1;
+				principal.numExec = new Integer(args[5]).intValue();
+				principal.auc = true;
+				if(principal.metodo.equals("apriori")){
+					principal.numRegras = new Integer(args[3]).intValue();
+					principal.algoritmo = new ObterRegrasApriori(principal.numRegras,principal.confianca, principal.minSuporte, principal.maxSuporte, principal.delta, principal.fronteiraApriori, principal.objetivos);
+				} else{
+					if(principal.metodo.equals("pso")){
+						principal.geracoes = new Integer(args[3]).intValue();
+						principal.populacao = new Integer(args[4]).intValue();
+						principal.algoritmo = new NuvemParticulas(principal.geracoes,principal.populacao, principal.objetivos);
+					}
+				}
+			}		
+			
+			if(!principal.nomeBase.equals("all")){
+				/*NuvemParticulas nuvem = (NuvemParticulas) principal.algoritmo;
+				 if(principal.metodo.equals("pso_apriori"))
+				 prinnuvem.iniciarRepositorios(nomeBase, caminhoBase,10, 0.2, 0.4, new Integer(args[6]).intValue());
+				 */
+				
 				principal.algoritmo.executarFolds(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao);
-			else
-				principal.algoritmo.executarParalelo(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao, principal.numParticoes);
-
+				
+			}
+			//Executa mais de uma base por vez
+			else{
+				Reader reader = new FileReader("bases.txt");
+				BufferedReader buff = new BufferedReader(reader);
+				String[] bases = buff.readLine().split(",");
+				
+				for (int i = 0; i < bases.length; i++) {
+					String nBase = bases[i];
+					
+					principal.algoritmo.executarFolds(nBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, nBase, principal.auc, principal.verbose, principal.votacao, principal.selecaoVotacao);
+					
+				}
+			}
 		} catch (Exception ex) {ex.printStackTrace();}
 	}
 	
@@ -83,6 +115,12 @@ public class Principal {
 	 * maxSuporte = Suporte máximo
 	 * delta = Taxa de variação do suporte
 	 * auc = Executa ou não o cálculo da AUC
+	 * vebose = Imprime ou nao o andamento das geracoes.
+	 * votacao = escolhe o método de votacao das regras. simples, confidence, laplace, ordenacao
+	 * selecaoVotacao = retorna somente as regras que votaram na escolha da AUC.
+	 * fronteiraApriori = flag que define se as regras geradas pelo apriori serão reduzidas somente 
+	 * à fronteira de pareto.
+	 * objetivos = Objetivos da busca separados por ";" (spec,sens,nov,lap)
 	 * @param nomeArquivo
 	 * @throws IOException
 	 */
@@ -114,8 +152,6 @@ public class Principal {
 				populacao = new Integer(valor).intValue();
 			if(tag.equals("numfolds"))
 				numFolds = new Integer(valor).intValue();
-			if(tag.equals("numparticoes"))
-				numParticoes = new Integer(valor).intValue();
 			if(tag.equals("numexec"))
 				numExec = new Integer(valor).intValue();
 			if(tag.equals("numregras"))
@@ -163,7 +199,10 @@ public class Principal {
 				objetivos = valor.split(";");
 			}
 			
-
+			if(tag.equals("numparticoes"))
+				numParticoes = new Integer(valor).intValue();
+			
+			
 			
 		}
 		

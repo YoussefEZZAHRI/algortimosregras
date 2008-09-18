@@ -213,22 +213,15 @@ public abstract class ObterRegras {
 	
 	/**
 	 * Calcula a AUC a partir de um conjunto de dados passado como parâmetro
-	 * @param arquivoTeste Caminho do arquivo que contém os dados de teste para o cálculo da AUC
+	 * @param dadosTeste Dados de teste para o cálculo da AUC
 	 * @return O valor da AUC das regras para os dados passados como parâmetro
 	 * @throws IOException
 	 */
-	public double obterAUC(String arquivoTeste) throws IOException{
-		Reader reader = new FileReader(arquivoTeste);
-		Instances dadosTeste = new Instances(reader);
-		dadosTeste.setClassIndex(dadosTeste.numAttributes()-1);
-		System.out.println("Numero de Instancias de Teste: " + dadosTeste.numInstances());
-		psLog.println("Numero de Instancias de Teste: " + dadosTeste.numInstances());
+	public double obterAUC(Instances dadosTeste) throws IOException{
+		
 				
 		double[][] d = construirROC(dadosTeste,regras);
 		
-		confusao = new MatrizConfusao();
-		preencherMatrizConfusao(confusao, dadosTeste, regras);		
-
 		
 		/*CurvaROC positive = new CurvaROC(d[0], d[1], "Curva ROC - Positive");
 		CurvaROC negative = new CurvaROC(d[2], d[3], "Curva ROC - Negative");
@@ -697,7 +690,18 @@ public abstract class ObterRegras {
 					}
 					else{
 						
-						double a = obterAUC(arquivoTeste);
+						Reader reader = new FileReader(arquivoTeste);
+						Instances dadosTeste = new Instances(reader);
+						dadosTeste.setClassIndex(dadosTeste.numAttributes()-1);
+						System.out.println("Numero de Instancias de Teste: " + dadosTeste.numInstances());
+						psLog.println("Numero de Instancias de Teste: " + dadosTeste.numInstances());
+						
+						
+						confusao = new MatrizConfusao();
+						preencherMatrizConfusao(confusao, dadosTeste, regras);		
+
+						
+						double a = obterAUC(dadosTeste);
 						
 						System.out.println("AUC: " + a);
 						psLog.println("AUC: " + a);
@@ -848,9 +852,14 @@ private void setVotacao(String votacao) {
 			    psLog.println("Nenhuma regra encontrada");
 			}
 			else{
-				System.out.println("Numero de Regras: " + regras.size());
-				psLog.println("Numero de Regras: " + regras.size());
-				double a = obterAUC(arquivoTeste);
+
+				Reader reader = new FileReader(arquivoTeste);
+				Instances dadosTeste = new Instances(reader);
+				dadosTeste.setClassIndex(dadosTeste.numAttributes()-1);
+				System.out.println("Numero de Instancias de Teste: " + dadosTeste.numInstances());
+				psLog.println("Numero de Instancias de Teste: " + dadosTeste.numInstances());
+				
+				double a = obterAUC(dadosTeste);
 				
 				
 				System.out.println("AUC: " + a);
@@ -924,68 +933,162 @@ private void setVotacao(String votacao) {
 	 * @param numParticoes
 	 * @throws Exception
 	 */
-	public void executarParalelo(String nomeBase, String caminhoBase, String nomeMetodo, int cPositiva, int cNegativa, int numFolds, String indice, String dirResultado, boolean AUC, int numParticoes)  throws Exception{
-		String caminhoDir = System.getProperty("user.dir");
-		String arquivoLog = caminhoDir + "/resultados/" +nomeMetodo +"/" + dirResultado + "/" + nomeBase + indice +"/" +nomeBase + indice + ".log";
-		String diretorio = caminhoDir +  "/resultados/" +nomeMetodo +"/" + dirResultado + "/" +nomeBase + indice+"/";
-		File dir = new File(diretorio);
-		dir.mkdirs();
-		psLog = new PrintStream(arquivoLog);
+	
+	public void executarParalelo(String nomeBase, String caminhoBase, String nomeMetodo, int cPositiva, int cNegativa, int numFolds, int numExec, String dirResultado, boolean AUC , boolean verbose, String votacao, boolean selecao, int numParticoes)  throws Exception{
 		
-		System.out.println("Inicio: " + Calendar.getInstance().getTime());
-		System.out.println("Base: " + nomeBase);
-		System.out.println("Caminho da Base: " + caminhoBase);
-		System.out.println("Inicio da execucao");
-		psLog.println("Inicio: " + Calendar.getInstance().getTime());
-		psLog.println("Base: " + nomeBase);
-		psLog.println("Caminho da Base: " + caminhoBase);
-		psLog.println("Inicio da execucao");
+		
 		dadosExperimento = new DadosExperimentos();
 		dadosExperimento.nomeBase = nomeBase;
-
-		//ArrayList<Regra> regrasFinais = new ArrayList<Regra>();
-		ArrayList<Regra> regrasParticoes =new ArrayList<Regra>();
+		dadosExperimento.metodo = nomeMetodo;
+		String caminhoDir = System.getProperty("user.dir");
 		
-		for(int i = 0; i<numFolds; i++){
-			System.out.println("Fold: "+ i);
-			numFold = i;
-			String arquivoTreinamento = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_data.arff";
-			System.out.println("Base de Treinamento: "+ arquivoTreinamento);
-			psLog.println("Base de Treinamento: "+ arquivoTreinamento);
-			carregarInstancias(arquivoTreinamento, cPositiva, cNegativa);
-			int tamParticao = dados.numInstances()/numParticoes;
-			Instances dadosTreinamentoTotal = new Instances(dados);
-			for (int n = 0; n < numParticoes; n++) {
-				System.out.println("Partição: " + n);
-				int inicio = n*tamParticao;
-				int fim = 0;
-				if(n+1<numParticoes)
-					fim = (n+1)*tamParticao;
-				else
-					fim = dadosTreinamentoTotal.numInstances();
-				System.out.println("Inicio: " + inicio + " - Fim: " + fim );
-				dados = new Instances(dadosTreinamentoTotal,0);
-				for(int j = inicio; j<fim; j++){
-					dados.add(dadosTreinamentoTotal.instance(j));
+		//Arquivo de redundância que salva as informações das execuções durante o processo. 
+		//Evita perder as informações se houver um problema na execução.
+		String caminhoTemp = caminhoDir + "/resultados/" +nomeMetodo +"/" + dirResultado + "/"; 
+		File dir = new File(caminhoTemp);
+		dir.mkdirs();
+		String arquivoTemp = caminhoTemp + "temp_" +nomeBase+ ".txt";
+		PrintStream psTemp = new PrintStream(arquivoTemp);
+		
+		for(int j = 0; j<numExec; j++){
+			
+			String arquivoLog = caminhoDir + "/resultados/" +nomeMetodo +"/" + dirResultado + "/" + nomeBase + "" + j +"/" +nomeBase + "" + j + ".log";			
+			String diretorio = caminhoDir +  "/resultados/" +nomeMetodo +"/" + dirResultado + "/" +nomeBase + "" +j+"/";
+			dir = new File(diretorio);
+			dir.mkdirs();
+			psLog = new PrintStream(arquivoLog);
+
+
+			System.out.println("Inicio: " + Calendar.getInstance().getTime());
+			System.out.println("Base: " + nomeBase);
+			System.out.println("Caminho da Base: " + caminhoBase);
+			System.out.println("Execucao: " + j);
+			psLog.println("Inicio: " + Calendar.getInstance().getTime());
+			psLog.println("Base: " + nomeBase);
+			psLog.println("Caminho da Base: " + caminhoBase);
+			psLog.println("Inicio da execucao");
+
+
+			this.verbose = verbose;
+
+			setVotacao(votacao);
+
+
+			//ArrayList<Regra> regrasFinais = new ArrayList<Regra>();
+
+			ArrayList<Regra> regrasParticoes =new ArrayList<Regra>();
+
+			
+			for(int i = 0; i<numFolds; i++){
+				System.out.println("Fold: "+ j+ "-"+ i);
+				numFold = i;
+				String arquivoTreinamento = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_data.arff";
+				System.out.println("Base de Treinamento: "+ arquivoTreinamento);
+				psLog.println("Base de Treinamento: "+ arquivoTreinamento);
+				carregarInstancias(arquivoTreinamento, cPositiva, cNegativa);
+				int tamParticao = dados.numInstances()/numParticoes;
+				Instances dadosTreinamentoTotal = new Instances(dados);
+				for (int n = 0; n < numParticoes; n++) {
+					System.out.println("Partição: " + n);
+					int inicio = n*tamParticao;
+					int fim = 0;
+					if(n+1<numParticoes)
+						fim = (n+1)*tamParticao;
+					else
+						fim = dadosTreinamentoTotal.numInstances();
+				
+					dados = new Instances(dadosTreinamentoTotal,0);
+					for(int z = inicio; z<fim; z++){
+						dados.add(dadosTreinamentoTotal.instance(z));
+					}
+
+					obterRegras(cPositiva, cNegativa);
+					System.out.println("Numero de Instancias: " + dados.numInstances());
+					psLog.println("Numero de Instancias: " + dados.numInstances());
+					System.out.println("Numero de Regras Partição: " + regras.size());
+					psLog.println("Numero de Regras Partição: " + regras.size());
+					regrasParticoes.addAll(regras);
+					apagarListas();
 				}
 				
-				obterRegras(cPositiva, cNegativa);
-				System.out.println("Numero de Instancias: " + dados.numInstances());
-				psLog.println("Numero de Instancias: " + dados.numInstances());
-				System.out.println("Numero de Regras: " + regras.size());
-				psLog.println("Numero de Regras: " + regras.size());
-				regrasParticoes.addAll(regras);
+				//Recalcular os objetivos para a base de dados original 
+				//preencherMatrizContigencia(regrasParticoes, dadosTreinamentoTotal);
+				
+				//eliminarRegrasDominadas(regrasParticoes);
+				regras.addAll(regrasParticoes);
+				regrasParticoes.clear();
+				
+				System.out.println("\nNumero de Regras Total: " + regras.size());
+				psLog.println("\nNumero de Regras Total: " + regras.size());
+				
+
+				String arquivoTeste = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_test.arff";
+				
+				if(AUC){
+					if(regras.isEmpty()){
+						System.out.println("Nenhuma regra encontrada");
+						psLog.println("Nenhuma regra encontrada");
+					}
+					else{
+						
+						Reader reader = new FileReader(arquivoTeste);
+						Instances dadosTeste = new Instances(reader);
+						dadosTeste.setClassIndex(dadosTeste.numAttributes()-1);
+						System.out.println("Numero de Instancias de Teste: " + dadosTeste.numInstances());
+						psLog.println("Numero de Instancias de Teste: " + dadosTeste.numInstances());
+						
+						confusao = new MatrizConfusao();
+						preencherMatrizConfusao(confusao, dadosTeste, regras);		
+						
+						double a = obterAUC(dadosTeste);
+						
+						System.out.println("AUC: " + a);
+						psLog.println("AUC: " + a);
+						
+						DadosExecucao fold = new DadosExecucao(nomeBase, i, j, a, regras.size(), confusao);					
+						
+						dadosExperimento.addFold(fold);
+						psTemp.println(fold);
+						
+						String arquivoRegras = "resultados/" + nomeMetodo + "/" + dirResultado + "/" + nomeBase+ "" + j +"/regras_" + nomeBase + "" + j + "_" + i + ".txt";
+						PrintStream psRegras = new PrintStream(arquivoRegras);
+						
+						//Grava as regras num arquivo texto
+						for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
+							Regra regra = (Regra) iter.next();
+							if(!selecao)
+								psRegras.println(regra);
+							 else{
+								if(regra.votou)
+									psRegras.println(regra);
+							}
+						}
+					}
+				} 
+				
+				System.out.println();
+				psLog.println();
 				apagarListas();
 			}
-			System.out.println();
-			psLog.println();
-			apagarListas();
+
+			System.out.println("Fim: " + Calendar.getInstance().getTime());
+			psLog.println("Fim: " + Calendar.getInstance().getTime());
 		}
 		
-		eliminarRegrasDominadas(regrasParticoes);
-		regrasParticoes.clear();
+		if(AUC){
+			String diretorio = caminhoDir +  "/resultados/" + nomeMetodo +"/" + nomeBase +"/";
+			String arquivoResult = diretorio + "/resultado_" + nomeBase +".txt";
+			System.out.println("Resultado gerado em: " + arquivoResult);
+			
+			PrintStream ps = new PrintStream(arquivoResult);
+			dadosExperimento.calcularMediaAreasPrecisaoNumRegras();
+			dadosExperimento.calcularDesvioPadrao();
+			
+			System.out.println(dadosExperimento);			
+			ps.println(dadosExperimento);
 		
-	
+			dadosExperimento.gerarArquivosMedidas(diretorio,nomeMetodo+"_"+ nomeBase + "_medidas.txt",nomeMetodo+"_"+ nomeBase + "_comandos.txt", nomeMetodo+"_"+ nomeBase + "_confusao.txt");
+		}
 	}
 	
 	/**
@@ -994,7 +1097,6 @@ private void setVotacao(String votacao) {
 	 * @param regrasTemp Regras à serem refinadas
 	 */
 	public void eliminarRegrasDominadas(ArrayList<Regra> regrasTemp){
-		preencherMatrizContigencia(regrasTemp, dados);
 		
 		paretoPos = new FronteiraPareto();
 		paretoNeg = new FronteiraPareto();
@@ -1163,9 +1265,31 @@ private void setVotacao(String votacao) {
 			}
 		}
 		
-		
-		
 	}
+	
+	/**
+	 * Método que preenche o conjunto de regras a partir de um arquivo com as regras com todos os valores
+	 * dos atributos separados por virgula 
+	 * @param arquivoRegras Arquivo com as regras com todos os atributos separados por virgula
+	 * @param dadosOriginais Objeto com as informacoes sobre os atributos da base de dados.
+	 */
+	/*public void preencherRegrasArquivo(String arquivoRegras, Instances dadosOriginais){
+		
+		Enumeration<Attribute> atributos = dadosOriginais.enumerateAttributes();
+		
+		int i = 0;
+		while(atributos.hasMoreElements()){
+			Attribute att = (Attribute)atributos.nextElement();
+			if(att.isNominal())
+				regra.corpo[i] = new AtributoNominal(true, att, i);
+			else{
+				double[] limites = obterMaximoMinimoAtributo(att);
+				regra.corpo[i] = new AtributoNumerico(true, att, i, limites[0], limites[1]);
+			}
+			++i;
+		}
+		
+	}*/
 
 
 
