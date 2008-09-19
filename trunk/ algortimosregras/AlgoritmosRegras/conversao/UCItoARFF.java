@@ -23,11 +23,11 @@ public class UCItoARFF {
 		
 		FastVector attInfo = obterAtributos(buff);
 		dados = new Instances(nomeBase, attInfo,1);
-		dados.setClassIndex(dados.numAttributes()-1);
+		dados.setClassIndex(1);
 		System.out.println(dados);
 		carregarDados(buff,",");
 		ps.println(dados);
-		System.out.println(dados);
+		//System.out.println(dados);
 	}
 	
 	public FastVector obterAtributos(BufferedReader buff) throws Exception{
@@ -81,8 +81,12 @@ public class UCItoARFF {
 					else{
 						if(att.isString())
 							exemplo.setValue(i,valor);
-						else						
-							exemplo.setValue(i,valor);
+						else{		
+							if(valor.equals("?"))
+								exemplo.setMissing(i);
+							else
+								exemplo.setValue(i,valor);
+						}
 
 					}
 				}	 catch(IllegalArgumentException ex){
@@ -97,8 +101,8 @@ public class UCItoARFF {
 	public static void main(String[] args) {
 		try{
 			UCItoARFF gerador = new UCItoARFF();
-			String nomeBase = "ionosphere_discreto";
-			String caminhoBase = "C:\\Andre\\Bases\\Artigo\\"+ nomeBase+"\\";
+			String nomeBase = "hepatitis";
+			String caminhoBase = "C:\\Andre\\bases\\teste\\hepatitis\\";
 			gerador.gerarArquivoARFF(nomeBase, caminhoBase);
 		}catch(Exception ex){
 			ex.printStackTrace();
