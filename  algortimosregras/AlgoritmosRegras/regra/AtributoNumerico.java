@@ -70,8 +70,13 @@ public class AtributoNumerico extends Atributo {
 	 *definido para o atributo 
 	 */
 	public boolean compararValor(double valorExemplo) {
-		if(valorExemplo >=limiteInferior && valorExemplo<=limiteSuperior)
+		if(valorExemplo == Double.NaN){
 			return true;
+		} else {
+			if(valorExemplo >=limiteInferior && valorExemplo<=limiteSuperior){
+				return true;
+			}
+		}
 		return false;
 	}
 

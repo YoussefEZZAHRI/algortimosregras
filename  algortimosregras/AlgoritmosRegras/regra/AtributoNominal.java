@@ -61,16 +61,20 @@ public class AtributoNominal extends Atributo {
 	 * @return Retorna true caso o valor seja igual ao valor de atributo, de acordo com o operador 
 	 */
 	public boolean compararValor(double valorExemplo){
-		if(operador == igual){
-			if(valor==valorExemplo)
-				return true;
-			else
-				return false;		
+		if(valorExemplo == Double.NaN){
+			return true;
 		} else {
-			if(valor!=valorExemplo)
-				return true;
-			else
-				return false;
+			if(operador == igual){
+				if(valor==valorExemplo)
+					return true;
+				else
+					return false;		
+			} else {
+				if(valor!=valorExemplo)
+					return true;
+				else
+					return false;
+			}
 		}
 	}
 	
