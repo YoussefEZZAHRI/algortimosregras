@@ -1240,8 +1240,10 @@ private void setVotacao(String votacao) {
 			for(int j = 0; j<exemplo.numAttributes(); j++){
 				Attribute att = exemplo.attribute(j);
 				if(att.isNominal() && att!=dados.classAttribute()){
-				    int value = (int)exemplo.value(j);
-					distribuicaoAtributos[indice++][(int) value]++;
+					double temp = exemplo.value(j);
+					if(temp!=Double.NaN) {
+						distribuicaoAtributos[indice++][(int) temp]++;
+					}
 				}
 			}
 		}
