@@ -51,7 +51,6 @@ public class ObterRegrasApriori extends ObterRegras{
 	public ArrayList<Regra> obterRegras(int cPositiva, int cNegativa) throws Exception{
 		executar();
 		System.out.println("Apriori terminado!");
-		psLog.println("Apriori terminado!");
 		FastVector v[] = apriori.getAllTheRules();
 		FastVector corpos = v[0]; //v[0] --> Corpos
 		FastVector cabecas = v[1]; //v[1] --> Cabecas

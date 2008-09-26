@@ -34,6 +34,8 @@ public class Principal {
 	public boolean fronteiraApriori = true;
 	public boolean selecaoVotacao = false;
 	
+	public boolean medoid = false;
+	
 	public int geracoes = 0;
 	public int populacao = 0;
 	
@@ -56,10 +58,14 @@ public class Principal {
 			else
 				principal.algoritmo = new ObterRegrasApriori(principal.numRegras, principal.confianca, principal.minSuporte, principal.maxSuporte, principal.delta, principal.fronteiraApriori, principal.objetivos);					
 
-			if(principal.numParticoes == 1)
-				principal.algoritmo.executarFolds(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao);
-			else
-				principal.algoritmo.executarParalelo(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao, principal.numParticoes);
+			if(principal.medoid)
+				principal.algoritmo.executarMedoid(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao);
+			else{
+				if(principal.numParticoes == 1)
+					principal.algoritmo.executarFolds(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao);
+				else
+					principal.algoritmo.executarParalelo(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao, principal.numParticoes);
+			}
 
 		} catch (Exception ex) {ex.printStackTrace();}
 	}
@@ -161,6 +167,13 @@ public class Principal {
 			
 			if(tag.equals("objetivos")){
 				objetivos = valor.split(";");
+			}
+			
+			if(tag.equals("medoid")){
+				if(valor.equals("sim"))
+					medoid = true;
+				else
+					medoid = false;
 			}
 			
 

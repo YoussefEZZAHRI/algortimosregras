@@ -19,14 +19,18 @@ public class DadosExperimentos {
 	public double desvioPadrao;
 	public double mediaNumRegras;
 	
+	public String ID;
 	
-	public DadosExperimentos(String n, String m){
+	
+	public DadosExperimentos(String n, String m, String id){
 		nomeBase = n;
 		metodo = m;
 		dadosFolds = new ArrayList<DadosExecucao>();
 		mediaAreas = 0;
 		mediaPrecisao = 0;
 		mediaNumRegras = 0;
+		
+		this.ID=id;
 		
 	}
 	
@@ -35,6 +39,7 @@ public class DadosExperimentos {
 		mediaAreas = 0;
 		mediaPrecisao = 0;
 		mediaNumRegras = 0;
+		ID = "";
 	}
 	
 	public void addFold(DadosExecucao d){
@@ -45,15 +50,18 @@ public class DadosExperimentos {
 	
 		double somaAUC = 0;
 		double somaRegra = 0;
+		double somaPrecisao = 0;
 		for (Iterator<DadosExecucao> iter = dadosFolds.iterator(); iter.hasNext();) {
 			DadosExecucao dados = iter.next();
 			somaAUC+= dados.auc;
 			somaRegra+= dados.numRegrasTotal;
+			somaPrecisao+= dados.accuracy;
 		}
 		
 		if(dadosFolds.size()>0){
 		   mediaAreas = somaAUC/dadosFolds.size();
 		   mediaNumRegras = somaRegra/dadosFolds.size();
+		   mediaPrecisao = somaPrecisao/dadosFolds.size();
 		}
 	}
 	
@@ -78,13 +86,14 @@ public class DadosExperimentos {
 	 * outro contendo os comandos para carregar vetores na ferramenta R
 	 * @param caminhoSaida Caminho da saida dos arquivos
 	 * @param arquivoMedidas Nome do arquivo com as medidas
-	 * @param arquivoComandos Nome do arqui com os comandos
+	 * @param arquivoComandos Nome do arquivo com os comandos
+	 * @param ID String utilizada para diferenciar vários dados de uma mesma execucao
 	 * @throws Exception
 	 */
 	public void gerarArquivosMedidas(String caminhoSaida, String arquivoMedidas, String arquivoComandos, String arquivoConfusao) throws Exception{
-		PrintStream med = new PrintStream(caminhoSaida + arquivoMedidas);
-		PrintStream com = new PrintStream(caminhoSaida + arquivoComandos);
-		PrintStream conf = new PrintStream(caminhoSaida + arquivoConfusao);
+		PrintStream med = new PrintStream(caminhoSaida + arquivoMedidas + ID + ".txt");
+		PrintStream com = new PrintStream(caminhoSaida + arquivoComandos + ID + ".txt");
+		PrintStream conf = new PrintStream(caminhoSaida + arquivoConfusao + ID + ".txt");
 		
 		//Criacao das strings com os comandos
 		
@@ -129,7 +138,7 @@ public class DadosExperimentos {
 			conf.println();
 			
 			comandoAuc.append(fold.auc + ",");
-			comandoAcc.append(fold.accuracyPos + ",");
+			comandoAcc.append(fold.accuracy + ",");
 			
 			comandoPrec.append(fold.precisionPos + ",");
 			comandoRec.append(fold.recallPos + ",");
