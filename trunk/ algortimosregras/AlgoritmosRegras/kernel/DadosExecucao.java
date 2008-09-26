@@ -16,15 +16,18 @@ public class DadosExecucao {
 	public MatrizConfusao confusao = null;
 	
 	public double auc;
+	public double accuracy;
+	
 	public double fmeasurePos;
 	public double precisionPos;
 	public double recallPos;
-	public double accuracyPos;
+	
+	
 	
 	public double fmeasureNeg;
 	public double precisionNeg;
 	public double recallNeg;
-	public double accuracyNeg;
+	
 	
 	
 	
@@ -39,7 +42,7 @@ public class DadosExecucao {
 		fmeasurePos = confusao.getFmeasure(0);
 		precisionPos = confusao.getPrecision(0);
 		recallPos = confusao.getRecall(0);
-		accuracyPos = accuracyNeg = confusao.getAccuracy();
+		accuracy = confusao.getAccuracy();
 		
 		fmeasureNeg = confusao.getFmeasure(1);
 		precisionNeg = confusao.getPrecision(1);
@@ -77,7 +80,7 @@ public class DadosExecucao {
 	}
 	
 	public void setAccuracy(double acc){
-		accuracyPos = accuracyNeg = acc;
+		accuracy = acc;
 	}
 	
 	
@@ -88,14 +91,14 @@ public class DadosExecucao {
 		Double precisaoPos = new Double(this.precisionPos);
 		Double recallPos = new Double(this.recallPos);
 		Double fmeasurePos = new Double(this.fmeasurePos);
-		Double accuracyPos = new Double(this.accuracyPos);
+		Double accuracy = new Double(this.accuracy);
 		
 		Double precisaoNeg = new Double(this.precisionNeg);
 		Double recallNeg = new Double(this.recallNeg);
 		Double fmeasureNeg = new Double(this.fmeasureNeg);
 		
 		str.append(auc.toString().replace('.',',') + "\t");
-		str.append(accuracyPos.toString().replace('.', ',')+ "\t");
+		str.append(accuracy.toString().replace('.', ',')+ "\t");
 		
 		str.append("\t" + precisaoPos.toString().replace('.', ',')+ "\t");
 		str.append(recallPos.toString().replace('.', ',')+ "\t");

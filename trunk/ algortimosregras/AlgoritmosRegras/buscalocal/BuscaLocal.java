@@ -250,7 +250,6 @@ public class BuscaLocal extends ObterRegras {
 		String arquivoLog = "resultados/" + nomebase +"/" + nomebase + ".log";
 		
 		try{
-			local.psLog = new PrintStream(arquivoLog);
 			local.carregarInstancias(arquivoARFF,0,1);
 			local.obterRegras(0,1);
 		} catch (Exception e){e.printStackTrace();}
