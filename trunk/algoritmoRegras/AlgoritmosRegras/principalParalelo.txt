@@ -1,0 +1,16 @@
+nomebase=haberman_discreto
+caminhobase=D:\Andre\Mestrado\Bases\Artigo\
+metodo=pso
+classePositiva=0
+classeNegativa=1
+numFolds=1
+numExec=1
+numParticoes=10
+auc=sim
+geracoes=10
+populacao=50
+numRegras=300
+confianca=0.0
+minSuporte=0.0
+maxSuporte=1.0
+delta=0.05
