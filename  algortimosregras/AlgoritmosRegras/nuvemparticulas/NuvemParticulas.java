@@ -85,7 +85,7 @@ public class NuvemParticulas extends ObterRegras {
  			for (Iterator iter = populacao.iterator(); iter.hasNext();) {
 				Particula particula = (Particula) iter.next();
 				//Calcula a nova velocidade
-				particula.calcularNovaVelocidade(i);
+				particula.calcularNovaVelocidadeConstriction();
 				//Calcula a nova posição
 				particula.calcularNovaPosicao();
 				//Avalia a partícula
@@ -113,20 +113,20 @@ public class NuvemParticulas extends ObterRegras {
 	/**
 	 * Método que executa o aprendizado de regras do método executar para as duas classes.
 	 */
-	public ArrayList<Regra> obterRegras(int cPositiva, int cNegativa) throws Exception {
+	public ArrayList<Regra> obterRegras(int numClasses) throws Exception {
 		
 		//Caso haja uma hibridização com o apriori
 		if(repositorios != null)
 			repositorioInicial = repositorios[numFold];
 		
-		ArrayList<Regra> positivas = executar(cPositiva);
-		//mergeRegrasCruzam(positivas);
-		ArrayList<Regra> negativas = executar(cNegativa);
-		//mergeRegrasCruzam(positivas);
-		
+		ArrayList<Regra> temp = null;
 		regras = new ArrayList<Regra>();
-		regras.addAll(positivas);
-		regras.addAll(negativas);
+		
+		for(int i=0; i<numClasses; i++){
+			temp = executar(i);
+			regras.addAll(temp);
+			temp.clear();
+		}
 		return regras;
 	}
 	
@@ -148,7 +148,7 @@ public class NuvemParticulas extends ObterRegras {
 		ObterRegrasApriori apri = new ObterRegrasApriori(numRegras,0.1,0.1,1.0,0.05, true, objs);
 		apri.objetivos = objetivos;
 		apri.carregarInstancias(arquivoARFF, cPositiva, cNegativa);
-		return  apri.obterRegras(cPositiva, cNegativa);
+		return  apri.obterRegras(2);
 	}
 	
 	public void preencherRepositorioRegras(int classe){

@@ -49,7 +49,7 @@ public class BuscaLocal extends ObterRegras {
 	}
 	
 	
-	public ArrayList<Regra> obterRegras(int cPositiva, int cNegativa) throws Exception {
+	public ArrayList<Regra> obterRegras(int numClasses) throws Exception {
 		if(regraAtual == null)
 			regraAtual = gerarRegraAleatoria(dados.enumerateAttributes(), dados.classAttribute(), dados.numAttributes(), 0);
 		preencherMatrizContigencia(regraAtual, dados);
@@ -251,7 +251,7 @@ public class BuscaLocal extends ObterRegras {
 		
 		try{
 			local.carregarInstancias(arquivoARFF,0,1);
-			local.obterRegras(0,1);
+			local.obterRegras(2);
 		} catch (Exception e){e.printStackTrace();}
 	}
 

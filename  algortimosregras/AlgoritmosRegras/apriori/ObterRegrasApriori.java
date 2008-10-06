@@ -48,7 +48,7 @@ public class ObterRegrasApriori extends ObterRegras{
 			return apriori;		
 	}
 	
-	public ArrayList<Regra> obterRegras(int cPositiva, int cNegativa) throws Exception{
+	public ArrayList<Regra> obterRegras(int numClasses) throws Exception{
 		executar();
 		System.out.println("Apriori terminado!");
 		FastVector v[] = apriori.getAllTheRules();

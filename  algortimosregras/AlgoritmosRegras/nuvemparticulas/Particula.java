@@ -38,6 +38,11 @@ public class Particula {
 	//Coeficientes da equação do cálculo da velocidade
 	public double phi1;
 	public double phi2;
+	
+	public final double c1 = 2.05;
+	public final double c2 = 2.05;
+	public double X = 0.72984;
+	
 	private double omega;
 	//Limites da atualização dos coeficientes
 	private final double MAX_PHI = 4;
@@ -105,6 +110,21 @@ public class Particula {
 	public double getPhi2(int iteracao){
 		//Valor de phi2 aleatorio. Pode-se utilizar uma função que varia o valor de phi de acordo com aiteração
 		return phi2 = (Math.random()*10) % MAX_PHI;
+	}
+	
+	/**
+	 * Funcao que retorna o valor aleatorio de phi1 [0,1].  
+	 * @return Valor de phi1
+	 */
+	public double getPhi1(){
+		return phi1 = Math.random()*10;
+	}
+		
+	/**
+	 * Funcao que retorna o valor aleatorio de phi2 [0,1].  
+	 * @return Valor de phi2
+	 */	public double getPhi2(){
+		return phi2 = Math.random();
 	}
 	
 	/**
@@ -264,11 +284,28 @@ public class Particula {
 		//omega*velocidad
 		double[] parte1 = multiplicacao(omega,velocidade);
 		//phi1*(localBest - posicao);
-		double[] parte2 = multiplicacao(getPhi1(iter),soma(localBest, posicao, -1));
+		double[] parte2 = multiplicacao(c1*getPhi1(),soma(localBest, posicao, -1));
 		//phi2*(globalBest - posicao);
-		double[] parte3 = multiplicacao(getPhi2(iter),soma(globalBest, posicao, -1));
+		double[] parte3 = multiplicacao(c2*getPhi2(),soma(globalBest, posicao, -1));
 		double[] parte4 = soma(parte2,parte3,1);
 		double[] parte5 = soma(parte1,parte4,1);
+		double[] parte6 = mod(parte5);
+		velocidade = truncar(parte6);
+		
+	}
+	
+	public void calcularNovaVelocidadeConstriction(){
+		
+		//c1*phi1*(localBest - posicao)
+		double[] parte1 = multiplicacao(c1*getPhi1(),soma(localBest, posicao, -1));
+		//c2*phi2*(globalBest - posicao)
+		double[] parte2 = multiplicacao(c2*getPhi2(),soma(globalBest, posicao, -1));
+		//c1*phi1*(localBest - posicao) + c2*phi2*(globalBest - posicao)
+		double[] parte3 = soma(parte1,parte2,1);
+		//v + c1*phi1*(localBest - posicao) + c2*phi2*(globalBest - posicao)
+		double[] parte4 = soma(velocidade,parte3,1);
+		//X(v + c1*phi1*(localBest - posicao) + c2*phi2*(globalBest - posicao))
+		double[] parte5 = multiplicacao(X, parte4); 
 		double[] parte6 = mod(parte5);
 		velocidade = truncar(parte6);
 		
