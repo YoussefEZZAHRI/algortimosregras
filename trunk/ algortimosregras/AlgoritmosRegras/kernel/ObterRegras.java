@@ -92,7 +92,7 @@ public abstract class ObterRegras {
 	 * @return As regras encontradas
 	 * @throws Exception
 	 */	
-	public abstract ArrayList<Regra> obterRegras(int cPositiva, int cNegativa) throws Exception;
+	public abstract ArrayList<Regra> obterRegras(int numClasses) throws Exception;
 	
 	public ObterRegras(String[] objs){
 		addObjetivos(objs);
@@ -627,7 +627,7 @@ public abstract class ObterRegras {
  * @param selecao Indica se as regras finais vão ser somente as regras que votaram na etapa de teste
  * @throws Exception Lança execuçãoc caso haja algum erro nos arquivos de entrada ou saída.
  */
-	public void executarFolds(String nomeBase, String caminhoBase, String nomeMetodo, int cPositiva, int cNegativa, int numFolds, int numExec, String dirResultado, boolean AUC, boolean verbose, String votacao, boolean selecao/*, String[] objetivos*/)  throws Exception{
+	public void executarFolds(String nomeBase, String caminhoBase, String nomeMetodo, int numClasses, int cPositiva, int cNegativa, int numFolds, int numExec, String dirResultado, boolean AUC, boolean verbose, String votacao, boolean selecao/*, String[] objetivos*/)  throws Exception{
 		
 		dadosExperimento = new DadosExperimentos();
 		dadosExperimento.nomeBase = nomeBase;
@@ -665,7 +665,7 @@ public abstract class ObterRegras {
 				numFold = i;
 				
 				executarTreinamento(nomeBase, caminhoBase, cPositiva,
-						cNegativa, i);
+						cNegativa, i, numClasses);
 				
 				if(regras.isEmpty()){
 					System.out.println("Nenhuma regra encontrada");
@@ -721,7 +721,7 @@ public abstract class ObterRegras {
 	 * @throws Exception
 	 */
 	
-	public void executarParalelo(String nomeBase, String caminhoBase, String nomeMetodo, int cPositiva, int cNegativa, int numFolds, int numExec, String dirResultado, boolean AUC , boolean verbose, String votacao, boolean selecao, int numParticoes)  throws Exception{
+	public void executarParalelo(String nomeBase, String caminhoBase, String nomeMetodo, int numClasses, int cPositiva, int cNegativa, int numFolds, int numExec, String dirResultado, boolean AUC , boolean verbose, String votacao, boolean selecao, int numParticoes)  throws Exception{
 		
 		
 		dadosExperimento = new DadosExperimentos();
@@ -782,7 +782,7 @@ public abstract class ObterRegras {
 						dados.add(dadosTreinamentoTotal.instance(z));
 					}
 
-					obterRegras(cPositiva, cNegativa);
+					obterRegras(numClasses);
 					System.out.println("Numero de Instancias: " + dados.numInstances());
 					System.out.println("Numero de Regras Partição: " + regras.size());
 					regrasParticoes.addAll(regras);
@@ -856,7 +856,7 @@ public abstract class ObterRegras {
 	 * @throws Exception
 	 */
 	
-	public void executarMedoid(String nomeBase, String caminhoBase, String nomeMetodo, int cPositiva, int cNegativa, int numFolds, int numExec, String dirResultado, boolean AUC , boolean verbose, String votacao, boolean selecao)  throws Exception{
+	public void executarMedoid(String nomeBase, String caminhoBase, String nomeMetodo,int numClasses, int cPositiva, int cNegativa, int numFolds, int numExec, String dirResultado, boolean AUC , boolean verbose, String votacao, boolean selecao)  throws Exception{
 		
 		
 		dadosExperimento = new DadosExperimentos();
@@ -917,7 +917,7 @@ public abstract class ObterRegras {
 				numFold = i;
 				
 				executarTreinamento(nomeBase, caminhoBase, cPositiva,
-						cNegativa, i);
+						cNegativa, i, numClasses);
 				
 				//ArrayList regras4 = medoid(... ,... ,..., 4);
 				//ArrayList regras8 = medoid(... ,... ,..., 8);
@@ -1052,12 +1052,12 @@ private void executarTeste(ArrayList<Regra> regrasTeste ,String nomeBase, PrintS
  * @throws Exception
  */
 private void executarTreinamento(String nomeBase, String caminhoBase,
-		int cPositiva, int cNegativa, int i) throws Exception {
+		int cPositiva, int cNegativa, int i, int numClasses) throws Exception {
 
 	String arquivoTreinamento = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_data.arff";
 	System.out.println("Base de Treinamento: "+ arquivoTreinamento);
 	carregarInstancias(arquivoTreinamento, cPositiva, cNegativa);
-	obterRegras(cPositiva, cNegativa);
+	obterRegras(numClasses);
 
 	System.out.println();
 	System.out.println("Numero de Instancias: " + dados.numInstances());
@@ -1088,7 +1088,7 @@ private void gravarMedidasFinaisArquivo(DadosExperimentos dadosExperimento,Strin
 	System.out.println(dadosExperimento);			
 	ps.println(dadosExperimento);
 
-	dadosExperimento.gerarArquivosMedidas(diretorio,nomeMetodo+"_"+ nomeBase + "_medidas.txt",nomeMetodo+"_"+ nomeBase + "_comandos.txt", nomeMetodo+"_"+ nomeBase + "_confusao.txt");
+	dadosExperimento.gerarArquivosMedidas(diretorio,nomeMetodo+"_"+ nomeBase + "_medidas",nomeMetodo+"_"+ nomeBase + "_comandos", nomeMetodo+"_"+ nomeBase + "_confusao");
 }
 
 /**
@@ -1164,7 +1164,7 @@ private void setVotacao(String votacao) {
 			String arquivoTreinamento = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_data.arff";
 			System.out.println("Base de Treinamento: "+ arquivoTreinamento);
 			carregarInstancias(arquivoTreinamento, cPositiva, cNegativa);
-			obterRegras(cPositiva, cNegativa);	
+			obterRegras(2);	
 			String arquivoTeste = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_test.arff";
 			
 			if(regras.isEmpty()){

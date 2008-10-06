@@ -20,6 +20,9 @@ public class PrincipalAntigo {
 	public int numParticoes = 1;
 	public int classePositiva = 0;
 	public int classeNegativa = 1;
+	
+	public int numClasses = 2;
+	
 	public boolean auc = true;
 	public boolean verbose = true;
 	
@@ -77,7 +80,7 @@ public class PrincipalAntigo {
 				 prinnuvem.iniciarRepositorios(nomeBase, caminhoBase,10, 0.2, 0.4, new Integer(args[6]).intValue());
 				 */
 				
-				principal.algoritmo.executarFolds(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao);
+				principal.algoritmo.executarFolds(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.numClasses,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao);
 				
 			}
 			//Executa mais de uma base por vez
@@ -89,7 +92,6 @@ public class PrincipalAntigo {
 				for (int i = 0; i < bases.length; i++) {
 					String nBase = bases[i];
 					
-					principal.algoritmo.executarFolds(nBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, nBase, principal.auc, principal.verbose, principal.votacao, principal.selecaoVotacao);
 					
 				}
 			}

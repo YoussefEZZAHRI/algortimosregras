@@ -38,6 +38,7 @@ public class Principal {
 	
 	public int geracoes = 0;
 	public int populacao = 0;
+	public int numclasses = 0;
 	
 	public int numRegras = 0;
 	public double minSuporte = 0;
@@ -59,12 +60,12 @@ public class Principal {
 				principal.algoritmo = new ObterRegrasApriori(principal.numRegras, principal.confianca, principal.minSuporte, principal.maxSuporte, principal.delta, principal.fronteiraApriori, principal.objetivos);					
 
 			if(principal.medoid)
-				principal.algoritmo.executarMedoid(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao);
+				principal.algoritmo.executarMedoid(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.numclasses,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao);
 			else{
 				if(principal.numParticoes == 1)
-					principal.algoritmo.executarFolds(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao);
+					principal.algoritmo.executarFolds(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.numclasses,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao);
 				else
-					principal.algoritmo.executarParalelo(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao, principal.numParticoes);
+					principal.algoritmo.executarParalelo(principal.nomeBase, principal.caminhoBase, principal.metodo, principal.numclasses,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao, principal.numParticoes);
 			}
 
 		} catch (Exception ex) {ex.printStackTrace();}
@@ -124,6 +125,8 @@ public class Principal {
 				numParticoes = new Integer(valor).intValue();
 			if(tag.equals("numexec"))
 				numExec = new Integer(valor).intValue();
+			if(tag.equals("numclasses"))
+				numclasses = new Integer(valor).intValue();
 			if(tag.equals("numregras"))
 				numRegras = new Integer(valor).intValue();
 			if(tag.equals("confianca"))
