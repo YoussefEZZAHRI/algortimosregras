@@ -51,8 +51,8 @@ public class GerarFolds {
 	public static void main(String[] args) {
 		
 		GerarFolds folds = new GerarFolds();
-		String nomebase = "jm1-cfs";
-		String caminhoBase = "c:\\Andre\\bases\\revista\\"+nomebase+"\\";
+		String nomebase = "hepatitis";
+		String caminhoBase = "c:\\bases\\"+nomebase+"\\";
 		//String caminhoBase = "/home/andre/mestrado/weka-3-5-5/data/";
 		//String arquivoARFF = caminhoBase + nomebase + "/it0/" + nomebase + "_data.arff";
 		String arquivoARFF = caminhoBase + nomebase + ".arff";

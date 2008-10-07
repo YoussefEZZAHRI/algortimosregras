@@ -24,6 +24,15 @@ public abstract class Votacao {
 	public abstract double votacao(ArrayList<Regra> regras, Instance exemplo, String classePositiva);
 	
 	/**
+	 * Método abstrato de votação multiclasses
+	 * @param regras Regras que irão votar
+	 * @param exemplo Exemplo a ser votado
+	 * @param numClasses quantidade de classes da basenegativa
+	 * @return
+	 */
+	public abstract int votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, int numClasses);
+	
+	/**
 	 * Método que seleciona todas as regras, positivas e negativas, que votam no exemplo passado como paramêtro.
 	 * @param regrasVotacaoPositiva Lista em que serão guardados as regras positivas
 	 * @param regrasVotacaoNegativa Lista em que serão guardados as regras negativas

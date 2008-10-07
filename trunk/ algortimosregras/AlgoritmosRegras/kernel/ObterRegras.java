@@ -52,6 +52,7 @@ public abstract class ObterRegras {
 	
 	//Matriz de confusão que é calculada para cada execução
 	public MatrizConfusao confusao;
+	public MatrizConfusaoMultiClasse confusaoMultiClasse;
 	
 	//Arquivo de log
 	//public PrintStream psLog = null;
@@ -66,7 +67,7 @@ public abstract class ObterRegras {
 	public  String classePositiva;
 	//String que contém o nome da classe negativa da execução (Ex: negative ou false )
 	public  String classeNegativa;
-	
+
 	//Contéma  informação do fold corrente
 	public int numFold;
 	
@@ -409,6 +410,25 @@ public abstract class ObterRegras {
 	}
 	
 	/**
+	 * Método que preenche a matriz de confusão multi classe de acordo com as instancias e regras passadas por parametro
+	 * @author matheus
+	 * @param confusao Matriz de confusao a ser preenchida
+	 * @param dadosTeste Dados de testes
+	 * @param regras Regras do modelo
+	 */
+	public void preencherMatrizConfusaoMultiClasse(MatrizConfusaoMultiClasse confusao, Instances dadosTeste, ArrayList<Regra> regras){
+		int classeEleita;
+		int classeReal;
+		Instance temp = null;
+		for(int i = 0; i < dadosTeste.numInstances(); i++){
+			temp = dadosTeste.instance(i);
+			classeEleita = metodoVotacao.votacaoMultiClasse(regras, temp, confusao.tamanho);
+			classeReal = (int)temp.classValue();			
+			confusao.matriz[classeReal][classeEleita]++;
+		}
+	}
+	
+	/**
 	 * Método que recebe como parâmetro um conjunto de regras e retira deste conjunto as regras 
 	 * cujo o erro e maior que a porcentagem da class majortaria
 	 * @param regras Regras de entrada
@@ -676,7 +696,7 @@ public abstract class ObterRegras {
 					
 					if(AUC){
 						String arquivoTeste = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_test.arff";
-						executarTeste(regras, nomeBase, psTemp, j, i, arquivoTeste, dadosExperimento);
+						executarTeste(regras, nomeBase, numClasses, psTemp, j, i, arquivoTeste, dadosExperimento);
 						gravarRegrasArquivo(selecao, regrasFinais, psRegras, regras);
 					}  else{
 						//Como não há cálculo das medidas, não há o processod e votação.
@@ -809,7 +829,7 @@ public abstract class ObterRegras {
 					if(AUC){
 
 						String arquivoTeste = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_test.arff";
-						executarTeste(regras, nomeBase, psTemp, j, i, arquivoTeste, dadosExperimento);
+						executarTeste(regras, nomeBase, numClasses, psTemp, j, i, arquivoTeste, dadosExperimento);
 
 						gravarRegrasArquivo(selecao, regrasFinais, psRegras, regras);
 					}  else{
@@ -937,7 +957,7 @@ public abstract class ObterRegras {
 						String arquivoTeste = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_test.arff";
 						
 						//Teste com as regras originais
-						executarTeste(regras, nomeBase, psTemp, j, i, arquivoTeste, dadosExperimento);
+						executarTeste(regras, nomeBase, numClasses, psTemp, j, i, arquivoTeste, dadosExperimento);
 						
 						//Teste com as regras apos aplicacao do medoid com 4 cluster
 						//executarTeste(regras4, nomeBase, psTemp, j, i, arquivoTeste, dadosExperimento_4);
@@ -1020,7 +1040,7 @@ private void gravarRegrasArquivo(boolean selecao,
  * @throws FileNotFoundException
  * @throws IOException
  */
-private void executarTeste(ArrayList<Regra> regrasTeste ,String nomeBase, PrintStream psTemp, int j, int i,
+private void executarTeste(ArrayList<Regra> regrasTeste ,String nomeBase, int numClasses, PrintStream psTemp, int j, int i,
 		String arquivoTeste, DadosExperimentos dadosExperimentosTeste) throws FileNotFoundException, IOException {
 	
 	Reader reader = new FileReader(arquivoTeste);
@@ -1030,7 +1050,10 @@ private void executarTeste(ArrayList<Regra> regrasTeste ,String nomeBase, PrintS
 		
 	confusao = new MatrizConfusao();
 	preencherMatrizConfusao(confusao, dadosTeste, regrasTeste);		
-
+	
+	confusaoMultiClasse = new MatrizConfusaoMultiClasse(numClasses);
+	preencherMatrizConfusaoMultiClasse(confusaoMultiClasse, dadosTeste, regrasTeste);		
+		
 	
 	double a = obterAUC(dadosTeste, regrasTeste);
 	
