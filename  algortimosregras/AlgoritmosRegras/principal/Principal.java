@@ -78,6 +78,7 @@ public class Principal {
 	 * metodo = Método que será a base será executada (pso, apriori)
 	 * classePositiva = Índice da classe positiva (0 ou 1)  
 	 * classeNegativa = Índice da classe positiva (1 ou 0)
+	 * numClasses = Número de classes da base
 	 * numFolds = Número de folds da base de dados
 	 * numExec = Número de execuções do algoritmo
 	 * Parametros da nuvem de particulas

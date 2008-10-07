@@ -51,8 +51,8 @@ public class Reclassificar {
 	public static void main(String[] args) {
 		Reclassificar rec = new Reclassificar();
 		try{
-			String nomebase = "ecoli_numerico";
-			String caminhoBase = "C:\\Andre\\bases\\UCI\\ecoli_numerico\\";
+			String nomebase = "hepatitis";
+			String caminhoBase = "C:\\bases\\hepatitis\\";
 			//String caminhoBase = "/home/andre/mestrado/weka-3-5-5/data/";
 			//String arquivoARFF = caminhoBase + nomebase + "/it0/" + nomebase + "_data.arff";
 			String arquivoARFF = caminhoBase + nomebase + ".arff";

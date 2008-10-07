@@ -52,6 +52,12 @@ public class VotacaoConfidenceLaplaceOrdenacao extends Votacao {
 		return positivo-negativo;
 	}
 
+	@Override
+	public int votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo,	int numClasses) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	/*METODO ANTIGO
 	public double votacaotemp(ArrayList<Regra> regras, Instance exemplo,
 			String classePositiva) {

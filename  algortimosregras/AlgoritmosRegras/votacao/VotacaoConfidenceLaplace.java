@@ -103,4 +103,10 @@ public class VotacaoConfidenceLaplace extends Votacao {
 		return selecao;
 	}
 
+	@Override
+	public int votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo,			int numClasses) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

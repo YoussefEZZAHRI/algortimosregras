@@ -110,8 +110,8 @@ public class BasicoWeka {
 	}
 
 	public static void main(String[] args) {
-		String nomebase = "weather.nominal.arff";
-		String caminhoBase = "C:\\Arquivos de programas\\Weka-3-5\\data\\";
+		String nomebase = "hepatitis.arff";
+		String caminhoBase = "C:\\bases\\hepatitis\\";
 		String arquivoARFF = caminhoBase + nomebase;
 		BasicoWeka basico = new BasicoWeka();
 		//Aquela exceção que eu repassei, agora eu tenho que tratar ela.
