@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -67,7 +68,10 @@ public abstract class ObterRegras {
 	public  String classePositiva;
 	//String que contém o nome da classe negativa da execução (Ex: negative ou false )
 	public  String classeNegativa;
-
+	
+	//ArrayList que contém todas as classes da base
+	public  ArrayList<Classe> classes;
+	
 	//Contéma  informação do fold corrente
 	public int numFold;
 	
@@ -97,7 +101,7 @@ public abstract class ObterRegras {
 	
 	public ObterRegras(String[] objs){
 		addObjetivos(objs);
-		
+		classes = new ArrayList<Classe>();
 	}
 	
 	/**
@@ -114,6 +118,12 @@ public abstract class ObterRegras {
 		Attribute classe = dados.classAttribute();
 		classePositiva = classe.value(indicePositiva);
 		classeNegativa = classe.value(indiceNegativa);
+		//preenche o arrayList classes com os nomes
+		for(int i = 0; i < dados.numClasses(); i++){
+			Classe novaClasse = new Classe();
+			novaClasse.setNome(classe.value(i));
+			classes.add(novaClasse);
+		}		
 	}
 	
 	/**
@@ -211,6 +221,43 @@ public abstract class ObterRegras {
 		retorno[1] = porcentagemClasseMajoritaria;
 		return retorno;
 		
+	}
+	
+	
+	/**
+	 * @author Matheus Rosendo
+	 * Preenche o arrayList com os exemplos cobertos das classes 
+	 * @param dados Dados para o cálcula da classe majoritária
+	 * @param classes array list de classes
+	 */
+	public void preencherArrayClasses(ArrayList<Classe> classes, Instances dados){
+		for(int i = 0; i < dados.numInstances(); i++){
+			Instance temp = dados.instance(i);
+			for (Classe classe : classes) {
+				if(temp.classValue() == temp.classAttribute().indexOfValue(classe.getNome())){
+					classe.addExemplosCobertos(1);
+					break;
+				}				
+			}
+		}		
+	}
+	
+	/**
+	 * @author Matheus Rosendo
+	 * Retorna a classe de maior cobertura entre as passadas como parametro
+	 * @param classes array list de classes
+	 * @return Classe 
+	 */
+	public Classe getClasseMaiorCobertura(ArrayList<Classe> classes){
+		int exemplos = 0;
+		int indice = 0;
+		for (Classe classe : classes) {
+			if(classe.getExemplosCobertos() > exemplos){
+				exemplos = classe.getExemplosCobertos();
+				indice = classes.indexOf(classe);
+			}
+		}
+		return classes.get(indice);		
 	}
 	
 	/**
@@ -417,14 +464,24 @@ public abstract class ObterRegras {
 	 * @param regras Regras do modelo
 	 */
 	public void preencherMatrizConfusaoMultiClasse(MatrizConfusaoMultiClasse confusao, Instances dadosTeste, ArrayList<Regra> regras){
-		int classeEleita;
+		ArrayList<Integer> classesMaisVotadas;
 		int classeReal;
 		Instance temp = null;
 		for(int i = 0; i < dadosTeste.numInstances(); i++){
 			temp = dadosTeste.instance(i);
-			classeEleita = metodoVotacao.votacaoMultiClasse(regras, temp, confusao.tamanho);
+			classesMaisVotadas = metodoVotacao.votacaoMultiClasse(regras, temp, confusao.tamanho);
 			classeReal = (int)temp.classValue();			
-			confusao.matriz[classeReal][classeEleita]++;
+			//em caso de não haver empate pega-se o primeiro e único elemento do arraylist que é a classe eleita
+			if(classesMaisVotadas.size()==1){
+				confusao.matriz[classeReal][classesMaisVotadas.get(0)]++;
+			} else {
+				ArrayList<Classe> arrayClassesMaisVotadas = new ArrayList<Classe>();
+				for (Integer indiceClasse : classesMaisVotadas) {
+					arrayClassesMaisVotadas.add(this.classes.get(indiceClasse));
+				}
+				int indiceClasseMaiorCobertura = classes.indexOf(getClasseMaiorCobertura(arrayClassesMaisVotadas));
+				confusao.matriz[classeReal][indiceClasseMaiorCobertura]++;
+			}
 		}
 	}
 	
@@ -1047,7 +1104,9 @@ private void executarTeste(ArrayList<Regra> regrasTeste ,String nomeBase, int nu
 	Instances dadosTeste = new Instances(reader);
 	dadosTeste.setClassIndex(dadosTeste.numAttributes()-1);
 	System.out.println("Numero de Instancias de Teste: " + dadosTeste.numInstances());
-		
+	
+	preencherArrayClasses(this.classes, dadosTeste);
+	
 	confusao = new MatrizConfusao();
 	preencherMatrizConfusao(confusao, dadosTeste, regrasTeste);		
 	

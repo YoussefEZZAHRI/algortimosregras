@@ -25,12 +25,13 @@ public abstract class Votacao {
 	
 	/**
 	 * Método abstrato de votação multiclasses
+	 * @author Matheus Rosendo
 	 * @param regras Regras que irão votar
 	 * @param exemplo Exemplo a ser votado
-	 * @param numClasses quantidade de classes da basenegativa
-	 * @return
+	 * @param numClasses quantidade de classes do exemplo
+	 * @return ArrayList<Integer> Indices das classes mais votadas
 	 */
-	public abstract int votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, int numClasses);
+	public abstract ArrayList<Integer> votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, int numClasses);
 	
 	/**
 	 * Método que seleciona todas as regras, positivas e negativas, que votam no exemplo passado como paramêtro.
@@ -51,6 +52,31 @@ public abstract class Votacao {
 				}
 				else{ 
 					regrasVotacaoNegativa.add(regra);
+				}
+			}	
+		}
+		
+	}
+	
+	/**
+	 * Método que seleciona todas as regras que votam no exemplo passado como paramêtro e preenche a matriz de regras passada.
+	 * @param regrasVotacaoPositiva Lista em que serão guardados as regras positivas
+	 * @param regrasVotacaoNegativa Lista em que serão guardados as regras negativas
+	 * @param regras Todas as regras
+	 * @param exemplo Exemplo a ser votado
+	 * @param classePositiva String que identifica qual é a classe positiva
+	 */
+	public void obterRegrasVotamMultiClasse(ArrayList<Regra> regrasQueVotamNoExemplo, ArrayList<Regra> regras, Instance exemplo, String classePositiva){
+		
+		for (Iterator iter = regras.iterator(); iter.hasNext();) {
+			Regra regra = (Regra) iter.next();
+			boolean b = regra.compararCorpo(exemplo.toDoubleArray());
+			if(b){
+				if(regra.cabeca == regra.classe.indexOfValue(classePositiva)){
+					//regrasVotacaoPositiva.add(regra);
+				}
+				else{ 
+					//regrasVotacaoNegativa.add(regra);
 				}
 			}	
 		}
