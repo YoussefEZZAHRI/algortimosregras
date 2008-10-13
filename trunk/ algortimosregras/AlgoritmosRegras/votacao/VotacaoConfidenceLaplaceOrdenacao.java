@@ -53,9 +53,14 @@ public class VotacaoConfidenceLaplaceOrdenacao extends Votacao {
 	}
 
 	@Override
-	public int votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo,	int numClasses) {
-		// TODO Auto-generated method stub
-		return 0;
+	public ArrayList<Integer> votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, int numClasses) {
+		ArrayList<Integer> asdf;
+		double k = exemplo.classAttribute().numValues();
+		//for(int i = 0; i < numClasses; i++){
+		ArrayList<Regra> regrasQueVotamNoExemplo = new ArrayList<Regra>();
+		
+		//}
+		return asdf;
 	}
 
 	/*METODO ANTIGO

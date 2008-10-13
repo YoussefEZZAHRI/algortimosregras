@@ -41,12 +41,15 @@ public class VotacaoSimples extends Votacao {
 
 	/**
 	 * Método de votação simples multiclasse. Todas regras votam e um ponto para cada voto.
-	 * @author matheus
+	 * @author Matheus Rosendo
 	 * @return a classe mais votada pelo conjunto de regras 
 	 */
-	public int votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, int numClasses) {
+	public ArrayList<Integer> votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, int numClasses) {
 		int[] classePontuacao = new int[numClasses];
 		int classeMaisVotada = 0;
+		
+		ArrayList<Integer> classesMaisVotadas = new ArrayList<Integer>();//será apenas uma em caso de não haver empate
+		
 		for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			boolean b = regra.compararCorpo(exemplo.toDoubleArray());
@@ -57,12 +60,20 @@ public class VotacaoSimples extends Votacao {
 		}
 		//verifica qual foi a mais votada
 		for(int i = 0; i < (numClasses - 1); i++){
-			if(classePontuacao[i+1] > classePontuacao[i]){
-				classeMaisVotada = i+1; 
+			if(classePontuacao[i + 1] > classePontuacao[i]){
+				classeMaisVotada = i + 1; 
 			}			
 		}
 		
-		return classeMaisVotada;
+		classesMaisVotadas.add(classeMaisVotada);
+		
+		//verifica se houve empate entre as classes mais votada e preeche o array classesMaisVotadas em caso positivo
+		for(int i = 0; i < numClasses; i++){
+			if( (classeMaisVotada != i) && (classePontuacao[i] == classePontuacao[classeMaisVotada]) ){
+				classesMaisVotadas.add(i);
+			}			
+		}
+		
+		return classesMaisVotadas;		
 	}
-
 }
