@@ -3,6 +3,8 @@ package votacao;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import kernel.Classe;
+
 import regra.Regra;
 import weka.core.Instance;
 
@@ -104,9 +106,9 @@ public class VotacaoConfidenceLaplace extends Votacao {
 	}
 
 	@Override
-	public int votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo,			int numClasses) {
+	public ArrayList<Integer> votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo,	ArrayList<Classe> classes) {
 		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 
 }

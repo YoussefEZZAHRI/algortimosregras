@@ -3,6 +3,8 @@ package votacao;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import kernel.Classe;
+
 import regra.Regra;
 import weka.core.Instance;
 
@@ -31,7 +33,7 @@ public abstract class Votacao {
 	 * @param numClasses quantidade de classes do exemplo
 	 * @return ArrayList<Integer> Indices das classes mais votadas
 	 */
-	public abstract ArrayList<Integer> votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, int numClasses);
+	public abstract ArrayList<Integer> votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, ArrayList<Classe> classes);
 	
 	/**
 	 * Método que seleciona todas as regras, positivas e negativas, que votam no exemplo passado como paramêtro.
@@ -59,24 +61,21 @@ public abstract class Votacao {
 	}
 	
 	/**
-	 * Método que seleciona todas as regras que votam no exemplo passado como paramêtro e preenche a matriz de regras passada.
+	 * @author Matheus
 	 * @param regrasVotacaoPositiva Lista em que serão guardados as regras positivas
 	 * @param regrasVotacaoNegativa Lista em que serão guardados as regras negativas
 	 * @param regras Todas as regras
 	 * @param exemplo Exemplo a ser votado
 	 * @param classePositiva String que identifica qual é a classe positiva
 	 */
-	public void obterRegrasVotamMultiClasse(ArrayList<Regra> regrasQueVotamNoExemplo, ArrayList<Regra> regras, Instance exemplo, String classePositiva){
+	public void obterRegrasVotamMultiClasse(ArrayList<Regra> regrasDaClasseQueVotamNoExemplo, ArrayList<Regra> regras, Instance exemplo, String nomeClasse){
 		
-		for (Iterator iter = regras.iterator(); iter.hasNext();) {
+		for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			boolean b = regra.compararCorpo(exemplo.toDoubleArray());
 			if(b){
-				if(regra.cabeca == regra.classe.indexOfValue(classePositiva)){
-					//regrasVotacaoPositiva.add(regra);
-				}
-				else{ 
-					//regrasVotacaoNegativa.add(regra);
+				if(regra.cabeca == regra.classe.indexOfValue(nomeClasse)){
+					regrasDaClasseQueVotamNoExemplo.add(regra);
 				}
 			}	
 		}
