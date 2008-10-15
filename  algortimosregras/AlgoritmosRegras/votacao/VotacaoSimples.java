@@ -3,6 +3,8 @@ package votacao;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import kernel.Classe;
+
 import regra.Regra;
 import weka.core.Instance;
 
@@ -44,8 +46,8 @@ public class VotacaoSimples extends Votacao {
 	 * @author Matheus Rosendo
 	 * @return a classe mais votada pelo conjunto de regras 
 	 */
-	public ArrayList<Integer> votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, int numClasses) {
-		int[] classePontuacao = new int[numClasses];
+	public ArrayList<Integer> votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, ArrayList<Classe> classes) {
+		int[] classePontuacao = new int[classes.size()];
 		int classeMaisVotada = 0;
 		
 		ArrayList<Integer> classesMaisVotadas = new ArrayList<Integer>();//será apenas uma em caso de não haver empate
@@ -59,7 +61,7 @@ public class VotacaoSimples extends Votacao {
 			}	
 		}
 		//verifica qual foi a mais votada
-		for(int i = 0; i < (numClasses - 1); i++){
+		for(int i = 0; i < (classes.size() - 1); i++){
 			if(classePontuacao[i + 1] > classePontuacao[i]){
 				classeMaisVotada = i + 1; 
 			}			
@@ -68,7 +70,7 @@ public class VotacaoSimples extends Votacao {
 		classesMaisVotadas.add(classeMaisVotada);
 		
 		//verifica se houve empate entre as classes mais votada e preeche o array classesMaisVotadas em caso positivo
-		for(int i = 0; i < numClasses; i++){
+		for(int i = 0; i < classes.size(); i++){
 			if( (classeMaisVotada != i) && (classePontuacao[i] == classePontuacao[classeMaisVotada]) ){
 				classesMaisVotadas.add(i);
 			}			

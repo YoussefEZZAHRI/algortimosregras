@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import kernel.Classe;
+
 import regra.ComparatorRegraLaplace;
 import regra.ComparatorX;
 import regra.Regra;
@@ -43,7 +45,6 @@ public class VotacaoConfidenceLaplaceOrdenacao extends Votacao {
 		Collections.sort(regrasVotacaoPositiva, comp);
 		Collections.sort(regrasVotacaoNegativa, comp);
 		
-		
 		//Votação das k melhores regras para cada classe
 		
 		positivo = votarConfidenceMedia(regrasVotacaoPositiva, k);
@@ -53,14 +54,38 @@ public class VotacaoConfidenceLaplaceOrdenacao extends Votacao {
 	}
 
 	@Override
-	public ArrayList<Integer> votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, int numClasses) {
-		ArrayList<Integer> asdf;
-		double k = exemplo.classAttribute().numValues();
-		//for(int i = 0; i < numClasses; i++){
-		ArrayList<Regra> regrasQueVotamNoExemplo = new ArrayList<Regra>();
+	public ArrayList<Integer> votacaoMultiClasse(ArrayList<Regra> regras, Instance exemplo, ArrayList<Classe> classes) {
 		
-		//}
-		return asdf;
+		ArrayList<Integer> classesMaisVotadas = new ArrayList<Integer>();
+		int classeMaisVotada = 0;
+		int[] classePontuacao = new int[classes.size()];		
+		double k = exemplo.classAttribute().numValues();		
+		ComparatorRegraLaplace comp = new ComparatorRegraLaplace();
+		
+		for(int i = 0; i < classes.size(); i++){
+			ArrayList<Regra> regrasDaClasseQueVotamNoExemplo = new ArrayList<Regra>();
+			obterRegrasVotamMultiClasse(regrasDaClasseQueVotamNoExemplo, regras, exemplo, classes.get(i).getNome());
+			Collections.sort(regrasDaClasseQueVotamNoExemplo, comp);
+			classePontuacao[i] += votarConfidenceMedia(regrasDaClasseQueVotamNoExemplo, k);
+		}
+		
+		//verifica qual foi a mais votada
+		for(int i = 0; i < (classes.size() - 1); i++){
+			if(classePontuacao[i + 1] > classePontuacao[i]){
+				classeMaisVotada = i + 1; 
+			}			
+		}
+		
+		classesMaisVotadas.add(classeMaisVotada);
+		
+		//verifica se houve empate entre as classes mais votada e preeche o array classesMaisVotadas em caso positivo
+		for(int i = 0; i < classes.size(); i++){
+			if( (classeMaisVotada != i) && (classePontuacao[i] == classePontuacao[classeMaisVotada]) ){
+				classesMaisVotadas.add(i);
+			}			
+		}
+		
+		return classesMaisVotadas;
 	}
 
 	/*METODO ANTIGO

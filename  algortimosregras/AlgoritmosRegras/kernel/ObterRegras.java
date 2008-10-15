@@ -469,7 +469,7 @@ public abstract class ObterRegras {
 		Instance temp = null;
 		for(int i = 0; i < dadosTeste.numInstances(); i++){
 			temp = dadosTeste.instance(i);
-			classesMaisVotadas = metodoVotacao.votacaoMultiClasse(regras, temp, confusao.tamanho);
+			classesMaisVotadas = metodoVotacao.votacaoMultiClasse(regras, temp, this.classes);
 			classeReal = (int)temp.classValue();			
 			//em caso de não haver empate pega-se o primeiro e único elemento do arraylist que é a classe eleita
 			if(classesMaisVotadas.size()==1){
