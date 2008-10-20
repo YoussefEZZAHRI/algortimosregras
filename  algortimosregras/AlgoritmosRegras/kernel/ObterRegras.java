@@ -1112,7 +1112,22 @@ private void executarTeste(ArrayList<Regra> regrasTeste ,String nomeBase, int nu
 	
 	confusaoMultiClasse = new MatrizConfusaoMultiClasse(numClasses);
 	preencherMatrizConfusaoMultiClasse(confusaoMultiClasse, dadosTeste, regrasTeste);		
-		
+	
+	double getFmeasure0, getFmeasure1, getAccuracy, getRecall0,getRecall1, 
+		   mgetFmeasure0, mgetFmeasure1, mgetAccuracy, mgetRecall0, mgetRecall1;
+	
+	getFmeasure0 = confusao.getFmeasure(0);
+	getFmeasure1 = confusao.getFmeasure(1);
+	getAccuracy = confusao.getAccuracy();
+	getRecall0 = confusao.getRecall(0);
+	getRecall1 = confusao.getRecall(1);
+	
+	mgetFmeasure0 = confusaoMultiClasse.getFmeasure(0);
+	mgetFmeasure1 = confusaoMultiClasse.getFmeasure(1);
+	mgetAccuracy = confusaoMultiClasse.getAccuracy();
+	mgetRecall0 = confusaoMultiClasse.getRecall(0);
+	mgetRecall1 = confusaoMultiClasse.getRecall(1);
+	
 	
 	double a = obterAUC(dadosTeste, regrasTeste);
 	
