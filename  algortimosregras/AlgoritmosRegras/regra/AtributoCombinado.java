@@ -170,7 +170,7 @@ public class AtributoCombinado extends Atributo {
 				retorno.append(nome + " v ");
 			}
 			
-			retorno.delete(retorno.length()-4,retorno.length()-1);
+			retorno.delete(retorno.length()-3,retorno.length()-1);
 			retorno.append("]");
 			
 			return retorno.toString();
