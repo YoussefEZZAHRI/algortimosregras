@@ -8,7 +8,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
+
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -31,6 +32,7 @@ import weka.core.Instances;
 
 import regra.Atributo;
 import regra.AtributoNominal;
+import regra.AtributoCombinado;
 import regra.AtributoNumerico;
 import regra.Regra;
 
@@ -55,9 +57,7 @@ public abstract class ObterRegras {
 	public MatrizConfusao confusao;
 	public MatrizConfusaoMultiClasse confusaoMultiClasse;
 	
-	//Arquivo de log
-	//public PrintStream psLog = null;
-	
+
 	//Objeto que cotem todas as informacoes os dados do experimento
 	public DadosExperimentos dadosExperimento = null;
 	
@@ -654,6 +654,49 @@ public abstract class ObterRegras {
 	}
 	
 	/**
+	 * Método que gera regras iniciais aleatórias de acordo com a distribuição dos valores na base
+	 * Utiliza atributos nominais combinados
+	 * @param atributos Informações sobre os atributos da base
+	 * @param classAttribute Atributo classe
+	 * @param numAtributos Número de atributos
+	 * @param classe Classe da regra gerada
+	 * @return A regra com seus valores iniciais gerados
+	 */
+	public Regra gerarRegraAleatoriaCombinacao(Enumeration atributos, Attribute classAttribute, int numAtributos, int classe){
+		Regra regra = new Regra(objetivos);
+		regra.corpo = new Atributo[numAtributos-1];
+		int i = 0;
+		while(atributos.hasMoreElements()){
+			Attribute att = (Attribute)atributos.nextElement();
+			if(att.isNominal())
+				regra.corpo[i] = new AtributoCombinado(true, att, i);
+			else{
+				double[] limites = obterMaximoMinimoAtributo(att);
+				regra.corpo[i] = new AtributoNumerico(true, att, i, limites[0], limites[1]);
+			}
+			++i;
+		}
+		
+		double temp = Math.random();
+		int n = (int)((temp*100) % regra.corpo.length);
+		if(n == 0)
+			n = 1;
+		
+		preencherRegraAleatoria(n, regra);
+		
+		while(regra.isEmpty()){
+			preencherRegraAleatoria(n, regra);
+		}
+		if(classe == 0)
+			regra.cabeca = classAttribute.indexOfValue(classePositiva);
+		else
+			regra.cabeca = classAttribute.indexOfValue(classeNegativa);
+		regra.classe = classAttribute;
+		regra.getNumAtributosNaoVazios();
+		return regra;
+	}
+	
+	/**
 	 * Preenche n posicoes da regra aleatoriamente
 	 * @param n Numero de posicoes a serem preenchidas
 	 * @param regra Regra a ser preenchida
@@ -719,14 +762,26 @@ public abstract class ObterRegras {
 		String arquivoTemp = caminhoTemp + "temp_" +nomeBase+ ".txt";
 		PrintStream psTemp = new PrintStream(arquivoTemp);
 		
+		//Arquivos que salvam os tempos de cada execucao
+		PrintStream psExec = null;
+		PrintStream psFold = null;
+		
+		String arquivoExec = caminhoTemp + "texec_" +nomeBase+ ".txt";
+		psExec = new PrintStream(arquivoExec);
+		
+		String arquivoFold = caminhoTemp + "tfold_" +nomeBase+ ".txt";
+		psFold = new PrintStream(arquivoFold);
+		
+
+		
 		for(int j = 0; j<numExec; j++){
 						
 			String diretorio = caminhoDir +  "/resultados/" +nomeMetodo +"/" + dirResultado + "/" +nomeBase + "" +j+"/";
 			dir = new File(diretorio);
 			dir.mkdirs();
 			
-			
-			System.out.println("Inicio: " + Calendar.getInstance().getTime());
+			System.out.println("Inicio Execucao: " + Calendar.getInstance().getTime());
+			psExec.print(j +":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
 			System.out.println("Base: " + nomeBase);
 			System.out.println("Caminho da Base: " + caminhoBase);
 			System.out.println("Execucao: " + j);
@@ -738,6 +793,9 @@ public abstract class ObterRegras {
 			
 			ArrayList<Regra> regrasFinais = new ArrayList<Regra>();
 			for(int i = 0; i<numFolds; i++){
+				
+				System.out.println("Inicio Fold: " + Calendar.getInstance().getTime());
+				psFold.print(j+"-"+i+":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
 				System.out.println("Fold: "+ j+ "-" +i);
 				numFold = i;
 				
@@ -764,6 +822,9 @@ public abstract class ObterRegras {
 				}
 				System.out.println();
 				apagarListas();
+				
+				System.out.println("Fim Fold: " + Calendar.getInstance().getTime());
+				psFold.print(Calendar.getInstance().getTimeInMillis() + "\n");
 			}
 			
 			//Grava as regras finais da execução
@@ -773,7 +834,9 @@ public abstract class ObterRegras {
 				Regra regra = (Regra) iter.next();
 				psRegras.println(regra);
 			}
-			System.out.println("Fim: " + Calendar.getInstance().getTime());
+			
+			System.out.println("Fim Execucao: " + Calendar.getInstance().getTime());
+			psExec.print(Calendar.getInstance().getTimeInMillis()  + "\n");
 		}
 		
 		if(AUC){
@@ -811,8 +874,24 @@ public abstract class ObterRegras {
 		String caminhoTemp = caminhoDir + "/resultados/" +nomeMetodo +"/" + dirResultado + "/"; 
 		File dir = new File(caminhoTemp);
 		dir.mkdirs();
+		
 		String arquivoTemp = caminhoTemp + "temp_" +nomeBase+ ".txt";
 		PrintStream psTemp = new PrintStream(arquivoTemp);
+		
+		//Arquivos que salvam os tempos de cada execucao
+		PrintStream psExec = null;
+		PrintStream psFold = null;
+		PrintStream psPart = null;
+		
+		String arquivoExec = caminhoTemp + "texec_" +nomeBase+ ".txt";
+		psExec = new PrintStream(arquivoExec);
+		
+		String arquivoFold = caminhoTemp + "tfold_" +nomeBase+ ".txt";
+		psFold = new PrintStream(arquivoFold);
+		
+		String arquivoPart = caminhoTemp + "tpart_" +nomeBase+ ".txt";
+		psPart = new PrintStream(arquivoPart);
+		
 		
 		for(int j = 0; j<numExec; j++){
 			
@@ -821,7 +900,8 @@ public abstract class ObterRegras {
 			dir = new File(diretorio);
 			dir.mkdirs();
 			
-			System.out.println("Inicio: " + Calendar.getInstance().getTime());
+			System.out.println("Inicio Execucao: " + Calendar.getInstance().getTime());
+			psExec.print(j +":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
 			System.out.println("Base: " + nomeBase);
 			System.out.println("Caminho da Base: " + caminhoBase);
 			System.out.println("Execucao: " + j);
@@ -833,9 +913,10 @@ public abstract class ObterRegras {
 			ArrayList<Regra> regrasFinais = new ArrayList<Regra>();
 
 			ArrayList<Regra> regrasParticoes =new ArrayList<Regra>();
-
 			
 			for(int i = 0; i<numFolds; i++){
+				System.out.println("Inicio Fold: " + Calendar.getInstance().getTime());
+				psFold.print(j+ "-"+ i +":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
 				System.out.println("Fold: "+ j+ "-"+ i);
 				numFold = i;
 				
@@ -846,6 +927,8 @@ public abstract class ObterRegras {
 				int tamParticao = dados.numInstances()/numParticoes;
 				Instances dadosTreinamentoTotal = new Instances(dados);
 				for (int n = 0; n < numParticoes; n++) {
+					System.out.println("Inicio Particao: " + Calendar.getInstance().getTime());
+					psPart.print(j+ "-"+ i + "-" + n +":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
 					System.out.println("Partição: " + n);
 					int inicio = n*tamParticao;
 					int fim = 0;
@@ -864,6 +947,8 @@ public abstract class ObterRegras {
 					System.out.println("Numero de Regras Partição: " + regras.size());
 					regrasParticoes.addAll(regras);
 					apagarListas();
+					System.out.println("Fim Particao: " + Calendar.getInstance().getTime());
+					psPart.print(Calendar.getInstance().getTimeInMillis()  + "\n");
 				}
 				
 				//Recalcular os objetivos para a base de dados original 
@@ -898,6 +983,8 @@ public abstract class ObterRegras {
 				}
 				System.out.println();
 				apagarListas();
+				System.out.println("Fim Fold: " + Calendar.getInstance().getTime());
+				psFold.print(Calendar.getInstance().getTimeInMillis()  + "\n");
 			}
 			
 			//Grava as regras finais da execução
@@ -909,6 +996,7 @@ public abstract class ObterRegras {
 			}
 
 			System.out.println("Fim: " + Calendar.getInstance().getTime());
+			psExec.print(Calendar.getInstance().getTimeInMillis()  + "\n");
 		}
 		
 		if(AUC){
@@ -1110,7 +1198,7 @@ private void executarTeste(ArrayList<Regra> regrasTeste ,String nomeBase, int nu
 	confusao = new MatrizConfusao();
 	preencherMatrizConfusao(confusao, dadosTeste, regrasTeste);		
 	
-	confusaoMultiClasse = new MatrizConfusaoMultiClasse(numClasses);
+	/*confusaoMultiClasse = new MatrizConfusaoMultiClasse(numClasses);
 	preencherMatrizConfusaoMultiClasse(confusaoMultiClasse, dadosTeste, regrasTeste);		
 	
 	double getFmeasure0, getFmeasure1, getAccuracy, getRecall0,getRecall1, 
@@ -1126,7 +1214,7 @@ private void executarTeste(ArrayList<Regra> regrasTeste ,String nomeBase, int nu
 	mgetFmeasure1 = confusaoMultiClasse.getFmeasure(1);
 	mgetAccuracy = confusaoMultiClasse.getAccuracy();
 	mgetRecall0 = confusaoMultiClasse.getRecall(0);
-	mgetRecall1 = confusaoMultiClasse.getRecall(1);
+	mgetRecall1 = confusaoMultiClasse.getRecall(1);*/
 	
 	
 	double a = obterAUC(dadosTeste, regrasTeste);

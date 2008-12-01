@@ -31,6 +31,7 @@ public abstract class Atributo {
 	public abstract boolean isNominal();
 	public abstract boolean isNumerico();
 	public abstract boolean isVazio();
+	public abstract boolean isCombinacao();
 	public abstract boolean isGeneric(Atributo a);
 	
 	public abstract Atributo clone();

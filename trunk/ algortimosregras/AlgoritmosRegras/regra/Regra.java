@@ -663,21 +663,27 @@ public String toString(){
 	 */
 	public void preencherAtributoNominalAleatorio(int pos, Atributo atributo){
 		
-		AtributoNominal atNom = (AtributoNominal) atributo;
-		double random = atNom.obterNovoValorAleatorio();
-		double operador = AtributoNominal.igual;
-		corpo[pos].atualizar(random, operador);
+		if(!atributo.isCombinacao()){
+			AtributoNominal atNom = (AtributoNominal) atributo;
+			double random = atNom.obterNovoValorAleatorio();
+			double operador = AtributoNominal.igual;
+			corpo[pos].atualizar(random, operador);
+		} else{
+			AtributoCombinado atComb = (AtributoCombinado) atributo;
+			double random = atComb.obterNovoValorAleatorio();
+			corpo[pos].atualizar(random, atComb.att.numValues());
+		}
 	}
 	
 	/**
 	 * Prencher o atributo nominal na posicao pos, de forma proporcional aos valores da base
-	 * @param pos
-	 * @param atributo
+	 * @param pos Posicao do atributo na rega
+	 * @param atributo Atributo a ser preenchido
+	 * @param proporcao Array com as proporcoes dos valores na base de dados
 	 */
 	public void preencherAtributoNominalAleatorioProporcional(int pos, Atributo atributo, int[] proporcao){
 		
-		AtributoNominal atNom = (AtributoNominal) atributo;
-		double probVazio = 1.0/atNom.att.numValues();
+		double probVazio = 1.0/atributo.att.numValues();
 		int soma = 0;
 		for (int i = 0; i < proporcao.length; i++) {
 			soma += proporcao[i];
@@ -701,7 +707,9 @@ public String toString(){
 		if(indice==proporcao.length)
 			indice=-1;
 		
+
 		double operador = AtributoNominal.igual;
+		
 		corpo[pos].atualizar(indice, operador);
 	}
 	

@@ -100,6 +100,10 @@ public class AtributoNumerico extends Atributo {
 		return vazio;
 	}
 	
+	public boolean isCombinacao() {
+		return false;
+	}
+	
 	public double[] obterNovoValorAleatorio(){
 		double[] retorno = new double[2];
 		//Probabilidade de se escolher um atributo vazio

@@ -8,6 +8,7 @@ import kernel.FronteiraPareto;
 import objetivo.FuncaoObjetivo;
 
 import regra.Atributo;
+import regra.AtributoCombinado;
 import regra.AtributoNominal;
 import regra.AtributoNumerico;
 import regra.Regra;
@@ -81,7 +82,12 @@ public class Particula {
 		for(int i = 0; i<regra.corpo.length; i++){
 			Atributo atributo = regra.corpo[i];
 			if(atributo.isNominal()){
-				double novoValor = ((AtributoNominal)atributo).obterNovoValorAleatorio();
+				
+				double novoValor = 0 ;
+				if(!atributo.isCombinacao())
+					novoValor = ((AtributoNominal)atributo).obterNovoValorAleatorio();
+				else
+					novoValor = ((AtributoCombinado)atributo).obterNovoValorAleatorio();
 				velocidade[j++] = novoValor+1;
 			} else {
 				double[] novoValor = ((AtributoNumerico)atributo).obterNovoValorAleatorio();

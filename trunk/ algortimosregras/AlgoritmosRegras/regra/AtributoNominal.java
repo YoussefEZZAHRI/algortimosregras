@@ -6,7 +6,7 @@ public class AtributoNominal extends Atributo {
 
 	public double valor;
 	public double operador;
-	
+		
 	public static double igual = 0;
 	public static double diferente = 1;
 	
@@ -99,6 +99,10 @@ public class AtributoNominal extends Atributo {
 	}
 	public boolean isVazio(){
 		return vazio;
+	}
+	
+	public boolean isCombinacao() {
+		return false;
 	}
 	
 	public String toString(){
