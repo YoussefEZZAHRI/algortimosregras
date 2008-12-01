@@ -27,6 +27,7 @@ public class Principal {
 	public int classePositiva = 0;
 	public int classeNegativa = 1;
 	public boolean auc;
+	public boolean combinacao;
 	public int numParticoes = 1;
 	
 	public boolean verbose = false;
@@ -55,7 +56,7 @@ public class Principal {
 		try{			
 			principal.carregarArquivoConf(args[0]);
 			if(principal.metodo.equals("pso"))
-				principal.algoritmo = new NuvemParticulas(principal.geracoes,principal.populacao, principal.objetivos);
+				principal.algoritmo = new NuvemParticulas(principal.geracoes,principal.populacao, principal.objetivos, principal.combinacao);
 			else
 				principal.algoritmo = new ObterRegrasApriori(principal.numRegras, principal.confianca, principal.minSuporte, principal.maxSuporte, principal.delta, principal.fronteiraApriori, principal.objetivos);					
 
@@ -180,6 +181,12 @@ public class Principal {
 					medoid = false;
 			}
 			
+			if(tag.equals("combinacao")){
+				if(valor.equals("sim"))
+					combinacao = true;
+				else
+					combinacao = false;
+			}
 
 			
 		}

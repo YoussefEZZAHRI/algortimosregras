@@ -32,9 +32,11 @@ public class NuvemParticulas extends ObterRegras {
 	public int geracoes;
 	//Tamanho inicial da população
 	public int tamanhoPopulacao;
+	//Flag q indica se os atributos nominais vao ser combinados ou nao
+	public boolean combinacao = false;
 	
 	
-	public NuvemParticulas(int g, int t, String[] objs){
+	public NuvemParticulas(int g, int t, String[] objs, boolean comb){
 		super(objs);
 		geracoes = g;
 		tamanhoPopulacao = t;
@@ -42,6 +44,7 @@ public class NuvemParticulas extends ObterRegras {
 		repositorio = new ArrayList<Particula>();
 		paretoPos = new FronteiraPareto();
 		dadosExperimento = new DadosExperimentos();
+		combinacao = comb;
 	}
 	
 	/**
@@ -85,7 +88,7 @@ public class NuvemParticulas extends ObterRegras {
  			for (Iterator iter = populacao.iterator(); iter.hasNext();) {
 				Particula particula = (Particula) iter.next();
 				//Calcula a nova velocidade
-				particula.calcularNovaVelocidadeConstriction();
+				particula.calcularNovaVelocidade(i);
 				//Calcula a nova posição
 				particula.calcularNovaPosicao();
 				//Avalia a partícula
@@ -209,8 +212,14 @@ public class NuvemParticulas extends ObterRegras {
 			//Contador utilizada para a criação da regra não ficar presa no laço
 			int cont = 0;
 			do{
-				//Regra r = gerarRegraAleatoria(dados.enumerateAttributes(), dados.classAttribute(), dados.numAttributes(), classe);
-				Regra r = gerarRegraAleatoriaProporcional(dados.enumerateAttributes(), dados.classAttribute(), dados.numAttributes(), classe);
+				Regra r = null;
+				//Caso seja selecionado a opcao por combinacao de atributos nominais e executado o metodo de
+				//geracao de regras combinadas, caso nao e executado o metodo que utiliza a proporcao de 
+				//cada valor para preencher as regras iniciais
+				if(!combinacao)
+					 r = gerarRegraAleatoriaProporcional(dados.enumerateAttributes(), dados.classAttribute(), dados.numAttributes(), classe);
+				else
+					 r = gerarRegraAleatoriaCombinacao(dados.enumerateAttributes(), dados.classAttribute(), dados.numAttributes(), classe);
 				
 				particula.iniciarParticulaAleatoriamente(objetivos, r);
 				preencherMatrizContigencia(particula.regra, dados);
