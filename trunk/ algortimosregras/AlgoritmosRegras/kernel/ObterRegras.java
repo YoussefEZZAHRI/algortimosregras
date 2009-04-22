@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -26,6 +27,7 @@ import votacao.VotacaoConfidence;
 import votacao.VotacaoConfidenceLaplace;
 import votacao.VotacaoConfidenceLaplaceOrdenacao;
 import votacao.VotacaoSimples;
+import weka.classifiers.meta.Bagging;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -45,7 +47,7 @@ import regra.Regra;
 public abstract class ObterRegras {
 	
 	//Arraylist que contém as regras encontradas pelos algoritmos de obtenção de regras.
-	protected ArrayList<Regra> regras = null;
+	public ArrayList<Regra> regras = null;
 	//Obejto do framework weka que contém os dados de treinamento
 	public Instances dados = null;
 	
@@ -1021,6 +1023,164 @@ public abstract class ObterRegras {
 	 * @throws Exception
 	 */
 	
+	public void executarParaleloBagging(String nomeBase, String caminhoBase, String nomeMetodo, int numClasses, int cPositiva, int cNegativa, int numFolds, int numExec, String dirResultado, boolean AUC , boolean verbose, String votacao, boolean selecao, int numParticoes)  throws Exception{
+		
+		
+		dadosExperimento = new DadosExperimentos();
+		dadosExperimento.nomeBase = nomeBase;
+		dadosExperimento.metodo = nomeMetodo;
+		String caminhoDir = System.getProperty("user.dir");
+		
+		//Arquivo de redundância que salva as informações das execuções durante o processo. 
+		//Evita perder as informações se houver um problema na execução.
+		String caminhoTemp = caminhoDir + "/resultados/" +nomeMetodo +"/" + dirResultado + "/"; 
+		File dir = new File(caminhoTemp);
+		dir.mkdirs();
+		
+		String arquivoTemp = caminhoTemp + "temp_" +nomeBase+ ".txt";
+		PrintStream psTemp = new PrintStream(arquivoTemp);
+		
+		//Arquivos que salvam os tempos de cada execucao
+		PrintStream psExec = null;
+		PrintStream psFold = null;
+		PrintStream psPart = null;
+		
+		String arquivoExec = caminhoTemp + "texec_" +nomeBase+ ".txt";
+		psExec = new PrintStream(arquivoExec);
+		
+		String arquivoFold = caminhoTemp + "tfold_" +nomeBase+ ".txt";
+		psFold = new PrintStream(arquivoFold);
+		
+		String arquivoPart = caminhoTemp + "tpart_" +nomeBase+ ".txt";
+		psPart = new PrintStream(arquivoPart);
+		
+		setVotacao(votacao);
+		
+		
+		for(int j = 0; j<numExec; j++){
+			
+			String arquivoLog = caminhoDir + "/resultados/" +nomeMetodo +"/" + dirResultado + "/" + nomeBase + "" + j +"/" +nomeBase + "" + j + ".log";			
+			String diretorio = caminhoDir +  "/resultados/" +nomeMetodo +"/" + dirResultado + "/" +nomeBase + "" +j+"/";
+			dir = new File(diretorio);
+			dir.mkdirs();
+			
+			System.out.println("Inicio Execucao: " + Calendar.getInstance().getTime());
+			psExec.print(j +":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
+			System.out.println("Base: " + nomeBase);
+			System.out.println("Caminho da Base: " + caminhoBase);
+			System.out.println("Execucao: " + j);
+			
+			this.verbose = verbose;
+
+			ArrayList<Regra> regrasFinais = new ArrayList<Regra>();
+
+			ArrayList<Regra> regrasParticoes =new ArrayList<Regra>();
+			
+			for(int i = 0; i<numFolds; i++){
+				System.out.println("Inicio Fold: " + Calendar.getInstance().getTime());
+				psFold.print(j+ "-"+ i +":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
+				System.out.println("Fold: "+ j+ "-"+ i);
+				numFold = i;
+				
+				String arquivoTreinamento = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_data.arff";
+				System.out.println("Base de Treinamento: "+ arquivoTreinamento);
+				carregarInstancias(arquivoTreinamento, cPositiva, cNegativa);
+				
+				int tamParticao = dados.numInstances()/numParticoes;
+				Instances dadosTreinamentoTotal = new Instances(dados);
+				
+				for (int n = 0; n < numParticoes; n++) {
+					System.out.println("Inicio Particao: " + Calendar.getInstance().getTime());
+					psPart.print(j+ "-"+ i + "-" + n +":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
+					System.out.println("Partição: " + n);
+					
+					Bagging bagg = new Bagging();
+					
+					boolean[] sampled = new boolean[dadosTreinamentoTotal.numInstances()];
+					
+					dados = bagg.resampleWithWeights(dadosTreinamentoTotal, new Random(), sampled);
+					
+				
+
+					obterRegras(numClasses);
+					System.out.println("Numero de Instancias: " + dados.numInstances());
+					System.out.println("Numero de Regras Partição: " + regras.size());
+					regrasParticoes.addAll(regras);
+					apagarListas();
+					System.out.println("Fim Particao: " + Calendar.getInstance().getTime());
+					psPart.print(Calendar.getInstance().getTimeInMillis()  + "\n");
+				}
+				
+				//Recalcular os objetivos para a base de dados original 
+				//preencherMatrizContigencia(regrasParticoes, dadosTreinamentoTotal);
+				
+				//eliminarRegrasDominadas(regrasParticoes);
+				
+				regras.addAll(regrasParticoes);
+				regrasParticoes.clear();
+				
+				System.out.println("\nNumero de Regras Total: " + regras.size());
+				
+				if(regras.isEmpty()){
+					System.out.println("Nenhuma regra encontrada");
+				} else{
+
+					String arquivoRegras = "resultados/" + nomeMetodo + "/" + dirResultado + "/" + nomeBase+ "" + j +"/regras_" + nomeBase + "" + j + "_" + i + ".txt";
+					PrintStream psRegras = new PrintStream(arquivoRegras);
+
+					if(AUC){
+
+						String arquivoTeste = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_test.arff";
+						executarTeste(regras, nomeBase, numClasses, psTemp, j, i, arquivoTeste, dadosExperimento);
+
+						gravarRegrasArquivo(selecao, regrasFinais, psRegras, regras);
+					}  else{
+						//Como não há cálculo das medidas, não há o processod e votação.
+						//Assim a opção seleção na gravação de regras deve ser sempre falsa
+						gravarRegrasArquivo(false, regrasFinais, psRegras, regras);
+					}
+					
+				}
+				System.out.println();
+				apagarListas();
+				System.out.println("Fim Fold: " + Calendar.getInstance().getTime());
+				psFold.print(Calendar.getInstance().getTimeInMillis()  + "\n");
+			}
+			
+			//Grava as regras finais da execução
+			String arquivoRegrasFinais = "resultados/" + nomeMetodo + "/" + dirResultado + "/" + nomeBase + "" + j +"/regras_" + nomeBase + "" + j + ".txt";
+			PrintStream psRegras = new PrintStream(arquivoRegrasFinais);
+			for (Iterator iter = regrasFinais.iterator(); iter.hasNext();) {
+				Regra regra = (Regra) iter.next();
+				psRegras.println(regra);
+			}
+
+			System.out.println("Fim: " + Calendar.getInstance().getTime());
+			psExec.print(Calendar.getInstance().getTimeInMillis()  + "\n");
+		}
+		
+		if(AUC){
+			gravarMedidasFinaisArquivo(dadosExperimento,nomeBase, nomeMetodo, caminhoDir);
+		}
+	}
+	
+	/**
+	 * Método que divide a execução dos em folds em diversas partições, junta todas as regras geradas e testa no arquivo de test.
+	 * Já esta divindo o base de treinamento em partes iguais, executando o algoritmo para todas as partições, juntando as regras
+	 * deixando apenas as regras não dominadas. Falta a parte do cálculo da AUC no arquivo de teste.
+	 * @param nomeBase
+	 * @param caminhoBase
+	 * @param nomeMetodo
+	 * @param cPositiva
+	 * @param cNegativa
+	 * @param numFolds
+	 * @param indice
+	 * @param dirResultado
+	 * @param AUC
+	 * @param numParticoes
+	 * @throws Exception
+	 */
+	
 	public void executarMedoid(String nomeBase, String caminhoBase, String nomeMetodo,int numClasses, int cPositiva, int cNegativa, int numFolds, int numExec, String dirResultado, boolean AUC , boolean verbose, String votacao, boolean selecao)  throws Exception{
 		
 		
@@ -1236,7 +1396,7 @@ private void executarTeste(ArrayList<Regra> regrasTeste ,String nomeBase, int nu
  * @param i Numero do fold
  * @throws Exception
  */
-private void executarTreinamento(String nomeBase, String caminhoBase,
+public void executarTreinamento(String nomeBase, String caminhoBase,
 		int cPositiva, int cNegativa, int i, int numClasses) throws Exception {
 
 	String arquivoTreinamento = caminhoBase + nomeBase + "/it"+i+"/" + nomeBase + "_data.arff";
@@ -1246,6 +1406,23 @@ private void executarTreinamento(String nomeBase, String caminhoBase,
 
 	System.out.println();
 	System.out.println("Numero de Instancias: " + dados.numInstances());
+	System.out.println("Numero de Regras: " + regras.size());
+}
+
+/**
+ * Método que executa o treinamento da algoritmo passado como parametro no arquivo principal
+ * @param nomeBase Nome da base de dados de treinamento
+ * @param caminhoBase Caminho da base de dados de treinamento
+ * @param cPositiva Indice da classe positiva
+ * @param cNegativa Indice da classe negativa
+ * @param i Numero do fold
+ * @throws Exception
+ */
+public void executarTreinamento(Instances d, int numClasses) throws Exception {
+
+	dados = d;
+	obterRegras(numClasses);
+	System.out.println();
 	System.out.println("Numero de Regras: " + regras.size());
 }
 
@@ -1280,7 +1457,7 @@ private void gravarMedidasFinaisArquivo(DadosExperimentos dadosExperimento,Strin
  * Método que instania a votacao de acordo com a definicao do arquivo de configuracao
  * @param votacao
  */
-private void setVotacao(String votacao) {
+public void setVotacao(String votacao) {
 	if(votacao.equals("confidence"))
 		this.metodoVotacao = new VotacaoConfidence();
 	else{
@@ -1579,7 +1756,6 @@ private void setVotacao(String votacao) {
 					regrasCruzam.remove(r2);
 			}
 		}
-		
 	}
 	
 	/**
@@ -1605,7 +1781,5 @@ private void setVotacao(String votacao) {
 		}
 		
 	}*/
-
-
 
 }
