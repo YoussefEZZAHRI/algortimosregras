@@ -49,7 +49,7 @@ public class PrincipalAntigo {
 			if(args.length==1){
 				principal.carregarArquivoConf(args[0]);
 				if(principal.metodo.equals("pso"))
-					principal.algoritmo = new NuvemParticulas(principal.geracoes,principal.populacao, principal.objetivos);
+					principal.algoritmo = new NuvemParticulas(principal.geracoes,principal.populacao, principal.objetivos, false);
 				else
 					principal.algoritmo = new ObterRegrasApriori(principal.numRegras, principal.confianca, principal.minSuporte, principal.maxSuporte, principal.delta, principal.fronteiraApriori, principal.objetivos);					
 			}	
@@ -69,7 +69,7 @@ public class PrincipalAntigo {
 					if(principal.metodo.equals("pso")){
 						principal.geracoes = new Integer(args[3]).intValue();
 						principal.populacao = new Integer(args[4]).intValue();
-						principal.algoritmo = new NuvemParticulas(principal.geracoes,principal.populacao, principal.objetivos);
+						principal.algoritmo = new NuvemParticulas(principal.geracoes,principal.populacao, principal.objetivos, false);
 					}
 				}
 			}		
