@@ -17,7 +17,7 @@ import kernel.ObterRegras;
  * @author André B. de Carvalho
  *
  */
-public class NuvemParticulas extends ObterRegras {
+public class NuvemParticulas extends ObterRegras{
 
 	//Arraylist que contém as particulas da execução do algoritmo
 	public ArrayList<Particula> populacao = null;

@@ -66,7 +66,7 @@ public class Principal {
 				if(principal.numParticoes == 1)
 					principal.algoritmo.executarFolds(principal.nomeBase, principal.caminhoBase, principal.metodo,principal.numclasses,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao);
 				else
-					principal.algoritmo.executarParalelo(principal.nomeBase, principal.caminhoBase, principal.metodo, principal.numclasses,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao, principal.numParticoes);
+					principal.algoritmo.executarParaleloBagging(principal.nomeBase, principal.caminhoBase, principal.metodo, principal.numclasses,principal.classePositiva,principal.classeNegativa,principal.numFolds,principal.numExec, principal.nomeBase, principal.auc, principal.verbose, principal.votacao,principal.selecaoVotacao, principal.numParticoes);
 			}
 
 		} catch (Exception ex) {ex.printStackTrace();}
