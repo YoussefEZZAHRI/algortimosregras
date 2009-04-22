@@ -215,15 +215,15 @@ public class GerarComandosMedidas {
 		GerarComandosMedidas c = new GerarComandosMedidas();
 		String alg = "pso";
 		String caminho = "C:\\Andre\\revista\\resultados\\"+alg + "\\laplace\\";
-		String cmd = "auc";
+		String cmd = "rec_neg";
 		
 		String bases[] = {"cm1-cfs", "jm1-cfs", "kc1-cfs", "kc2-cfs", "pc1-cfs","kc1_class_defeito_numerico"};
 		try{
-			//c.gerarComandos(caminho,"cm1-cfs",10,alg,cmd);
-			//c.gerarComandos(caminho,"jm1-cfs",10,alg,cmd);
-			//c.gerarComandos(caminho,"kc1-cfs",10,alg,cmd);
-			//c.gerarComandos(caminho,"kc2-cfs",10,alg,cmd);
-			//c.gerarComandos(caminho,"pc1-cfs",10,alg,cmd);
+			c.gerarComandos(caminho,"cm1-cfs",10,alg,cmd);
+			c.gerarComandos(caminho,"jm1-cfs",10,alg,cmd);
+			c.gerarComandos(caminho,"kc1-cfs",10,alg,cmd);
+			c.gerarComandos(caminho,"kc2-cfs",10,alg,cmd);
+			c.gerarComandos(caminho,"pc1-cfs",10,alg,cmd);
 			c.gerarComandos(caminho,"kc1_class_defeito_numerico",10,alg,cmd);
 			
 			c.juntarComandosBases(caminho,bases,10,alg,cmd);
