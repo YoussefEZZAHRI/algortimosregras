@@ -1,16 +1,17 @@
 package kernel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 
 import javax.swing.JPanel;
 import javax.swing.JFrame;
-/*
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.DefaultXYDataset;
-*/
+
 import java.awt.GridBagLayout;
 
 public class CurvaROC extends JFrame {
@@ -21,12 +22,12 @@ public class CurvaROC extends JFrame {
 
 	private JPanel jPanel = null;
 	
-	//private double[][] dadosXY;
+	private double[][] dadosXY;
 
 	/**
 	 * This is the default constructor
 	 */
-	/*public CurvaROC(double[] x, double[] y, String titulo) {
+	public CurvaROC(double[] x, double[] y, String titulo) {
 		super();
 		dadosXY = new double[2][y.length];
 		dadosXY[0] = x;
@@ -34,7 +35,7 @@ public class CurvaROC extends JFrame {
 		jPanel = createPanel(titulo);  
 		initialize();
 	
-	}*/
+	}
 
 	/**
 	 * This method initializes this
@@ -75,7 +76,7 @@ public class CurvaROC extends JFrame {
 		return jPanel;
 	}
 	
-	/*public JFreeChart createChart(String titulo){
+	public JFreeChart createChart(String titulo){
 		DefaultXYDataset xyDataSet= new DefaultXYDataset();
 		Double d = new Double(1);
 		xyDataSet.addSeries(d, dadosXY);
@@ -92,7 +93,7 @@ public class CurvaROC extends JFrame {
 		return new ChartPanel(chart);  
 	}  
 	
-*/
+
 }
 
 class CurvaROCWindowAdapters extends java.awt.event.WindowAdapter{
