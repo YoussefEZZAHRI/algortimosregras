@@ -273,13 +273,9 @@ public abstract class ObterRegras {
 				
 		double[][] d = construirROC(dadosTeste,regrasTeste);
 		
-		
-		/*CurvaROC positive = new CurvaROC(d[0], d[1], "Curva ROC - Positive");
-		CurvaROC negative = new CurvaROC(d[2], d[3], "Curva ROC - Negative");
+		CurvaROC positive = new CurvaROC(d[0], d[1], "Curva ROC - Positive");
 		positive.setVisible(true);
 		positive.pack();
-		negative.setVisible(true);
-		negative.pack();*/
 		
 		//Calcular Area da classe positiva
 		double area = calcularArea(d[1], d[0]);
@@ -760,7 +756,7 @@ public abstract class ObterRegras {
 		//Evita perder as informações se houver um problema na execução.
 		String caminhoTemp = caminhoDir + "/resultados/" +nomeMetodo +"/" + dirResultado + "/"; 
 		File dir = new File(caminhoTemp);
-		dir.mkdirs();
+		dir.mkdirs(); 
 		String arquivoTemp = caminhoTemp + "temp_" +nomeBase+ ".txt";
 		PrintStream psTemp = new PrintStream(arquivoTemp);
 		
