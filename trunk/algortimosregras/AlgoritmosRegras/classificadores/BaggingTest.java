@@ -4,7 +4,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.util.Random;
 
-import nuvemparticulas.NuvemWeka;
+//import nuvemparticulas.NuvemWeka;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -32,7 +32,7 @@ public class BaggingTest {
 		boolean comb = true;
 		String v = "ordenacao";
 		
-		NuvemWeka n = new NuvemWeka(g,p,objs,comb,v);
+//		NuvemWeka n = new NuvemWeka(g,p,objs,comb,v);
 		
 		J48 j48 = new J48();
 		j48.setUnpruned(true);
@@ -52,7 +52,8 @@ public class BaggingTest {
 			dados.setClassIndex(dados.numAttributes()-1);
 			Bagging bagg = new Bagging();
 		
-			bagg.setClassifier(n);
+//			bagg.setClassifier(n);
+			bagg.setClassifier(j48);
 			bagg.buildClassifier(dados);
 			
 			arquivoARFF = caminhoBase+nomeBaseTe;
