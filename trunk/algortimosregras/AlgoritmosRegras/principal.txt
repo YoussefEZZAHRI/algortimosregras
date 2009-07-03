@@ -1,5 +1,5 @@
 nomebase=bupa
-caminhobase=C:\Documents and Settings\Desenvolvimento\Meus documentos\bases\paralelo\
+caminhobase=/home/daniel/iniciacao/basesDeDados/paralelo/
 metodo=pso
 classePositiva=0
 classeNegativa=1
