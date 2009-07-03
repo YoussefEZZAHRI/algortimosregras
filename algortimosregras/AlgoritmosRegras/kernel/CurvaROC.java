@@ -49,14 +49,14 @@ public class CurvaROC extends JFrame {
 		limiares = l;
 		
 		// Colocando a lista de limiares no conjunto como informativo...
-		double temp[][] = new double[1][y.length];
+		double temp[] = new double[y.length];
 		int i = 0;
 		for (Iterator iterator = limiares.iterator(); iterator.hasNext();) {
 			Double limiar = (Double) iterator.next();
-			temp[0][i] = limiar;
+			temp[i] = limiar;
 			i++;
 		}
-		dadosXY[2] = temp[0];
+		dadosXY[2] = temp;
 		
 		jPanel = createPanel(titulo);  
 		initialize();
