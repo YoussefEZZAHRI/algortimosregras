@@ -46,6 +46,8 @@ import regra.Regra;
  */
 public abstract class ObterRegras {
 	
+	SortedSet<Double> limiares; // limiares utilizados na construção do gráfico ROC
+	
 	//Arraylist que contém as regras encontradas pelos algoritmos de obtenção de regras.
 	public ArrayList<Regra> regras = null;
 	//Obejto do framework weka que contém os dados de treinamento
@@ -270,10 +272,10 @@ public abstract class ObterRegras {
 	 */
 	public double obterAUC(Instances dadosTeste, ArrayList<Regra> regrasTeste) throws IOException{
 		
-				
 		double[][] d = construirROC(dadosTeste,regrasTeste);
+//		System.out.println("limiares.size = " + limiares.size());
 		
-		CurvaROC positive = new CurvaROC(d[0], d[1], "Curva ROC - Positive");
+		CurvaROC positive = new CurvaROC(d[0], d[1], "Curva ROC - Positive", limiares);
 		positive.setVisible(true);
 		positive.pack();
 		
@@ -324,7 +326,8 @@ public abstract class ObterRegras {
 	public double[][] construirROC(Instances dadosTeste, ArrayList<Regra> regras){
 		
 		ArrayList<InstanceVotacao> votos = new ArrayList<InstanceVotacao>();
-		SortedSet<Double> limiares = new TreeSet<Double>();
+		//SortedSet<Double> limiares = new TreeSet<Double>();
+		limiares = new TreeSet<Double>();
 		for(int i = 0; i<dadosTeste.numInstances(); i++){
 			Instance exemplo = dadosTeste.instance(i); 
 			double voto = metodoVotacao.votacao(regras, exemplo, classePositiva);
@@ -340,7 +343,8 @@ public abstract class ObterRegras {
 			
 		}
 		Collections.sort(votos);
-	
+//		System.out.println("::::: construirROC() - limiares.size() = " + limiares.size());
+			
 		double[][] classesSugeridasPositivos = new double[limiares.size()][dadosTeste.numInstances()];
 		
 		i = 0;

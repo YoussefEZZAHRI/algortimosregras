@@ -1,5 +1,5 @@
-nomebase=adult
-caminhobase=C:\Andre\bases\paralelo\
+nomebase=bupa
+caminhobase=C:\Documents and Settings\Desenvolvimento\Meus documentos\bases\paralelo\
 metodo=pso
 classePositiva=0
 classeNegativa=1
