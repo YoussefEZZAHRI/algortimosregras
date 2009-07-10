@@ -1,4 +1,4 @@
-nomebase=bupa
+nomebase=lettera
 caminhobase=/home/daniel/iniciacao/basesDeDados/paralelo/
 metodo=pso
 classePositiva=0

@@ -22,8 +22,14 @@ import org.jfree.data.xy.XYSeries;
 import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 import java.awt.GridBagLayout;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.SortedSet;
 
@@ -49,12 +55,12 @@ public class CurvaROC extends JFrame {
 		limiares = l;
 		
 		// Colocando a lista de limiares no conjunto como informativo...
-		double temp[] = new double[y.length];
-		int i = 0;
+		double temp[] = new double[limiares.size()];
+		int i = temp.length-1;
 		for (Iterator iterator = limiares.iterator(); iterator.hasNext();) {
 			Double limiar = (Double) iterator.next();
 			temp[i] = limiar;
-			i++;
+			i--;
 		}
 		dadosXY[2] = temp;
 		
@@ -71,7 +77,7 @@ public class CurvaROC extends JFrame {
 	public void initialize() {
 		this.setSize(300, 200);
 		this.setContentPane(getJContentPane());
-		this.setTitle("Curva ROC");
+		this.setTitle("Curva ROC - TPR - FPR - LIMIAR");
 		this.addWindowListener(new CurvaROCWindowAdapters(this));
 	}
 
@@ -104,15 +110,32 @@ public class CurvaROC extends JFrame {
 	
 	public JFreeChart createChart(String titulo){
 		DefaultXYZDataset xyzDataSet = new DefaultXYZDataset();
-		xyzDataSet.addSeries("(TP,FP,L)", dadosXY);
+		xyzDataSet.addSeries("(TPR,FPR,L)", dadosXY);
 		JFreeChart chart = ChartFactory.createScatterPlot(titulo, "TP", "FP", xyzDataSet, PlotOrientation.HORIZONTAL, false, true, false);
-		//JFreeChart chart = ChartFactory.createBubbleChart(titulo, "TP", "FP", xyzDataSet, PlotOrientation.HORIZONTAL, false, true, false);
-		
-		
+	
+		// alterando o gerador de informações do gráfico (a tabela de é tridimensional)
 		XYItemRenderer renderer = (XYItemRenderer) chart.getXYPlot().getRenderer();
 		renderer.setBaseToolTipGenerator(new StandardXYZToolTipGenerator() );
         //renderer.setToolTipGenerator(new StandardCategoryToolTipGenerator( "{0}({1}) ", NumberFormat.getNumberInstance()));
 		
+		// Gerando arquivo com os pontos da curva ROC mais os limiares
+		try{
+			Formatter formatador_de_texto = new Formatter();
+			FileWriter file = new FileWriter("matriz.txt"); // mudar para o caminho para a pasta resultados/nom_da_base
+			file.write(formatador_de_texto.format("%14s%12s\t\t%14s%12s\t\t%17s\n", "TPR", "", "FPR", "", "LIMIAR").toString());
+			DecimalFormat formatador_de_valores = new DecimalFormat();
+			formatador_de_valores.setMaximumFractionDigits(24);
+			formatador_de_valores.setMinimumFractionDigits(24);
+			for (int i = dadosXY[0].length-1; i > 0; i--) {
+				 String linha = formatador_de_valores.format(Double.valueOf(dadosXY[0][i])) + "\t\t";
+				 linha += formatador_de_valores.format(Double.valueOf(dadosXY[1][i])) + "\t\t";
+				 linha += formatador_de_valores.format(Double.valueOf(dadosXY[2][i])) + "\n";
+				 file.write(linha);
+			}			
+			file.close();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 		
 		chart.setBorderPaint(Color.WHITE);
 		return chart;
