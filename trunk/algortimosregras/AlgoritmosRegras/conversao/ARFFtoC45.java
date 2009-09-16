@@ -139,7 +139,6 @@ public class ARFFtoC45 {
 			Instance exemplo = dados.instance(i);
 			for(int j = 0; j<exemplo.numAttributes(); j++){
 				int valor = (int)exemplo.value(j);
-				Attribute att = exemplo.attribute(j);
 				ps.print(valor  + "\t");
 				//System.out.print(valor + "\t");
 			}

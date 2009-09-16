@@ -53,7 +53,6 @@ public class ObterAllAUCArquivos {
 				"/resultado_" + nomeBase + i + ".txt";
 			String[] auc = obterAUC(nomeArquivo);
 			
-	
 		}
 		double soma = 0;
 		double media = 0;

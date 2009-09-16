@@ -1,14 +1,8 @@
 package conversao;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
-import java.io.PrintStream;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.TreeSet;
 
 public class ObterNumRegrasFold {
 	
@@ -17,7 +11,6 @@ public class ObterNumRegrasFold {
 	public double obterNumRegras(String nomeArquivo) throws Exception{
 		Reader reader = new FileReader(nomeArquivo);
 		BufferedReader buff = new BufferedReader(reader);
-		ArrayList<ObjetivosRegras> retorno = new ArrayList<ObjetivosRegras>();
 		
 		for(int i = 0; i<14; i++)
 			buff.readLine();
@@ -62,7 +55,8 @@ public class ObterNumRegrasFold {
 		} catch(Exception ex){ex.printStackTrace();}
 	}
 	
-	private class ObjetivosRegras implements Comparable{
+	@SuppressWarnings("unused")
+	private class ObjetivosRegras implements Comparable<ObjetivosRegras>{
 		double sens;
 		double spec;
 		
@@ -71,8 +65,7 @@ public class ObterNumRegrasFold {
 			spec = sp;
 		}
 		
-		public int compareTo(Object o){
-			ObjetivosRegras or = (ObjetivosRegras) o;
+		public int compareTo(ObjetivosRegras or){
 			if(sens < or.sens)
 				return -1;
 			else

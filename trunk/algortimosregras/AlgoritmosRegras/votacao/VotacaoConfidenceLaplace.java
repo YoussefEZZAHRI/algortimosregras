@@ -30,7 +30,7 @@ public class VotacaoConfidenceLaplace extends Votacao {
 		ArrayList<Regra> regrasVotacaoNegativa = new ArrayList<Regra>();
 		double k = exemplo.classAttribute().numValues();
 		//Seleção das k melhores regras para cada classe
-		for (Iterator iter = regras.iterator(); iter.hasNext();) {
+		for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			boolean b = regra.compararCorpo(exemplo.toDoubleArray());
 			if(b){
@@ -43,14 +43,14 @@ public class VotacaoConfidenceLaplace extends Votacao {
 		
 		//Votação das k melhores regras para cada classe
 		
-		for (Iterator iter = regrasVotacaoPositiva.iterator(); iter.hasNext();) {
+		for (Iterator<Regra> iter = regrasVotacaoPositiva.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			regra.votou = true;
 			positivo+= regra.getConfidence();	
 		}
 		
 		
-		for (Iterator iter = regrasVotacaoNegativa.iterator(); iter.hasNext();) {
+		for (Iterator<Regra> iter = regrasVotacaoNegativa.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			regra.votou=true;
 			negativo+= regra.getConfidence();	
@@ -81,7 +81,7 @@ public class VotacaoConfidenceLaplace extends Votacao {
 			selecao.add(r);
 		else{
 			boolean inserir = false;
-			for (Iterator iter = selecao.iterator(); iter.hasNext() & !inserir;) {
+			for (Iterator<Regra> iter = selecao.iterator(); iter.hasNext() & !inserir;) {
 				Regra regra = (Regra) iter.next();
 				if(regra.getLaplace()<r.getLaplace())
 					inserir = true;
@@ -90,7 +90,7 @@ public class VotacaoConfidenceLaplace extends Votacao {
 				double menorLaplace = Double.MAX_VALUE;
 				int menorIndice = Integer.MAX_VALUE;
 				int indice = 0;
-				for (Iterator iter = selecao.iterator(); iter.hasNext();) {
+				for (Iterator<Regra> iter = selecao.iterator(); iter.hasNext();) {
 					Regra regra = (Regra) iter.next();
 					if(regra.getLaplace()<menorLaplace){
 						menorLaplace = regra.getLaplace();

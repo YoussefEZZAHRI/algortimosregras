@@ -2,7 +2,7 @@ package kernel;
 
 import weka.core.Instance;
 
-public class InstanceVotacao implements Comparable{
+public class InstanceVotacao implements Comparable<InstanceVotacao>{
 	
 	public Instance exemplo;
 	public double votacao;
@@ -17,8 +17,7 @@ public class InstanceVotacao implements Comparable{
 		return ""+votacao; 
 	}
 	
-	public int compareTo(Object o){
-		InstanceVotacao temp = (InstanceVotacao) o;
+	public int compareTo(InstanceVotacao temp){
 		if(votacao<temp.votacao)
 			return -1;
 		else{

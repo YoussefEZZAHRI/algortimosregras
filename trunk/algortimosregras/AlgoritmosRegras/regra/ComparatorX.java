@@ -2,11 +2,10 @@ package regra;
 
 import java.util.Comparator;
 
-public class ComparatorX implements Comparator{
+public class ComparatorX implements Comparator<Regra>{
 	
-	public int compare(Object o1, Object o2){
-		Regra r1 = (Regra) o1;
-		Regra r2 = (Regra) o2;
+	public int compare(Regra r1, Regra r2){
+
 		if(r1.getConfidence()<r2.getConfidence()){
 			return -1;
 		} else{

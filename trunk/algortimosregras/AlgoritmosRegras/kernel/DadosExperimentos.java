@@ -69,7 +69,7 @@ public class DadosExperimentos {
 		if(mediaAreas == 0)
 			calcularMediaAreasPrecisaoNumRegras();
 		double soma = 0;
-		for (Iterator iter = dadosFolds.iterator(); iter.hasNext();) {
+		for (Iterator<DadosExecucao> iter = dadosFolds.iterator(); iter.hasNext();) {
 			DadosExecucao fold = (DadosExecucao) iter.next();
 			double diferenca = fold.auc - mediaAreas; 
 			double sqrtDif = diferenca*diferenca;
@@ -130,7 +130,7 @@ public class DadosExperimentos {
 		comandoAcc.append(nomeBase.substring(0,3) + "<-c(");
 		
 		//Precorre os dados de todas as execuções do programa
-		for (Iterator iter = dadosFolds.iterator(); iter.hasNext();) {
+		for (Iterator<DadosExecucao> iter = dadosFolds.iterator(); iter.hasNext();) {
 			DadosExecucao fold = (DadosExecucao) iter.next();
 			//Impressao das medidas no arquivo
 			med.println(fold);
@@ -203,7 +203,7 @@ public class DadosExperimentos {
 		StringBuffer str = new StringBuffer();
 		str.append("Base:\t"+ nomeBase + "\n");
 		str.append("\tAUC\t#Accuracy\t\t#PrecisionPos\t#RecallPos\t#F-MeasurePos\t\t#PrecisionNeg\t#RecallNeg\t#F-MeasureNeg\t\t#Regras Total\n");
-		for (Iterator iter = dadosFolds.iterator(); iter.hasNext();) {
+		for (Iterator<DadosExecucao> iter = dadosFolds.iterator(); iter.hasNext();) {
 			DadosExecucao fold = (DadosExecucao) iter.next();
 			str.append("Fold: " + fold.numExec+"-"+ fold.numFold + "\t" + fold.toString() + "\n");
 		}

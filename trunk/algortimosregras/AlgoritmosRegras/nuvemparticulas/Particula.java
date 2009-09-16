@@ -177,8 +177,7 @@ public class Particula {
 	 * @return Vetor sigma
 	 */
 	public double[] calcularSigmaVector(){
-		double[] objetivos = regra.getValoresObjetivos();
-		double denominador = 0;
+		double[] objetivos = regra.getValoresObjetivos(); 
 		int tamVetor = (int) combinacao(objetivos.length, 2);
 		sigmaVector = new double[tamVetor];
 		int  cont = 0;
@@ -255,7 +254,7 @@ public class Particula {
 		Particula gbest = null; 
 		//Calcula o valor da distancia euclidia dos sigmaVector de cada particula do repositorio
 		//e escolhe a menor
-		for (Iterator iter = repositorio.iterator(); iter.hasNext();) {
+		for (Iterator<Particula> iter = repositorio.iterator(); iter.hasNext();) {
 			Particula rep = (Particula) iter.next();
 			double temp = distanciaEuclidiana(sigmaVector, rep.sigmaVector);
 			if(temp<melhorValor){

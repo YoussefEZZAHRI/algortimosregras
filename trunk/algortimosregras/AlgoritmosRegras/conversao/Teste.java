@@ -2,7 +2,6 @@ package conversao;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -22,6 +21,7 @@ public class Teste {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void executarSorteios(long numSor){
 		for(long i = 0; i<numSor;i++){
 			sorteio();
@@ -51,7 +51,7 @@ public class Teste {
 	
 	
 	
-	private class Numero implements Comparable{
+	private class Numero implements Comparable<Numero>{
 		int numero;
 		int frequencia;
 		
@@ -64,8 +64,7 @@ public class Teste {
 			return numero + " = " + frequencia;
 		}
 		
-		public int compareTo(Object o){
-			Numero num2 = (Numero) o;
+		public int compareTo(Numero num2){
 			if(this.frequencia<num2.frequencia)
 				return 1;
 			else

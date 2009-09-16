@@ -17,7 +17,7 @@ public class ObterObjetivosFold {
 	
 	public TreeSet<ObjetivosRegras> fronteira;
 	
-	public ArrayList obterObjetivos(String nomeArquivo, String c) throws Exception{
+	public ArrayList<ObjetivosRegras> obterObjetivos(String nomeArquivo, String c) throws Exception{
 		Reader reader = new FileReader(nomeArquivo);
 		BufferedReader buff = new BufferedReader(reader);
 		ArrayList<ObjetivosRegras> retorno = new ArrayList<ObjetivosRegras>();
@@ -44,6 +44,7 @@ public class ObterObjetivosFold {
 		return retorno;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void lerArquivos(String nomeBase, String caminhoBase, String algoritmo, String classe) throws Exception{
 		System.out.println("Base: " + nomeBase);
 		System.out.println("Classe: "+ classe );
@@ -84,6 +85,7 @@ public class ObterObjetivosFold {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void lerArquivosSemFold(String nomeBase, String caminhoBase, String classe) throws Exception{
 		
 		fronteira = new TreeSet<ObjetivosRegras>();
@@ -118,6 +120,7 @@ public class ObterObjetivosFold {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public boolean add(ObjetivosRegras obj){
 		int comp;
 		if(fronteira.size()==0){
@@ -198,7 +201,7 @@ public class ObterObjetivosFold {
 		} catch(Exception ex){ex.printStackTrace();}
 	}
 	
-	private class ObjetivosRegras implements Comparable{
+	private class ObjetivosRegras implements Comparable<ObjetivosRegras>{
 		double sens;
 		double spec;
 		
@@ -207,8 +210,7 @@ public class ObterObjetivosFold {
 			spec = sp;
 		}
 		
-		public int compareTo(Object o){
-			ObjetivosRegras or = (ObjetivosRegras) o;
+		public int compareTo(ObjetivosRegras or){
 			if(sens < or.sens)
 				return -1;
 			else
