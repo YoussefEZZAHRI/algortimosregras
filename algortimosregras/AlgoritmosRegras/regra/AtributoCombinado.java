@@ -1,7 +1,6 @@
 package regra;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 
 import weka.core.Attribute;
@@ -31,10 +30,6 @@ public class AtributoCombinado extends Atributo {
 		combinacaoBinaria = "0";
 	}
 	
-	public void apagarCombinacao(){
-		Double vazio = new Double(-1);
-		
-	}
 	
 	/**
 	 * Método de atualizacao do atributo. Recebe como parametro um inteiro que representa
@@ -163,7 +158,7 @@ public class AtributoCombinado extends Atributo {
 		if(!vazio){
 			StringBuffer retorno = new StringBuffer();
 			retorno.append("[" + att.name() + " = ");
-			for (Iterator iterator = combinacao.iterator(); iterator.hasNext();) {
+			for (Iterator<Double> iterator = combinacao.iterator(); iterator.hasNext();) {
 				Double valor = (Double) iterator.next();
 				
 				String nome = att.value(valor.intValue());
@@ -180,9 +175,6 @@ public class AtributoCombinado extends Atributo {
 	}
 	
 	public static void main(String[] args) {
-		int val1 = 2;
-		int numatt = 3;
-		Integer i = new Integer("001010");
 		int j = Integer.parseInt("10",2);
 		System.out.println(j);
 		

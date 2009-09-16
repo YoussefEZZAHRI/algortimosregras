@@ -79,7 +79,7 @@ public class ObterRegrasApriori extends ObterRegras{
 		paretoPos = new FronteiraPareto();
 		paretoNeg = new FronteiraPareto();
 		int i = 0;
-		for (Iterator iter = regrasTemp.iterator(); iter.hasNext();) {
+		for (Iterator<Regra> iter = regrasTemp.iterator(); iter.hasNext();) {
 			if(verbose){
 				if(i%75000 == 0)
 					System.out.print(i + " - " + regrasTemp.size() + " ");

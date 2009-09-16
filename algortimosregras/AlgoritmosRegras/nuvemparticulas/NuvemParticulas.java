@@ -85,8 +85,8 @@ public class NuvemParticulas extends ObterRegras{
 					System.out.print(i + " - " + geracoes + " ");
 			}
 			//Itera sobre todas as partículas da população
- 			for (Iterator iter = populacao.iterator(); iter.hasNext();) {
-				Particula particula = (Particula) iter.next();
+ 			for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
+				Particula particula = iter.next();
 				//Calcula a nova velocidade
 				particula.calcularNovaVelocidade(i);
 				//Calcula a nova posição
@@ -106,8 +106,8 @@ public class NuvemParticulas extends ObterRegras{
 		limparRepositorio();
 		//Obtém as regras a partir das partículas do repositório
 		ArrayList<Regra> regrasRetorno = new ArrayList<Regra>();
-		for (Iterator iter = repositorio.iterator(); iter.hasNext();) {
-			Particula particula = (Particula) iter.next();
+		for (Iterator<Particula> iter = repositorio.iterator(); iter.hasNext();) {
+			Particula particula = iter.next();
 			regrasRetorno.add(particula.regra);
 		}
 		return regrasRetorno;
@@ -155,8 +155,8 @@ public class NuvemParticulas extends ObterRegras{
 	}
 	
 	public void preencherRepositorioRegras(int classe){
-		for (Iterator iter = repositorioInicial.iterator(); iter.hasNext();) {
-			Regra regra = (Regra) iter.next();
+		for (Iterator<Regra> iter = repositorioInicial.iterator(); iter.hasNext();) {
+			Regra regra = iter.next();
 			
 			if(regra.cabeca == classe){
 				Particula particula = new Particula();
@@ -183,8 +183,8 @@ public class NuvemParticulas extends ObterRegras{
 	public void limparRepositorio(){
 		ArrayList<Particula> temp = new ArrayList<Particula>();
 		ArrayList<Regra> tempRegras = new ArrayList<Regra>();
-		for (Iterator iter = repositorio.iterator(); iter.hasNext();) {
-			Particula part = (Particula) iter.next();
+		for (Iterator<Particula> iter = repositorio.iterator(); iter.hasNext();) {
+			Particula part = iter.next();
 			if(!temp.contains(part) && !part.regra.isEmpty()){
 				temp.add(part);
 				tempRegras.add(part.regra);
@@ -193,8 +193,8 @@ public class NuvemParticulas extends ObterRegras{
 		}
 		if(temp.size()!=repositorio.size()){
 			repositorio.clear();
-			for (Iterator iter = temp.iterator(); iter.hasNext();) {
-				Particula part = (Particula) iter.next();
+			for (Iterator<Particula> iter = temp.iterator(); iter.hasNext();) {
+				Particula part = iter.next();
 				repositorio.add(part);
 			}
 			paretoPos.setFronteira(tempRegras);
@@ -205,6 +205,7 @@ public class NuvemParticulas extends ObterRegras{
 	 * Método que inicia a população de partículas. 
 	 * Os dados já devem estar carregados.
 	 */
+	@SuppressWarnings({ "unchecked" })
 	public void inicializarPopulacao(int classe){
 		
 		for(int i = 0; i<tamanhoPopulacao; i++){
@@ -236,8 +237,8 @@ public class NuvemParticulas extends ObterRegras{
 	 *
 	 */
 	public void atualizarRepositorio(){
-		for (Iterator iter = populacao.iterator(); iter.hasNext();) {
-			Particula particula = (Particula) iter.next();
+		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
+			Particula particula = iter.next();
 			if(!repositorio.contains(particula) && !particula.regra.isEmpty())
 				paretoPos.add_NuvemParticulas(particula, repositorio);
 		}
@@ -248,13 +249,13 @@ public class NuvemParticulas extends ObterRegras{
 	 *
 	 */
 	public void dividirEspacoBusca(){
-		for (Iterator iter = repositorio.iterator(); iter.hasNext();) {
-			Particula partRepositorio = (Particula) iter.next();
+		for (Iterator<Particula> iter = repositorio.iterator(); iter.hasNext();) {
+			Particula partRepositorio = iter.next();
 			partRepositorio.calcularSigmaVector();
 		}
 		
-		for (Iterator iter = populacao.iterator(); iter.hasNext();) {
-			Particula particula = (Particula) iter.next();
+		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
+			Particula particula = iter.next();
 			particula.calcularSigmaVector();
 			particula.escolherGlobalBest(repositorio);
 		}

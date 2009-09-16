@@ -66,7 +66,7 @@ public class Regra{
 	public Regra(ArrayList<FuncaoObjetivo> o){
 		matrizContigencia = new MatrizContingencia();
 		objetivos = new ArrayList<FuncaoObjetivo>();
-		for (Iterator iter = o.iterator(); iter.hasNext();) {
+		for (Iterator<FuncaoObjetivo> iter = o.iterator(); iter.hasNext();) {
 			FuncaoObjetivo obj = (FuncaoObjetivo) iter.next();
 			objetivos.add(obj);
 			
@@ -82,7 +82,7 @@ public class Regra{
 	 * @param e Lista com os atributos da regra
 	 * @param c Atributo da classe da regra
 	 */
-	public Regra(ItemSet b, ItemSet h, double conf, Enumeration e, Attribute c) throws Exception{
+	public Regra(ItemSet b, ItemSet h, double conf, Enumeration<Attribute> e, Attribute c) throws Exception{
 		
 		cabeca = h.itemAt(0);
 		confianca = conf;
@@ -326,7 +326,7 @@ public class Regra{
 	public void calcularHeuristicas(){
 		valoresObjetivos = new double[objetivos.size()];
 		int i = 0;
-		for (Iterator iter = objetivos.iterator(); iter.hasNext();) {
+		for (Iterator<FuncaoObjetivo> iter = objetivos.iterator(); iter.hasNext();) {
 			FuncaoObjetivo funcao = (FuncaoObjetivo) iter.next();
 			valoresObjetivos[i++] = funcao.calcularHeuristica(this);
 		}
@@ -553,7 +553,6 @@ public String toString(){
 	public boolean isGeneric(Regra r){
 		boolean matrizes = matrizContigencia.equals(r.matrizContigencia);
 		if(matrizes){
-			int[] generic = new int[corpo.length];
 			for (int i = 0; i < corpo.length; i++) {
 				Atributo atributo1 = corpo[i];
 				Atributo atributo2 = r.corpo[i];
@@ -622,7 +621,7 @@ public String toString(){
 		double[] retorno = new double[valoresAtributos.size()];
 		
 		int i = 0;
-		for (Iterator iter = valoresAtributos.iterator(); iter.hasNext();) {
+		for (Iterator<Double> iter = valoresAtributos.iterator(); iter.hasNext();) {
 			Double valor = (Double) iter.next();
 			retorno[i++] = valor.doubleValue();
 		}

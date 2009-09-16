@@ -2,13 +2,9 @@ package votacao;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 
 import kernel.Classe;
-
 import regra.ComparatorRegraLaplace;
-import regra.ComparatorX;
 import regra.Regra;
 import weka.core.Instance;
 

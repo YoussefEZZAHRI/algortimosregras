@@ -1,21 +1,13 @@
 package buscalocal;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 
-import objetivo.Especificidade;
-import objetivo.FuncaoObjetivo;
-import objetivo.Precisao;
-import objetivo.Sensitividade;
-
+import kernel.ObterRegras;
 import regra.Atributo;
 import regra.AtributoNominal;
 import regra.AtributoNumerico;
 import regra.Regra;
-import weka.core.Attribute;
-import kernel.ObterRegras;
 
 public class BuscaLocal extends ObterRegras {
 
@@ -49,15 +41,16 @@ public class BuscaLocal extends ObterRegras {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	public ArrayList<Regra> obterRegras(int numClasses) throws Exception {
 		if(regraAtual == null)
-			regraAtual = gerarRegraAleatoria(dados.enumerateAttributes(), dados.classAttribute(), dados.numAttributes(), 0);
+			regraAtual = gerarRegraAleatoriaProporcional(dados.enumerateAttributes(), dados.classAttribute(), dados.numAttributes(), 0);
 		preencherMatrizContigencia(regraAtual, dados);
 		regraAtual.getConfidence();
 		regraAtual.getValoresObjetivos();
 		while(regraAtual.getConfidence()<0.1){
 
-			regraAtual = gerarRegraAleatoria(dados.enumerateAttributes(), dados.classAttribute(), dados.numAttributes(), 0);
+			regraAtual = gerarRegraAleatoriaProporcional(dados.enumerateAttributes(), dados.classAttribute(), dados.numAttributes(), 0);
 			preencherMatrizContigencia(regraAtual, dados);
 
 		}
@@ -92,8 +85,8 @@ public class BuscaLocal extends ObterRegras {
 	public Regra encontrarMelhorRegra(int posicaoObjetivo){
 		Regra melhorRegra = vizinhanca.get(0);
 		double[] melhoresValores = melhorRegra.getValoresObjetivos();
-		for (Iterator iter = vizinhanca.iterator(); iter.hasNext();) {
-			Regra temp = (Regra) iter.next();
+		for (Iterator<Regra> iter = vizinhanca.iterator(); iter.hasNext();) {
+			Regra temp = iter.next();
 			double[] valores = temp.getValoresObjetivos();
 			if(valores[posicaoObjetivo]>melhoresValores[posicaoObjetivo]){
 				melhorRegra = temp;
@@ -247,7 +240,6 @@ public class BuscaLocal extends ObterRegras {
 		String caminhoBase = "/home/andre/mestrado/weka-3-5-5/data/";
 		//String arquivoARFF = caminhoBase + nomebase + "/it0/" + nomebase + "_data.arff";
 		String arquivoARFF = caminhoBase + nomebase + ".arff";
-		String arquivoLog = "resultados/" + nomebase +"/" + nomebase + ".log";
 		
 		try{
 			local.carregarInstancias(arquivoARFF,0,1);

@@ -26,7 +26,7 @@ public class VotacaoSimples extends Votacao {
 		int positivo = 0;
 		int negativo = 0;
 
-		for (Iterator iter = regras.iterator(); iter.hasNext();) {
+		for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			boolean b = regra.compararCorpo(exemplo.toDoubleArray());
 			if(b){

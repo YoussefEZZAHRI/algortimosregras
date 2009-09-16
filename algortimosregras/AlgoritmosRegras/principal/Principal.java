@@ -4,16 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
 
-import classificadores.MetodoDefeito;
-
-import com.sun.corba.se.impl.interceptors.PINoOpHandlerImpl;
-
-import regra.Regra;
-
-import nuvemparticulas.NuvemParticulas;
 import kernel.ObterRegras;
+import nuvemparticulas.NuvemParticulas;
 import apriori.ObterRegrasApriori;
 
 public class Principal {

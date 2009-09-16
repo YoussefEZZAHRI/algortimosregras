@@ -45,7 +45,7 @@ public abstract class Votacao {
 	 */
 	public void obterRegrasVotam(ArrayList<Regra> regrasVotacaoPositiva, ArrayList<Regra> regrasVotacaoNegativa, ArrayList<Regra> regras, Instance exemplo, String classePositiva){
 		
-		for (Iterator iter = regras.iterator(); iter.hasNext();) {
+		for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			boolean b = regra.compararCorpo(exemplo.toDoubleArray());
 			if(b){

@@ -52,7 +52,6 @@ public class MatrizestoARFF {
 	
 	public void carregarDados(BufferedReader buff) throws Exception{
 		
-		int j = 0;
 		while(buff.ready()){
 			String linha = buff.readLine();
 			String atributos[] = linha.split(",");

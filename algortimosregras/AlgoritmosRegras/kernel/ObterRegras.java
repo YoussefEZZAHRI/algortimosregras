@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Random;
@@ -138,7 +137,7 @@ public abstract class ObterRegras {
 	 */
 	public void preencherMatrizContigencia(ArrayList<Regra> regras, Instances dados){
 		
-		for (Iterator iter = regras.iterator(); iter.hasNext();) {
+		for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			regra.matrizContigencia.limparMatrizContingencia();
 			//Método que limpa a matriz de contingencia antes de preenche-la
@@ -323,6 +322,7 @@ public abstract class ObterRegras {
 	 * Indice 2 valores True Negative da classe negativa
 	 * Indice 3 valores False Negative da classe negativa
 	 */
+	@SuppressWarnings("unchecked")
 	public double[][] construirROC(Instances dadosTeste, ArrayList<Regra> regras){
 		
 		ArrayList<InstanceVotacao> votos = new ArrayList<InstanceVotacao>();
@@ -496,7 +496,7 @@ public abstract class ObterRegras {
 	 */
 	public ArrayList<Regra> retirarRegrasRuins(ArrayList<Regra> regras, double porcentageClasseMajoritaria){
 		ArrayList<Regra> novasRegras = new ArrayList<Regra>();
-		for (Iterator iter = regras.iterator(); iter.hasNext();) {
+		for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			double erro = regra.getErro();
 			if(erro<porcentageClasseMajoritaria)
@@ -514,7 +514,7 @@ public abstract class ObterRegras {
 		for(int i = 0; i<dados.numInstances();i++){
 			Instance exemplo = dados.instance(i);
 			int x = 0;
-			for (Iterator iter = regras.iterator(); iter.hasNext();) {
+			for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
 				Regra r = (Regra) iter.next();
 				boolean b = r.compararCorpo(exemplo.toDoubleArray());
 				if(b){
@@ -551,7 +551,7 @@ public abstract class ObterRegras {
 	 */
 	public double[] obterMediaValoresObjetivos(){
 		double[] somaValores = new double[objetivos.size()];
-		for (Iterator iter = regras.iterator(); iter.hasNext();) {
+		for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			double valores[] = regra.getValoresObjetivos();
 			for (int i = 0; i < valores.length; i++) {
@@ -577,7 +577,7 @@ public abstract class ObterRegras {
 	 * @param classe String contendo o nome da classe da regra que sera gerada
 	 * @return Nova regra gerada
 	 */
-	public Regra gerarRegraAleatoria(Enumeration atributos, Attribute classAttribute, int numAtributos, int classe){
+	public Regra gerarRegraAleatoria(Enumeration<Attribute> atributos, Attribute classAttribute, int numAtributos, int classe){
 		Regra regra = new Regra(objetivos);
 		regra.corpo = new Atributo[numAtributos-1];
 				
@@ -621,7 +621,7 @@ public abstract class ObterRegras {
 	 * @param classe Classe da regra gerada
 	 * @return A regra com seus valores iniciais gerados
 	 */
-	public Regra gerarRegraAleatoriaProporcional(Enumeration atributos, Attribute classAttribute, int numAtributos, int classe){
+	public Regra gerarRegraAleatoriaProporcional(Enumeration<Attribute> atributos, Attribute classAttribute, int numAtributos, int classe){
 		Regra regra = new Regra(objetivos);
 		regra.corpo = new Atributo[numAtributos-1];
 		
@@ -664,7 +664,7 @@ public abstract class ObterRegras {
 	 * @param classe Classe da regra gerada
 	 * @return A regra com seus valores iniciais gerados
 	 */
-	public Regra gerarRegraAleatoriaCombinacao(Enumeration atributos, Attribute classAttribute, int numAtributos, int classe){
+	public Regra gerarRegraAleatoriaCombinacao(Enumeration<Attribute> atributos, Attribute classAttribute, int numAtributos, int classe){
 		Regra regra = new Regra(objetivos);
 		regra.corpo = new Atributo[numAtributos-1];
 		int i = 0;
@@ -832,7 +832,7 @@ public abstract class ObterRegras {
 			//Grava as regras finais da execução
 			String arquivoRegrasFinais = "resultados/" + nomeMetodo + "/" + dirResultado + "/" + nomeBase + "" + j +"/regras_" + nomeBase + "" + j + ".txt";
 			PrintStream psRegras = new PrintStream(arquivoRegrasFinais);
-			for (Iterator iter = regrasFinais.iterator(); iter.hasNext();) {
+			for (Iterator<Regra> iter = regrasFinais.iterator(); iter.hasNext();) {
 				Regra regra = (Regra) iter.next();
 				psRegras.println(regra);
 			}
@@ -896,8 +896,7 @@ public abstract class ObterRegras {
 		
 		
 		for(int j = 0; j<numExec; j++){
-			
-			String arquivoLog = caminhoDir + "/resultados/" +nomeMetodo +"/" + dirResultado + "/" + nomeBase + "" + j +"/" +nomeBase + "" + j + ".log";			
+						
 			String diretorio = caminhoDir +  "/resultados/" +nomeMetodo +"/" + dirResultado + "/" +nomeBase + "" +j+"/";
 			dir = new File(diretorio);
 			dir.mkdirs();
@@ -992,7 +991,7 @@ public abstract class ObterRegras {
 			//Grava as regras finais da execução
 			String arquivoRegrasFinais = "resultados/" + nomeMetodo + "/" + dirResultado + "/" + nomeBase + "" + j +"/regras_" + nomeBase + "" + j + ".txt";
 			PrintStream psRegras = new PrintStream(arquivoRegrasFinais);
-			for (Iterator iter = regrasFinais.iterator(); iter.hasNext();) {
+			for (Iterator<Regra> iter = regrasFinais.iterator(); iter.hasNext();) {
 				Regra regra = (Regra) iter.next();
 				psRegras.println(regra);
 			}
@@ -1058,8 +1057,7 @@ public abstract class ObterRegras {
 		
 		
 		for(int j = 0; j<numExec; j++){
-			
-			String arquivoLog = caminhoDir + "/resultados/" +nomeMetodo +"/" + dirResultado + "/" + nomeBase + "" + j +"/" +nomeBase + "" + j + ".log";			
+						
 			String diretorio = caminhoDir +  "/resultados/" +nomeMetodo +"/" + dirResultado + "/" +nomeBase + "" +j+"/";
 			dir = new File(diretorio);
 			dir.mkdirs();
@@ -1086,7 +1084,6 @@ public abstract class ObterRegras {
 				System.out.println("Base de Treinamento: "+ arquivoTreinamento);
 				carregarInstancias(arquivoTreinamento, cPositiva, cNegativa);
 				
-				int tamParticao = dados.numInstances()/numParticoes;
 				Instances dadosTreinamentoTotal = new Instances(dados);
 				
 				for (int n = 0; n < numParticoes; n++) {
@@ -1150,7 +1147,7 @@ public abstract class ObterRegras {
 			//Grava as regras finais da execução
 			String arquivoRegrasFinais = "resultados/" + nomeMetodo + "/" + dirResultado + "/" + nomeBase + "" + j +"/regras_" + nomeBase + "" + j + ".txt";
 			PrintStream psRegras = new PrintStream(arquivoRegrasFinais);
-			for (Iterator iter = regrasFinais.iterator(); iter.hasNext();) {
+			for (Iterator<Regra> iter = regrasFinais.iterator(); iter.hasNext();) {
 				Regra regra = (Regra) iter.next();
 				psRegras.println(regra);
 			}
@@ -1285,7 +1282,7 @@ public abstract class ObterRegras {
 			//Grava as regras finais da execução
 			String arquivoRegrasFinais = "resultados/" + nomeMetodo + "/" + dirResultado + "/" + nomeBase + "" + j +"/regras_" + nomeBase + "" + j + ".txt";
 			PrintStream psRegras = new PrintStream(arquivoRegrasFinais);
-			for (Iterator iter = regrasFinais.iterator(); iter.hasNext();) {
+			for (Iterator<Regra> iter = regrasFinais.iterator(); iter.hasNext();) {
 				Regra regra = (Regra) iter.next();
 				psRegras.println(regra);
 			}
@@ -1312,7 +1309,7 @@ public abstract class ObterRegras {
 private void gravarRegrasArquivo(boolean selecao,
 		ArrayList<Regra> regrasFinais, PrintStream psRegras, ArrayList<Regra> regras) {
 	//Grava as regras num arquivo texto
-	for (Iterator iter = regras.iterator(); iter.hasNext();) {
+	for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
 		Regra regra = (Regra) iter.next();
 		if(!selecao){
 			psRegras.println(regra);
@@ -1490,7 +1487,6 @@ public void setVotacao(String votacao) {
 	 */
 	public void executarFolds(String nomeBase, String caminhoBase, String nomeMetodo, int cPositiva, int cNegativa, int numFolds, boolean verbose, String votacao, boolean selecao)  throws Exception{
 		String caminhoDir = System.getProperty("user.dir");
-		String arquivoLog = caminhoDir + "/resultados/" +nomeMetodo +"/" +  nomeBase  +"/" +nomeBase  + ".log";
 		String diretorio = caminhoDir +  "/resultados/" +nomeMetodo +"/" + nomeBase +"/";
 		File dir = new File(diretorio);
 		dir.mkdirs();
@@ -1572,7 +1568,7 @@ public void setVotacao(String votacao) {
 		
 		String arquivoRegrasFinais = "resultados/" + nomeMetodo + "/" + nomeBase  +"/regras_" + nomeBase  + ".txt";
 		PrintStream psRegras = new PrintStream(arquivoRegrasFinais);
-	    for (Iterator iter = regrasFinais.iterator(); iter.hasNext();) {
+	    for (Iterator<Regra> iter = regrasFinais.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			psRegras.println(regra);
 		}
@@ -1591,7 +1587,7 @@ public void setVotacao(String votacao) {
 		paretoPos = new FronteiraPareto();
 		paretoNeg = new FronteiraPareto();
 		
-		for (Iterator iter = regrasTemp.iterator(); iter.hasNext();) {
+		for (Iterator<Regra> iter = regrasTemp.iterator(); iter.hasNext();) {
 			Regra regra = (Regra) iter.next();
 			paretoPos.add(regra, classePositiva);
 			paretoNeg.add(regra, classeNegativa);
@@ -1612,9 +1608,9 @@ public void setVotacao(String votacao) {
 		   coeficienteJaccard = new double[regras.size()][regras.size()];
 		   int i = 0;
 		   int j = 0;
-		   for (Iterator iter = regras.iterator(); iter.hasNext();) {
+		   for (Iterator<Regra> iter = regras.iterator(); iter.hasNext();) {
 				Regra r1 = (Regra) iter.next();
-				for (Iterator iterator = regras.iterator(); iterator.hasNext();) {
+				for (Iterator<Regra> iterator = regras.iterator(); iterator.hasNext();) {
 					Regra r2 = (Regra) iterator.next();
 					double[] similaridade = medidadeSimilaridade(r1, r2);
 					//Calcula do coeficiente de Jaccard
@@ -1707,11 +1703,12 @@ public void setVotacao(String votacao) {
 	/**
 	 * Método que percorre a base de dados e para cada atributo nominal preenche a distribuição dos valores
 	 */
+	@SuppressWarnings("unchecked")
 	public void preencherDistribuicaoValores(){
 		//Maior número de valores para um atributo na base
 		int maxValues = 0;
 		int num = 0;
-		Enumeration atributos = dados.enumerateAttributes();
+		Enumeration<Attribute> atributos = dados.enumerateAttributes();
 		while(atributos.hasMoreElements()){
 			Attribute att = (Attribute) atributos.nextElement();
 			if(att.isNominal()){

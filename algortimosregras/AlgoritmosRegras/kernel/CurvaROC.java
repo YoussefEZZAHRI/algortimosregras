@@ -2,36 +2,24 @@ package kernel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridBagLayout;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.Formatter;
+import java.util.Iterator;
+import java.util.SortedSet;
 
-import javax.swing.JPanel;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardXYZToolTipGenerator;
-import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.chart.renderer.xy.XYItemRendererState;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.DefaultXYZDataset;
-import org.jfree.data.xy.XYSeries;
-
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
-
-import java.awt.GridBagLayout;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Formatter;
-import java.util.Iterator;
-import java.util.SortedSet;
 
 public class CurvaROC extends JFrame {
 
@@ -57,7 +45,7 @@ public class CurvaROC extends JFrame {
 		// Colocando a lista de limiares no conjunto como informativo...
 		double temp[] = new double[limiares.size()];
 		int i = temp.length-1;
-		for (Iterator iterator = limiares.iterator(); iterator.hasNext();) {
+		for (Iterator<Double> iterator = limiares.iterator(); iterator.hasNext();) {
 			Double limiar = (Double) iterator.next();
 			temp[i] = limiar;
 			i--;

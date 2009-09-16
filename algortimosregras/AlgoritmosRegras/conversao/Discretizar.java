@@ -3,11 +3,8 @@ package conversao;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
-
-import org.w3c.dom.Attr;
 
 import weka.core.Attribute;
 import weka.core.Instance;

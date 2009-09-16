@@ -17,8 +17,8 @@ public class FronteiraPareto {
 	
 	public void setFronteira(ArrayList<Regra> temp){
 		fronteira.clear();
-		for (Iterator iter = temp.iterator(); iter.hasNext();) {
-			Regra r = (Regra) iter.next();
+		for (Iterator<Regra> iter = temp.iterator(); iter.hasNext();) {
+			Regra r = iter.next();
 			fronteira.add(r);
 			
 		}
@@ -34,6 +34,7 @@ public class FronteiraPareto {
 	 * @param classe Valor da classe das regras da fronteira
 	 * @return Valor booleano que especifica se o elemento foi inserido ou nao na fronteira 
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean add(Regra regra, String classe){
 		//Só adiciona na fronteira caso a regra seja da classe passada como parametro
 		if(regra.classe.indexOfValue(classe) == regra.cabeca){
@@ -44,10 +45,10 @@ public class FronteiraPareto {
 			
 		int comp;
 		
-		ArrayList cloneFronteira = (ArrayList)fronteira.clone();
+		ArrayList<Regra> cloneFronteira = (ArrayList<Regra>)fronteira.clone();
 		
-		for (Iterator iter = cloneFronteira.iterator(); iter.hasNext();) {
-			Regra temp = (Regra) iter.next();
+		for (Iterator<Regra> iter = cloneFronteira.iterator(); iter.hasNext();) {
+			Regra temp = iter.next();
 			comp = compararMedidas(regra.getValoresObjetivos(), temp.getValoresObjetivos());
 			if(comp == -1)
 				return false;
@@ -68,6 +69,7 @@ public class FronteiraPareto {
 	 * @param repositorio Repositorio com as particulas nao dominadas
 	 * @return True se a particula foi adicionada no repositorio, false caso contrario
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean add_NuvemParticulas(Particula particula, ArrayList<Particula> repositorio){
 		
 		Regra regra = (Regra)particula.regra.clone();
@@ -79,11 +81,11 @@ public class FronteiraPareto {
 			
 		int comp;
 		
-		ArrayList cloneFronteira = (ArrayList)fronteira.clone();
+		ArrayList<Regra> cloneFronteira = (ArrayList<Regra>)fronteira.clone();
 		
 		int pos = 0;
-		for (Iterator iter = cloneFronteira.iterator(); iter.hasNext();) {
-			Regra temp = (Regra) iter.next();
+		for (Iterator<Regra> iter = cloneFronteira.iterator(); iter.hasNext();) {
+			Regra temp = iter.next();
 			comp = compararMedidas(regra.getValoresObjetivos(), temp.getValoresObjetivos());
 			if(comp == -1){
 				return false;

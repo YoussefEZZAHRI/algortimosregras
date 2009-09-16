@@ -46,7 +46,6 @@ public class SQLtoARFF {
 		String linha;
 		String atributos[];
 		Instance temp;
-		int k = 0;
 		while(data.ready()){
 			temp = new Instance(dados.numAttributes());
 			temp.setDataset(dados);
