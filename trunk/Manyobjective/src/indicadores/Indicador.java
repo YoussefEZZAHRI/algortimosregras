@@ -2,6 +2,7 @@ package indicadores;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -83,6 +84,17 @@ public abstract class Indicador {
 		
 		iniciarArquivosSaida();
 		
+		carregarArrayList(nomeArquivo, fronteiras);
+		
+		calcularIndicadorArray(fronteiras);
+		
+		fecharArquivosSaida();
+	}
+
+
+	protected void carregarArrayList(String nomeArquivo,
+			ArrayList<ArrayList<PontoFronteira>> fronteiras)
+			throws FileNotFoundException, IOException {
 		BufferedReader buff = new BufferedReader(new FileReader(nomeArquivo));
 		
 		ArrayList<PontoFronteira> fronteira = new ArrayList<PontoFronteira>();
@@ -121,11 +133,8 @@ public abstract class Indicador {
 			//imprimirValor(valor);
 			fronteiras.add(fronteira);
 		}
-		
-		calcularIndicadorArray(fronteiras);
-		
-		fecharArquivosSaida();
 	}
+	
 	
 	/**
 	 * Método que calcula o indicador através de um arraylist de fronteiras
@@ -143,6 +152,8 @@ public abstract class Indicador {
 		}
 		fecharArquivosSaida();
 	}
+	
+
 	
 	/**
 	 * Método que inicia os arquivos de saida

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import kernel.nuvemparticulas.ComparetorCrowdedOperatorParticula;
 import kernel.nuvemparticulas.ComparetorRankParticula;
 import kernel.nuvemparticulas.Particula;
 
@@ -166,6 +167,17 @@ public class FronteiraPareto {
 		if(tamanhoRepositorio<fronteiraNuvem.size()){
 			ComparetorCrowdDistance comp = new ComparetorCrowdDistance();
 			//ComparetorCrowdedOperator comp = new ComparetorCrowdedOperator();
+			Collections.sort(fronteiraNuvem, comp);
+			int diferenca = fronteiraNuvem.size() - tamanhoRepositorio; 
+			for(int i = 0; i<diferenca; i++)
+				fronteiraNuvem.remove(fronteiraNuvem.remove(fronteiraNuvem.size()-1));
+			retornarFronteiraNuvem();
+		}
+	}
+	
+	public void podarLideresCrowdOperatorParticula(int tamanhoRepositorio){
+		if(tamanhoRepositorio<fronteiraNuvem.size()){
+			ComparetorCrowdedOperatorParticula comp = new ComparetorCrowdedOperatorParticula();
 			Collections.sort(fronteiraNuvem, comp);
 			int diferenca = fronteiraNuvem.size() - tamanhoRepositorio; 
 			for(int i = 0; i<diferenca; i++)

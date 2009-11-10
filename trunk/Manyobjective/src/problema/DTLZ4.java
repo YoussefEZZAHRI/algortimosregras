@@ -1,5 +1,8 @@
 package problema;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import pareto.FronteiraPareto;
 import solucao.Solucao;
 
@@ -60,6 +63,33 @@ public class DTLZ4 extends Problema {
 		}
 		
 		return solucao.objetivos;
+	}
+	
+	public  ArrayList<Solucao> obterFronteira(int n, int numSol){
+		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
+		
+		Random rand = new Random();
+		rand.setSeed(1000);
+		
+		while(melhores.size()<numSol){
+			Solucao melhor = new Solucao(n, m);
+
+			for (int i = m-1; i <n; i++) {
+				melhor.setVariavel(i, 0.5);
+			}
+
+			for (int i = 0; i < m-1; i++) {
+				double newVal = rand.nextDouble();
+				melhor.setVariavel(i, newVal);
+			}
+
+			
+			calcularObjetivos(melhor);
+			melhores.add(melhor);
+			
+		}
+		
+		return melhores;	
 	}
 	
 

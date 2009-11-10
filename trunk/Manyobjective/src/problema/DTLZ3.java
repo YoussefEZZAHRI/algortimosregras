@@ -1,5 +1,10 @@
 package problema;
 
+import java.util.ArrayList;
+import java.util.Random;
+
+import com.sun.org.apache.bcel.internal.generic.DLOAD;
+
 import pareto.FronteiraPareto;
 import solucao.Solucao;
 
@@ -54,23 +59,47 @@ public class DTLZ3 extends Problema {
 		return solucao.objetivos;
 	}
 	
+	public  ArrayList<Solucao> obterFronteira(int n, int numSol){
+		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
+		
+		Random rand = new Random();
+		rand.setSeed(1000);
+		
+		while(melhores.size()<numSol){
+			Solucao melhor = new Solucao(n, m);
+
+			for (int i = m-1; i <n; i++) {
+				melhor.setVariavel(i, 0.5);
+			}
+
+			for (int i = 0; i < m-1; i++) {
+				double newVal = rand.nextDouble();
+				melhor.setVariavel(i, newVal);
+			}
+
+			double somaParcial = 0;
+			calcularObjetivos(melhor);
+
+			for (int i = 0; i < melhor.m; i++) {
+				somaParcial += melhor.objetivos[i]*melhor.objetivos[i];
+			}
+			if(somaParcial==1){
+				melhores.add(melhor);
+			}
+		}
+		
+		return melhores;
+	}
+	
 
 	
 	public static void main(String[] args) {
 		
-		int m = 2;
-		FronteiraPareto pareto = new FronteiraPareto(0.25, false);
-		
-		DTLZ3 dtlz2 = new DTLZ3(m);
-		for(int i = 0; i<2; i++){
-			Solucao sol = new Solucao(5, m);
-			sol.iniciarSolucaoAleatoria();
-			dtlz2.calcularObjetivos(sol);
-			System.out.println(sol);
-			pareto.add(sol);
-		}
-		System.out.println("Fronteira:");
-		System.out.println(pareto);
+		int m = 3;
+
+		DTLZ3 dtlz3 = new DTLZ3(m);
+		ArrayList<Solucao> melhores =  dtlz3.obterFronteira(11, 250);
+		dtlz3.imprimirVetoresScilab(melhores);
 		
 		
 		

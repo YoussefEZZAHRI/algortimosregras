@@ -1,7 +1,9 @@
 package principal;
 
+import indicadores.Dominance;
 import indicadores.GD;
 import indicadores.Hipervolume;
+import indicadores.Indicador;
 import indicadores.PontoFronteira;
 import indicadores.Spread;
 
@@ -53,6 +55,14 @@ public class Principal {
 	public boolean modificar;
 	public double S;
 	
+	public boolean rank;
+	
+	public String alg1;
+	public String alg2;
+	public boolean dominance = false;
+	
+	public String indicador = "";
+	
 	public double maioresObjetivos[];
 	
 	public double limitesHiper[];
@@ -63,18 +73,89 @@ public class Principal {
 		try{			
 			principal.carregarArquivoConf(args[0]);
 			principal.setProblema();
-			if(principal.alg.equals("sigma"))
-				principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S, principal.modificar);
-			if(principal.alg.equals("smopso"))
-				principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S, principal.modificar);
-			if(principal.alg.equals("misa"))
-				principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S, principal.modificar);
-			if(principal.alg.equals("nsga2"))
-				principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S, principal.modificar);
-			principal.executar();
+			if(principal.dominance){
+				principal.executarDominance();
+			} else {
+				if(!principal.indicador.equals(""))
+					principal.executarIndicador();
+				else{
+					if(principal.alg.equals("sigma"))
+						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S, principal.modificar);
+					if(principal.alg.equals("smopso"))
+						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S, principal.modificar, principal.rank);
+					if(principal.alg.equals("misa"))
+						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S, principal.modificar);
+					if(principal.alg.equals("nsga2"))
+						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S, principal.modificar);
+					principal.executar();
+				}
+			  }
+			} catch (Exception ex) {ex.printStackTrace();}
+	}
+	
+	private void executarDominance() throws IOException{
+		
+		if(alg1 == null || alg2 == null){
+			System.err.println("Algoritmos para a comparação da dominancia não foram definido (Tags alg1 ou alg2)");
+			System.exit(0);
+		}
 			
+		
+		String caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/";
+		File dir = new File(caminhoDir);
+		dir.mkdirs();
+		
+		String idExec1 = alg + prob + "_" + m + alg1;
+		String idExec2 = alg + prob + "_" + m + alg2;
+		
+		Dominance dominance = new Dominance(m, caminhoDir, idExec1, idExec2);
+		dominance.preencherObjetivosMaxMin(maxmimObjetivos);
+		String arquivo1 = caminhoDir + alg1 + "/" + idExec1  + "_fronteira.txt";
+		String arquivo2 = caminhoDir + alg2 + "/" + idExec2  + "_fronteira.txt";
+		
+		dominance.calcularDominanceArquivo(arquivo1, arquivo2);
+		
+	}
+	
+	private void executarIndicador() throws IOException{
+		
+		if(alg1 == null){
+			System.err.println("Algoritmo para a execucao do indicador não foi definido (Tags alg1)");
+			System.exit(0);
+		}
 			
-		} catch (Exception ex) {ex.printStackTrace();}
+		
+		String caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + alg1 +"/";
+		File dir = new File(caminhoDir);
+		dir.mkdirs();
+		
+		String idExec = alg + prob + "_" + m + alg1;
+		Indicador ind;
+		if(indicador.equals("gd")){
+			ArrayList<Solucao> fronteira =  problema.obterFronteira(n, populacao);
+			ArrayList<PontoFronteira> pftrue= new ArrayList<PontoFronteira>();
+			
+			for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
+				Solucao solucao = (Solucao) iterator.next();
+				PontoFronteira temp = new PontoFronteira(solucao.objetivos);
+				pftrue.add(temp);
+			}
+					
+			ind = new GD(m, caminhoDir, idExec, pftrue);
+			
+		}
+		else{
+			if(indicador.equals("hipervolume"))
+				ind = new Hipervolume(m, caminhoDir, idExec, limitesHiper);
+			else
+				ind = new Spread(m, caminhoDir, idExec);
+		}
+		
+		ind.preencherObjetivosMaxMin(maxmimObjetivos);
+		String arquivo1 = caminhoDir + "/" + idExec  + "_fronteira.txt";
+		
+		ind.calcularIndicadorArquivo(arquivo1);
+		
 	}
 
 	private  void executar()
@@ -156,33 +237,28 @@ public class Principal {
 			
 		}
 		System.out.println();
-	
+		
 		Hipervolume hiper = new Hipervolume(m, caminhoDir, id+idS, limitesHiper);
 		hiper.preencherObjetivosMaxMin(maxmimObjetivos);
-		if(m<4)
+		if(m<5)
 			hiper.calcularIndicadorArray(fronteiras);
 		
 		Spread spread = new Spread(m, caminhoDir, id+idS);
 		spread.preencherObjetivosMaxMin(maxmimObjetivos);
 		spread.calcularIndicadorArray(fronteiras);
 	
-		double[] o = new double[m];
-		for (int j = 0; j < o.length; j++) {
-			o[j] = 0;
-		}
-		
-		PontoFronteira melhorPonto = new PontoFronteira(o);
+		ArrayList<Solucao> fronteira =  problema.obterFronteira(n, populacao);
 		ArrayList<PontoFronteira> pftrue= new ArrayList<PontoFronteira>();
-		pftrue.add(melhorPonto);
 		
+		for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
+			Solucao solucao = (Solucao) iterator.next();
+			PontoFronteira temp = new PontoFronteira(solucao.objetivos);
+			pftrue.add(temp);
+		}
+				
 		GD gd = new GD(m, caminhoDir, id+idS, pftrue);
 		gd.preencherObjetivosMaxMin(maxmimObjetivos);
 		gd.calcularIndicadorArray(fronteiras);
-		//gd.calcularIndicadorArquivo(caminhoDir+id+ idS+"_fronteira.txt");
-		
-		
-		
-
 	}
 	
 	public void gerarSaida(ArrayList<Solucao> fronteira, PrintStream solGeral, PrintStream psFronteiraGeral, PrintStream solExecucao, PrintStream psFronteiraExec){
@@ -224,7 +300,7 @@ public class Principal {
 			String linhaString = buff.readLine(); 
 			String linha[] = linhaString.split("=");
 			if(linha.length!=2){
-				System.err.println("Erro no arquivo de configuração! Linha: " + linhaString);
+				System.err.println("Erro no arquivo de configuração. Linha: " + linhaString);
 				System.exit(0);
 			}
 			String tag = linha[0].trim().toLowerCase();
@@ -248,6 +324,26 @@ public class Principal {
 				prob = valor;
 			}
 			
+			if(tag.equals("dominance")){
+				if(valor.equals("true"))
+					dominance = true;
+				else
+					dominance = false;
+			}
+			
+			if(tag.equals("indicador"))
+			if(valor.equals("hipervolume") || valor.equals("gd") || valor.equals("spread")){
+					indicador = valor;
+			}
+			
+			if(tag.equals("alg1")){
+				alg1 = valor;
+			}
+			
+			if(tag.equals("alg2")){
+				alg2 = valor;
+			}
+			
 			if(tag.equals("s"))
 				S = new Double(valor).doubleValue();
 			if(tag.equals("modificar")){
@@ -262,6 +358,13 @@ public class Principal {
 			}
 			if(tag.equals("objetivos")){
 				maxmimObjetivos = valor.split(" ");
+			}
+			
+			if(tag.equals("ordenacao")){
+				if(valor.equals("true"))
+					rank = true;
+				else
+				   	rank = false;
 			}
 		}
 		
