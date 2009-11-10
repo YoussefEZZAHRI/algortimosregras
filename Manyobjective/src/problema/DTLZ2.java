@@ -1,5 +1,8 @@
 package problema;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import pareto.FronteiraPareto;
 import solucao.Solucao;
 
@@ -55,12 +58,59 @@ public class DTLZ2 extends Problema {
 		return solucao.objetivos;
 	}
 	
+	public ArrayList<Solucao> obterFronteira(int n, int numSol){
+		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
+		
+		Random rand = new Random();
+		rand.setSeed(1000);
+		
+		while(melhores.size()<numSol){
+			Solucao melhor = new Solucao(n, m);
+
+			for (int i = m-1; i <n; i++) {
+				melhor.setVariavel(i, 0.5);
+			}
+
+			for (int i = 0; i < m-1; i++) {
+				double newVal = rand.nextDouble();
+				melhor.setVariavel(i, newVal);
+			}
+
+			double somaParcial = 0;
+			calcularObjetivos(melhor);
+
+			for (int i = 0; i < melhor.m; i++) {
+				somaParcial += melhor.objetivos[i]*melhor.objetivos[i];
+			}
+			if(somaParcial==1){
+				melhores.add(melhor);
+			}
+		}
+		
+		return melhores;
+	}
+	
+	public boolean validarSolucaoFronteira(Solucao s){
+		double soma = 0;
+		for (int i = 0; i < s.objetivos.length; i++) {
+			soma += s.objetivos[i];
+		}
+		
+		if(soma  == 1)
+			return true;
+		else
+			return false;
+	}
+	
 
 	
 	public static void main(String[] args) {
 		
-		int m = 2;
-		FronteiraPareto pareto = new FronteiraPareto(0.25, false);
+		int m = 3;
+		DTLZ2 dtlz2 = new DTLZ2(m);
+		dtlz2.obterFronteira(12, 250);
+		
+		/*FronteiraPareto pareto = new FronteiraPareto(0.25, false);
 		
 		DTLZ2 dtlz2 = new DTLZ2(m);
 		for(int i = 0; i<2; i++){
@@ -72,7 +122,7 @@ public class DTLZ2 extends Problema {
 		}
 		System.out.println("Fronteira:");
 		System.out.println(pareto);
-		
+		*/
 		
 		
 	}

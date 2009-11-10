@@ -1,6 +1,9 @@
 package problema;
 
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import solucao.Solucao;
 
 /**
@@ -45,20 +48,50 @@ public class DTLZ1 extends Problema {
 		return solucao.objetivos;
 	}
 	
-		public static void main(String[] args) {
 		
-		int m = 2;
 		
-		DTLZ1 dtlz2 = new DTLZ1(m);
-		for(int i = 0; i<1; i++){
-			Solucao sol = new Solucao(5, m);
-			sol.iniciarSolucaoAleatoria();
-			dtlz2.calcularObjetivos(sol);
+	public  ArrayList<Solucao> obterFronteira(int n, int numSol){
+		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
+		
+		Random rand = new Random();
+		rand.setSeed(1000);
+		
+		while(melhores.size()<numSol){
+			Solucao melhor = new Solucao(n, m);
+
+			for (int i = m-1; i <n; i++) {
+				melhor.setVariavel(i, 0.5);
+			}
+
+			for (int i = 0; i < m-1; i++) {
+				double newVal = rand.nextDouble();
+				melhor.setVariavel(i, newVal);
+			}
+
+			double somaParcial = 0;
+			calcularObjetivos(melhor);
+
+			for (int i = 0; i < melhor.m; i++) {
+				somaParcial += melhor.objetivos[i];
+			}
+			if(somaParcial==0.5){
+				melhores.add(melhor);	
+			}
 			
 		}
 		
 		
-	
+		
+		return melhores;
 	}
+	
+	public static void main(String[] args) {
+
+		int m = 3;
+
+		DTLZ1 dtlz1 = new DTLZ1(m);
+		dtlz1.obterFronteira(11, 250);
+	}
+	
 
 }

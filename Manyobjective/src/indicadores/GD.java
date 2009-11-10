@@ -56,7 +56,7 @@ public class GD extends Indicador {
 			System.exit(0);
 			return 0;
 		}	
-		return 1-gd;
+		return gd;
 	}
 
 }

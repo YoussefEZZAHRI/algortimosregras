@@ -167,5 +167,11 @@ public class Solucao {
 		}
 		return over_limits;
 	}
+	
+	public void setVariavel(int i, double valor){
+		variaveis[i] = valor;
+		if(i>=(m-1))
+			xm[i-(m-1)] = variaveis[i];
+	}
 
 }
