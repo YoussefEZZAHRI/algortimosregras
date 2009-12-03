@@ -1,0 +1,16 @@
+algoritmo = smopso
+problema = dtlz4
+m =  2
+n = 11
+geracoes = 100
+populacao = 250
+numexec = 4
+S = 0.50
+rank = false
+modificar = true
+limites_objetivos = 3 3
+objetivos = - -
+dominance = false
+alg1 = 0.7
+alg2 = normal
+indicador = false
