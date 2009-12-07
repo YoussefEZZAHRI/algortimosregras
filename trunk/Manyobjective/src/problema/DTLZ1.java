@@ -18,8 +18,12 @@ public class DTLZ1 extends Problema {
 	 * Construtor da classe
 	 * @param m Numero de objetivos do problema
 	 */
+	
+	
+	
 	public DTLZ1(int m){
 		this.m = m;
+		avaliacoes = 0;
 	}
 	
 	/**
@@ -45,6 +49,7 @@ public class DTLZ1 extends Problema {
 			solucao.objetivos[i] = fxi;
 		}
 		
+		avaliacoes++;
 		return solucao.objetivos;
 	}
 	

@@ -19,8 +19,8 @@ public class SigmaMOPSO extends MOPSO{
 
 
 	
-	public SigmaMOPSO(int n, Problema prob, int g, int t, double s, boolean mod){
-		super(n,prob,g,t, s, mod);
+	public SigmaMOPSO(int n, Problema prob, int g, int t, double s){
+		super(n,prob,g,t, s);
 
 	}
 	
@@ -92,7 +92,7 @@ public class SigmaMOPSO extends MOPSO{
 		int g = 50;
 		int t = 100;
 		for(int i = 0; i<5; i++){
-			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, t, 0.25, false);
+			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, t, 0.25);
 			ArrayList<Solucao> fronteira= nuvem.executar();
 			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
 				Solucao solucao = (Solucao) iterator.next();

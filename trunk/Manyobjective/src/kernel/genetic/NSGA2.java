@@ -27,10 +27,10 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	
 	
 	
-	public NSGA2(int n, Problema prob, int g, int t, double s, boolean mod){
+	public NSGA2(int n, Problema prob, int g, int t, double s){
 		super(n,prob,g,t);
 		
-		pareto = new FronteiraPareto(s, mod);
+		pareto = new FronteiraPareto(s);
 		problema = prob;
 
 	}

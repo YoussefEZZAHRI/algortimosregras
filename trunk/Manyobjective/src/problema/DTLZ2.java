@@ -55,6 +55,7 @@ public class DTLZ2 extends Problema {
 			solucao.objetivos[i] = fxi;
 		}
 		
+		avaliacoes++;
 		return solucao.objetivos;
 	}
 	
