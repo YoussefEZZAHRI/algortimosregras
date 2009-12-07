@@ -30,6 +30,8 @@ public abstract class AlgoritmoAprendizado {
 	
 	
 	private final double MAX_MUT = 0.5;
+	//Flag que indica se algum metodo de rankeamento many-objetivo sera utilizado
+	public boolean rank = false;
 	
 	
 	public AlgoritmoAprendizado(int n, Problema p, int g, int t){
@@ -113,7 +115,7 @@ public abstract class AlgoritmoAprendizado {
 		}	
 	}
 	
-	public void rankearSolucoes(ArrayList<Solucao> solucoes){
+	public void averageRank(ArrayList<Solucao> solucoes){
 		int[][][] A = new int[problema.m][solucoes.size()][solucoes.size()];
 		for(int k = 0; k<problema.m; k++){
 			for(int i = 0; i<solucoes.size()-1; i++){
@@ -145,6 +147,17 @@ public abstract class AlgoritmoAprendizado {
 					}
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Método que busca as soluções não dominadas da população atual
+	 * @return Soluções não dominadas da população
+	 */
+	public void encontrarSolucoesNaoDominadas(ArrayList<Solucao> solucoes, FronteiraPareto pareto){
+		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
+			Solucao solucao =  iter.next();
+			pareto.add(solucao);
 		}
 	}
 	

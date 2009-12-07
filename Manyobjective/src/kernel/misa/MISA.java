@@ -12,8 +12,14 @@ import solucao.ComparetorDominacao;
 import solucao.ComparetorRank;
 import solucao.Solucao;
 import kernel.AlgoritmoAprendizado;
-import kernel.Avaliacao;
 
+
+/**
+ * Algoritmo MISA proposto por Coello em: Solving Multiobjective Optimization Problems Using
+an Artificial Immune System
+ * @author Andre
+ *
+ */
 public class MISA extends AlgoritmoAprendizado {
 
 	
@@ -21,50 +27,64 @@ public class MISA extends AlgoritmoAprendizado {
 	public AdaptiveGrid populacaoSecundaria = null;
 	public ArrayList<Solucao> clones = null;
 	
-	//Número de execuções
-	public int geracoes;
-	//Tamanho inicial da população
-	public int tamanhoPopulacao;
+	//Total de elementos após a clonagem
 	public int totalClonagem;
 	
-	public final int taxaClonagem = 6;
+	//Taxa de clonagem
+	public int taxaClonagem = 1;
+	//Numero de divisoes do grid da populacaos secundaria
+	public final int partesGrid;
 	
-	public final int partesGrid = 4;
-	
-	public MISA(int n, Problema prob, int g, int t, double s, boolean mod){
+	/**
+	 * 
+	 * @param n Número de variaveis
+	 * @param prob Problema
+	 * @param g Número de gerações
+	 * @param t Tamanho máximo da população
+	 * @param s Valor do S do método do Sato
+	 * @param tc Taxa de clonagem
+	 * * @param pg Número de partes da divisão do grid da população secundária
+	 */
+	public MISA(int n, Problema prob, int g, int t, double s, int tc, int pg){
 		super(n,prob,g,t);
-		pareto = new FronteiraPareto(s,mod);
+		pareto = new FronteiraPareto(s);
+		taxaClonagem = tc;
 		totalClonagem = taxaClonagem * tamanhoPopulacao;
+		partesGrid = pg;
 	}
 	
 	@Override
+	
 	public ArrayList<Solucao> executar() {
 		
+		//Inicio aleatório da população
 		iniciarPopulacao();
-		
+		//Laço evolutivo
 		for(int g = 0; g<geracoes; g++){
+			if(g%10 == 0)
+				System.out.print(g + " ");
+			//Seleção das melhores soluções
 			encontrarSolucoesNaoDominadas(populacao, pareto);
-			ArrayList<Solucao> melhores = obterMelhoresAnticorpos(pareto, 0.05);
+			ArrayList<Solucao> melhores = obterMelhoresAnticorpos(pareto, populacao, 0.05);
+			//Adiciona as melhores soluções do problema no grid da populacao secundaria
 			for (Iterator<Solucao> iterator = melhores.iterator(); iterator.hasNext();) {
 				Solucao solucao = (Solucao) iterator.next();
 				solucao.aceita = populacaoSecundaria.add(solucao);
 			}
+			//Obtém
 			clones = populacaoSecundaria.getAll();
 			clonarMelhoresAnticorpos(clones);
 			
-			//rankearSolucoes(clones);
-			//ComparetorRank  comp = new ComparetorRank();
-			//Collections.sort(solucoes, comp);
 			mutacao(clones);
 			populacao.addAll(clones);
-			FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S, pareto.modificar);
+			FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S);
 			encontrarSolucoesNaoDominadas(populacao, paretoTemp);
 			reduzirPopulacao(populacao, paretoTemp);
 		}
 		
 		
 		
-		return null;
+		return populacao;
 	}
 	
 	/**
@@ -82,39 +102,44 @@ public class MISA extends AlgoritmoAprendizado {
 		populacaoSecundaria = new AdaptiveGrid(problema.m, partesGrid);
 	}
 	
-	/**
-	 * Método que busca as soluções não dominadas da população atual
-	 * @return Soluções não dominadas da população
-	 */
-	public void encontrarSolucoesNaoDominadas(ArrayList<Solucao> solucoes, FronteiraPareto pareto){
-		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
-			Solucao solucao =  iter.next();
-			pareto.add(solucao);
-		}
-	}
+
 	
 	public void reduzirPopulacao(ArrayList<Solucao> populacaoFinal, FronteiraPareto paretoTemp){
 		if(paretoTemp.fronteira.size()<tamanhoPopulacao){
-			ArrayList<Solucao> temp = obterMelhoresAnticorpos(paretoTemp, 1.0);
+			ArrayList<Solucao> temp = obterMelhoresAnticorpos(paretoTemp, populacaoFinal, 1.0);
 			populacaoFinal.clear();
 			populacaoFinal.addAll(temp);
 		}
 		else{
 			ArrayList<Solucao> solucoesFinais = paretoTemp.fronteira;
-			rankearSolucoes(solucoesFinais);
-			ComparetorRank  comp = new ComparetorRank();
-			Collections.sort(solucoesFinais, comp);
+			
+			if(rank){
+				averageRank(solucoesFinais);
+				ComparetorRank comp = new ComparetorRank();
+				Collections.sort(solucoesFinais, comp);
+			}else{
+				ComparetorDominacao comp = new ComparetorDominacao();
+				Collections.sort(solucoesFinais, comp);
+			}
+			
 			populacaoFinal.clear();
 			for(int i = 0; i<tamanhoPopulacao; i++)
 				populacaoFinal.add(solucoesFinais.get(i));	
 		}
 	}
 	
-	public ArrayList<Solucao> obterMelhoresAnticorpos(FronteiraPareto paretoAtual, double tamanhoMelhores){
+	/**
+	 * Método que obtém as melhores soluções. Caso o número de soluções seja menor que o valor porcentagemaMinima passado como parametro,
+	 * as melhores dominadas soluções são adicionadas nas melhores.
+	 * @param paretoAtual Soluçoes não dominadas
+	 * @param porcentagemaMinima Porcentagem mínima de soluções que devem ser retornadas
+	 * @return
+	 */
+	public ArrayList<Solucao> obterMelhoresAnticorpos(FronteiraPareto paretoAtual, ArrayList<Solucao> populacao,  double porcentagemaMinima){
 		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
 		melhores.addAll(paretoAtual.fronteira);
-		int maxMelhores = (int)(tamanhoMelhores*tamanhoPopulacao);
-		//Caso o número das melhore soluções seja menor q 5% da população deve-se preencher os array das melhores soluções
+		int maxMelhores = (int)(porcentagemaMinima*tamanhoPopulacao);
+		//Caso o número das melhores soluções seja menor que a porcentamge tamanhoMelhores da população deve-se preencher os array das melhores soluções
 		if(melhores.size()< maxMelhores){
 			ArrayList<Solucao> dominadas = new ArrayList<Solucao>();
 			for (Iterator<Solucao> iterator = populacao.iterator(); iterator.hasNext();) {
@@ -124,6 +149,7 @@ public class MISA extends AlgoritmoAprendizado {
 				}
 			}
 			
+			//Ordena as soluções de acordo com o número de dominacao de cada solucao
 			ComparetorDominacao comp = new ComparetorDominacao();
 			Collections.sort(dominadas, comp);
 			int resto = maxMelhores - melhores.size();
@@ -256,12 +282,11 @@ public class MISA extends AlgoritmoAprendizado {
 		int g = 50;
 		int t = 100;
 		
-		MISA misa = new MISA(n, prob, g, t, 0.25, false);
+		MISA misa = new MISA(n, prob, g, t, 0.25, 7, 25);
 		
-		ArrayList<Solucao> fronteira =  misa.executar();
+		misa.executar();
 		
-		Avaliacao aval = new Avaliacao(fronteira, m);
-		aval.avaliar();
+		
 	}
 	
 

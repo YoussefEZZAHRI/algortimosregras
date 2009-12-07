@@ -8,7 +8,7 @@ import solucao.Solucao;
 public abstract class Problema {
 	
 	public int m;
-	
+	public int avaliacoes;
 	
 	
 	public abstract double[] calcularObjetivos(Solucao solucao);

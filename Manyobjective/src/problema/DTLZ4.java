@@ -97,7 +97,7 @@ public class DTLZ4 extends Problema {
 	public static void main(String[] args) {
 		
 		int m = 2;
-		FronteiraPareto pareto = new FronteiraPareto(0.25,false);
+		FronteiraPareto pareto = new FronteiraPareto(0.25);
 		
 		DTLZ4 dtlz2 = new DTLZ4(m);
 		for(int i = 0; i<2; i++){

@@ -25,10 +25,9 @@ public class SMOPSO extends MOPSO{
 	
 	public int tamanhoRepositorio;
 	
-	public boolean rank = true;
 		
-	public SMOPSO(int n, Problema prob, int g, int t, double s, boolean mod, boolean r){
-		super(n,prob,g,t,s,mod);
+	public SMOPSO(int n, Problema prob, int g, int t, double s, boolean r){
+		super(n,prob,g,t,s);
 		tamanhoRepositorio = tamanhoPopulacao;
 		rank = r;
 	}
@@ -79,8 +78,7 @@ public class SMOPSO extends MOPSO{
 			atualizarRepositorio();
 			
 			if(rank)
-				rankearSolucoes(pareto.fronteira);
-			
+				averageRank(pareto.fronteira);			
 			calcularCrowdingDistance(pareto.fronteira);
 			
 			Avaliacao aval = new Avaliacao(pareto.fronteira, problema.m);
@@ -139,7 +137,7 @@ public class SMOPSO extends MOPSO{
 		int g = 250;
 		int t = 100;
 		for(int i = 0; i<5; i++){
-			SMOPSO nuvem = new SMOPSO(n, prob, g, t, 0.25, false, true);
+			SMOPSO nuvem = new SMOPSO(n, prob, g, t, 0.25, true);
 			ArrayList<Solucao> fronteira = nuvem.executar();
 			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
 				Solucao solucao = (Solucao) iterator.next();

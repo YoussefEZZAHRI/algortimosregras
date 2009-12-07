@@ -21,14 +21,12 @@ public class FronteiraPareto {
 	public ArrayList<Particula> fronteiraNuvem = null;
 	
 	public double S;
+
 	
-	public boolean modificar = false;
-	
-	public FronteiraPareto(double s, boolean mod){
+	public FronteiraPareto(double s){
 		fronteira = new ArrayList<Solucao>();
 		fronteiraNuvem = new ArrayList<Particula>();
 		S = s;
-		modificar = mod;
 	}
 	
 	public void setFronteira(ArrayList<Solucao> temp){
@@ -75,26 +73,23 @@ public class FronteiraPareto {
 		ArrayList<Solucao> cloneFronteira = (ArrayList<Solucao>)fronteira.clone();
 		
 		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
-		if(modificar){
-			double r = r(solucao.objetivos);
-			for (int i = 0; i < solucao.objetivos.length; i++) {
-				novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
-			}}
-		else
-			novosObjetivosSolucao = solucao.objetivos;
+
+		double r = r(solucao.objetivos);
+		for (int i = 0; i < solucao.objetivos.length; i++) {
+			novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
+		}
 		
-		for (Iterator iter = cloneFronteira.iterator(); iter.hasNext();) {
+		
+		for (Iterator<Solucao> iter = cloneFronteira.iterator(); iter.hasNext();) {
 			Solucao temp = (Solucao) iter.next();
 			
 			double[] novosObjetivosTemp = new double[temp.objetivos.length];
-			if(modificar){
-				double r = r(temp.objetivos);
-				for (int i = 0; i < temp.objetivos.length; i++) {
-					novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.objetivos[i], r, S);
-				}
+		
+			r = r(temp.objetivos);
+			for (int i = 0; i < temp.objetivos.length; i++) {
+				novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.objetivos[i], r, S);
 			}
-			else
-				novosObjetivosTemp = temp.objetivos;
+		
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
 			if(comp == -1)
@@ -126,27 +121,23 @@ public class FronteiraPareto {
 		
 		Solucao solucao = particula.solucao;
 		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
-		if(modificar){
-			double r = r(solucao.objetivos);
-			for (int i = 0; i < solucao.objetivos.length; i++) {
-				novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
-			}}
-		else
-			novosObjetivosSolucao = solucao.objetivos;
 		
-		for (Iterator iter = cloneFronteira.iterator(); iter.hasNext();) {
+		double r = r(solucao.objetivos);
+		for (int i = 0; i < solucao.objetivos.length; i++) {
+			novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
+		}
+			
+		
+		for (Iterator<Particula> iter = cloneFronteira.iterator(); iter.hasNext();) {
 			Particula temp = (Particula) iter.next();
 			
 			double[] novosObjetivosTemp = new double[temp.solucao.objetivos.length];
-			if(modificar){
-				double r = r(temp.solucao.objetivos);
-				for (int i = 0; i < temp.solucao.objetivos.length; i++) {
-					novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.solucao.objetivos[i], r, S);
-				}
+			r = r(temp.solucao.objetivos);
+			for (int i = 0; i < temp.solucao.objetivos.length; i++) {
+				novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.solucao.objetivos[i], r, S);
 			}
-			else
-				novosObjetivosTemp = temp.solucao.objetivos;
-			
+
+
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
 			if(comp == -1){
 				particula.solucao.numDominacao++;
@@ -202,7 +193,7 @@ public class FronteiraPareto {
 	
 	public void retornarFronteiraNuvem(){
 		fronteira.clear();
-		for (Iterator iterator = fronteiraNuvem.iterator(); iterator.hasNext();) {
+		for (Iterator<Particula> iterator = fronteiraNuvem.iterator(); iterator.hasNext();) {
 			Particula particula = (Particula) iterator.next();
 			fronteira.add(particula.solucao);
 			
@@ -294,30 +285,26 @@ public class FronteiraPareto {
 		int comp;
 	
 		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
-		if(modificar){
-			double r = r(solucao.objetivos);
-			for (int i = 0; i < solucao.objetivos.length; i++) {
-				novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
-			}}
-		else
-			novosObjetivosSolucao = solucao.objetivos;
+		
+		double r = r(solucao.objetivos);
+		for (int i = 0; i < solucao.objetivos.length; i++) {
+			novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
+		}
 		
 		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
 			Solucao temp = (Solucao) iter.next();
 			
 			double[] novosObjetivosTemp = new double[temp.objetivos.length];
-			if(modificar){
-				double r = r(temp.objetivos);
-				for (int i = 0; i < temp.objetivos.length; i++) {
-					novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.objetivos[i], r, S);
-				}
+
+			r = r(temp.objetivos);
+			for (int i = 0; i < temp.objetivos.length; i++) {
+				novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.objetivos[i], r, S);
 			}
-			else
-				novosObjetivosTemp = temp.objetivos;
+
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
 			if(comp == -1)
-				numDominacao ++;
+				numDominacao++;
 		}
 		
 		return numDominacao;
