@@ -71,19 +71,20 @@ public class MISA extends AlgoritmoAprendizado {
 				Solucao solucao = (Solucao) iterator.next();
 				solucao.aceita = populacaoSecundaria.add(solucao);
 			}
-			//Obtém
+			//Obtém as soluções presentes no grid
 			clones = populacaoSecundaria.getAll();
-			clonarMelhoresAnticorpos(clones);
-			
+			//Colna os melhores anticorpos
+			clonarMelhoresAnticorpos(clones);	
+			//Aplica uma mutação em todos os clones
 			mutacao(clones);
+			//Adiciona todos os clones na população atual
 			populacao.addAll(clones);
+			//Obtém os novos líderes da população
 			FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S);
 			encontrarSolucoesNaoDominadas(populacao, paretoTemp);
+			//Reduz a população com o tamanho passado como parametro
 			reduzirPopulacao(populacao, paretoTemp);
 		}
-		
-		
-		
 		return populacao;
 	}
 	
@@ -103,8 +104,15 @@ public class MISA extends AlgoritmoAprendizado {
 	}
 	
 
-	
+	/**
+	 * Método que reduz a população para o tamanho máximo passado como parametro
+	 * @param populacaoFinal População final da iteração
+	 * @param paretoTemp Conjunto das melhore soluçõs encontradas até então
+	 */
 	public void reduzirPopulacao(ArrayList<Solucao> populacaoFinal, FronteiraPareto paretoTemp){
+		//Se o número das melhores soluções é menor que o tamanho máximo, todas as soluções são adicionadas na população final 
+		//e as melhores soluções (domindas por menos soluções) dominadas da população
+		//Caso contrário somente as melhore soluções são adicionadas na população final
 		if(paretoTemp.fronteira.size()<tamanhoPopulacao){
 			ArrayList<Solucao> temp = obterMelhoresAnticorpos(paretoTemp, populacaoFinal, 1.0);
 			populacaoFinal.clear();
@@ -112,8 +120,9 @@ public class MISA extends AlgoritmoAprendizado {
 		}
 		else{
 			ArrayList<Solucao> solucoesFinais = paretoTemp.fronteira;
-			
+			//Verifica se o método AR será executado ou as soluções serão 
 			if(rank){
+				//
 				averageRank(solucoesFinais);
 				ComparetorRank comp = new ComparetorRank();
 				Collections.sort(solucoesFinais, comp);
@@ -159,7 +168,12 @@ public class MISA extends AlgoritmoAprendizado {
 		return melhores;
 	}
 	
+	/**
+	 * Clona as melhores soluções da iteração
+	 * @param clones Melhores solucoes da iteração
+	 */
 	public void clonarMelhoresAnticorpos(ArrayList<Solucao> clones){
+		//Calcula o numero estimado de clones para cada elemento a ser colnado
 		int numEstimadoClones = (taxaClonagem*populacao.size())/populacaoSecundaria.size();
 		clones = new ArrayList<Solucao>();
 		if(populacaoSecundaria.isFull())
@@ -169,6 +183,11 @@ public class MISA extends AlgoritmoAprendizado {
 		
 	}
 	
+	/**
+	 * Clona as melhores soluções caso a população secundária esteja cheia
+	 * @param numBase Número estimado de clones para cada solução
+	 * @param melhores Soluções que serão clonadas
+	 */
 	public void clonarFull(int numBase, ArrayList<Solucao> melhores){
 		for (Iterator<Solucao> iterator = melhores.iterator(); iterator.hasNext();) {
 			Solucao solucao = (Solucao) iterator.next();
@@ -176,6 +195,7 @@ public class MISA extends AlgoritmoAprendizado {
 			if(!solucao.aceita)
 				fator = 0;
 			else{
+				//Calcula quanto cada elemento vai ser clonado de acordo com a ocupação da célula em que o elemento pertence no grid
 				double mediaOcupacao = populacaoSecundaria.obterMediaOcupacao();
 				Integer celula = populacaoSecundaria.contains(solucao);				
 				int crowdCelula = populacaoSecundaria.obterLotacao(celula, solucao);
@@ -193,6 +213,11 @@ public class MISA extends AlgoritmoAprendizado {
 		
 	}
 	
+	/**
+	 * Clona as melhores soluções caso a população secundária não esteja cheia
+	 * @param numBase Número estimado de clones para cada solução
+	 * @param melhores Soluções que serão clonadas
+	 */
 	public void clonarNotFull(int numBase, ArrayList<Solucao> melhores){
 		double[][] distancias = new double[melhores.size()][melhores.size()];
 		double[] mediasIndividuais = new double[melhores.size()];
@@ -254,20 +279,14 @@ public class MISA extends AlgoritmoAprendizado {
 		}
 	}
 	
+	/**
+	 * Aplica uma mutação polinomial com probabilidade de 1/L em todos os clones
+	 * @param solucoes
+	 */
 	public void mutacao(ArrayList<Solucao> solucoes){
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			Solucao solucao = (Solucao) iterator.next();
-			int numAtt = (int)(Math.random()*100) % n;
-			for(int i = 0; i<numAtt; i++){
-				int att = (int)(Math.random()*100) % n;
-				double val = solucao.variaveis[att];
-				double inc = (Math.random()/10) % val;
-				double probFator = Math.random();
-				double fator = 1;
-				if(probFator<0.5)
-					fator = -1;
-				solucao.variaveis[att] = val+(fator*inc);
-			}
+			mutacaoPolinomial(PROB_MUT_COD, solucao.variaveis);
 			problema.calcularObjetivos(solucao);			
 		}
 	}
