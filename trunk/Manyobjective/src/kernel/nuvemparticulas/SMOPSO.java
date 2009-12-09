@@ -25,11 +25,14 @@ public class SMOPSO extends MOPSO{
 	
 	public int tamanhoRepositorio;
 	
+	
+	
 		
 	public SMOPSO(int n, Problema prob, int g, int t, double s, boolean r){
 		super(n,prob,g,t,s);
 		tamanhoRepositorio = tamanhoPopulacao;
 		rank = r;
+		
 	}
 		
 	/**

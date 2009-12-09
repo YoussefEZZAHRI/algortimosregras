@@ -18,8 +18,9 @@ public class Solucao {
 	
 	public double[] objetivos;
 	
-	//Variável que guarda por qts soluções a solução é dominada
+	//Conta por qts soluções a solução é dominada
 	public double numDominacao;
+	
 	//Variável que marca se a solução foi aceita na inserção da população secundária do MISA
 	public boolean aceita;
 		
