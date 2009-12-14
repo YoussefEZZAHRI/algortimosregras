@@ -34,6 +34,9 @@ public class MISA extends AlgoritmoAprendizado {
 	public int taxaClonagem = 1;
 	//Numero de divisoes do grid da populacaos secundaria
 	public final int partesGrid;
+	//Probabilidade da mutacao nao uniforme
+	public double non_uniform_prob;
+	public double decremento;
 	
 	/**
 	 * 
@@ -51,6 +54,12 @@ public class MISA extends AlgoritmoAprendizado {
 		taxaClonagem = tc;
 		totalClonagem = taxaClonagem * tamanhoPopulacao;
 		partesGrid = pg;
+		
+		//Probabilidade inicial da mutacao não uniforme
+		non_uniform_prob = 0.6;
+		//Decremento da mutação não uniforme, variando do incial até 1/n
+		double diff = non_uniform_prob - PROB_MUT_COD;
+		decremento = diff/(double) t;
 	}
 	
 	@Override
@@ -76,7 +85,9 @@ public class MISA extends AlgoritmoAprendizado {
 			//Colna os melhores anticorpos
 			clonarMelhoresAnticorpos(clones);	
 			//Aplica uma mutação em todos os clones
-			mutacao(clones);
+			mutacao(clones, PROB_MUT_COD);
+			//Aplica uma mutação não uniform nos clones dominados
+			//mutacaoSolucoesNaoTaoBoas(clones);			
 			//Adiciona todos os clones na população atual
 			populacao.addAll(clones);
 			//Obtém os novos líderes da população
@@ -280,15 +291,34 @@ public class MISA extends AlgoritmoAprendizado {
 	}
 	
 	/**
-	 * Aplica uma mutação polinomial com probabilidade de 1/L em todos os clones
+	 * Aplica uma mutação polinomial com probabilidade prob em todos os clones
 	 * @param solucoes
 	 */
-	public void mutacao(ArrayList<Solucao> solucoes){
+	public void mutacao(ArrayList<Solucao> solucoes, double prob){
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			Solucao solucao = (Solucao) iterator.next();
-			mutacaoPolinomial(PROB_MUT_COD, solucao.variaveis);
+			mutacaoPolinomial(prob, solucao.variaveis);
 			problema.calcularObjetivos(solucao);			
 		}
+	}
+	
+	public void mutacaoSolucoesNaoTaoBoas(ArrayList<Solucao> clones){
+		
+		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S);
+		encontrarSolucoesNaoDominadas(clones, clonesNaoDominados);
+		ArrayList<Solucao> melhores = clonesNaoDominados.getFronteira();
+		
+		ArrayList<Solucao> dominadas = new ArrayList<Solucao>();
+		for (Iterator<Solucao> iterator = clones.iterator(); iterator.hasNext();) {
+			Solucao solucao = (Solucao) iterator.next();
+			if(!melhores.contains(solucao)){
+				dominadas.add(solucao);
+			}
+		}
+		
+		mutacao(dominadas, non_uniform_prob);
+		non_uniform_prob -= decremento;
+		
 	}
 	
 
