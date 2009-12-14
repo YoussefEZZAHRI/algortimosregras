@@ -66,10 +66,12 @@ public class Principal {
 	
 	public double limitesHiper[];
 	public String[] maxmimObjetivos;
+	public int maxobjhiper;
 	
 	public int taxaclonagem;
 	public int partesgrid;
 	
+	 
 	public static void main(String[] args) {	
 		Principal principal = new Principal();
 		try{			
@@ -242,14 +244,14 @@ public class Principal {
 		
 		Hipervolume hiper = new Hipervolume(m, caminhoDir, id+S, limitesHiper);
 		hiper.preencherObjetivosMaxMin(maxmimObjetivos);
-		if(m<5)
+		if(m<=maxobjhiper)
 			hiper.calcularIndicadorArray(fronteiras);
 		
 		Spread spread = new Spread(m, caminhoDir, id+S);
 		spread.preencherObjetivosMaxMin(maxmimObjetivos);
 		spread.calcularIndicadorArray(fronteiras);
 	
-		ArrayList<Solucao> fronteira =  problema.obterFronteira(n, populacao);
+		/*ArrayList<Solucao> fronteira =  problema.obterFronteira(n, populacao);
 		ArrayList<PontoFronteira> pftrue= new ArrayList<PontoFronteira>();
 		
 		for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
@@ -260,7 +262,7 @@ public class Principal {
 				
 		GD gd = new GD(m, caminhoDir, id+S, pftrue);
 		gd.preencherObjetivosMaxMin(maxmimObjetivos);
-		gd.calcularIndicadorArray(fronteiras);
+		gd.calcularIndicadorArray(fronteiras);*/
 	}
 	
 	public void gerarSaida(ArrayList<Solucao> fronteira, PrintStream solGeral, PrintStream psFronteiraGeral, PrintStream solExecucao, PrintStream psFronteiraExec){
@@ -323,6 +325,9 @@ public class Principal {
 				n = new Integer(valor).intValue();
 			if(tag.equals("taxaclonagem"))
 				taxaclonagem = new Integer(valor).intValue();
+			
+			if(tag.equals("maxobjhiper"))
+				maxobjhiper = new Integer(valor).intValue();
 			
 			
 			if(tag.equals("problema")){
