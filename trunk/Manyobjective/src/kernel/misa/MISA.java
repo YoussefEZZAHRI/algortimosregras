@@ -68,6 +68,10 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		//Inicio aleatório da população
 		iniciarPopulacao();
+		
+		problema.avaliacoes = 0;
+		
+		
 		//Laço evolutivo
 		for(int g = 0; g<geracoes; g++){
 			if(g%10 == 0)
@@ -82,6 +86,7 @@ public class MISA extends AlgoritmoAprendizado {
 			}
 			//Obtém as soluções presentes no grid
 			clones = populacaoSecundaria.getAll();
+			
 			//Colna os melhores anticorpos
 			clonarMelhoresAnticorpos(clones);	
 			//Aplica uma mutação em todos os clones
@@ -94,10 +99,18 @@ public class MISA extends AlgoritmoAprendizado {
 			FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S);
 			encontrarSolucoesNaoDominadas(populacao, paretoTemp);
 			//Reduz a população com o tamanho passado como parametro
-			reduzirPopulacao(populacao, paretoTemp);
+			reduzirPopulacao(populacao, paretoTemp);	
 		}
 		return populacao;
 	}
+	
+	/*for (Iterator iterator = clones.iterator(); iterator.hasNext();) {
+		Solucao solucao = (Solucao) iterator.next();
+		for (int i = 0; i < solucao.variaveis.length; i++) {
+			if(solucao.variaveis[i]<0)
+				System.out.println();
+		}	
+	}*/
 	
 	/**
 	 * Método que inicia a população aleatoriamente e inicia a população secundária como vazia
@@ -131,16 +144,11 @@ public class MISA extends AlgoritmoAprendizado {
 		}
 		else{
 			ArrayList<Solucao> solucoesFinais = paretoTemp.fronteira;
-			//Verifica se o método AR será executado ou as soluções serão 
-			if(rank){
-				//
-				averageRank(solucoesFinais);
-				ComparetorRank comp = new ComparetorRank();
-				Collections.sort(solucoesFinais, comp);
-			}else{
-				ComparetorDominacao comp = new ComparetorDominacao();
-				Collections.sort(solucoesFinais, comp);
-			}
+			//Escolhe as melhores soluções atraves do metodo AR 
+			averageRank(solucoesFinais);
+			ComparetorRank comp = new ComparetorRank();
+			Collections.sort(solucoesFinais, comp);
+			
 			
 			populacaoFinal.clear();
 			for(int i = 0; i<tamanhoPopulacao; i++)
@@ -297,8 +305,10 @@ public class MISA extends AlgoritmoAprendizado {
 	public void mutacao(ArrayList<Solucao> solucoes, double prob){
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			Solucao solucao = (Solucao) iterator.next();
+
 			mutacaoPolinomial(prob, solucao.variaveis);
-			problema.calcularObjetivos(solucao);			
+			problema.calcularObjetivos(solucao);		
+
 		}
 	}
 	
