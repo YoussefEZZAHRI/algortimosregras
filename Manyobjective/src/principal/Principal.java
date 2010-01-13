@@ -230,6 +230,9 @@ public class Principal {
 			psSolucaoGeral.println();
 			psFronteiraGeral.println();
 			System.out.println();
+			
+			System.out.println();
+			System.out.println("Numero de avaliacoes: " + problema.avaliacoes);
 		}
 		
 		
@@ -238,9 +241,7 @@ public class Principal {
 			System.out.print(maioresObjetivos[j] + "\t");
 			
 		}
-		
 		System.out.println();
-		System.out.println("Numero de avaliacoes: " + problema.avaliacoes);
 		
 		Hipervolume hiper = new Hipervolume(m, caminhoDir, id+S, limitesHiper);
 		hiper.preencherObjetivosMaxMin(maxmimObjetivos);

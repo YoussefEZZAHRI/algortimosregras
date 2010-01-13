@@ -95,7 +95,7 @@ public abstract class AlgoritmoAprendizado {
 				
 			} else
 				delta = 0;
-			vetor1[i] = pos + delta*MAX_MUT; 
+			vetor1[i] = Math.max(0,pos + delta*MAX_MUT); 
 		}
 	}
 	
