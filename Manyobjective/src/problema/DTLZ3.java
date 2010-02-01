@@ -55,7 +55,7 @@ public class DTLZ3 extends Problema {
 			//System.out.println();
 			solucao.objetivos[i] = fxi;
 		}
-		
+		avaliacoes++;
 		return solucao.objetivos;
 	}
 	

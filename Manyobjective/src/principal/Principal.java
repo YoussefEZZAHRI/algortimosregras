@@ -52,6 +52,9 @@ public class Principal {
 	public int m;
 	public int n;
 	
+	public int numeroavaliacoes=-1;
+	
+	
 	public double S;
 	
 	public boolean rank;
@@ -84,14 +87,17 @@ public class Principal {
 					principal.executarIndicador();
 				else{
 					if(principal.alg.equals("sigma"))
-						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S);
+						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S);
 					if(principal.alg.equals("smopso"))
-						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S, principal.rank);
+						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.rank);
 					if(principal.alg.equals("misa"))
-						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid);
+						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid);
 					if(principal.alg.equals("nsga2"))
-						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.populacao, principal.S);
+						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S);
+					
+					
 					principal.executar();
+				
 				}
 			  }
 			} catch (Exception ex) {ex.printStackTrace();}
@@ -201,7 +207,13 @@ public class Principal {
 			PrintStream psFronteiraExec = new PrintStream(caminhoDirExec+id+"_fronteira.txt");
 			
 			psTempo.print(i +":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
-			ArrayList<Solucao> solucoes =  algoritmo.executar();
+			
+			ArrayList<Solucao> solucoes = null;
+			if(numeroavaliacoes==-1)
+				solucoes =  algoritmo.executar();
+			else
+				solucoes =  algoritmo.executarAvaliacoes();
+			
 			psTempo.print(Calendar.getInstance().getTimeInMillis()  + "\n");
 			
 			for (int j = 0; j < maioresObjetivos.length; j++) {
@@ -229,19 +241,21 @@ public class Principal {
 			gerarSaida(solucoes, psSolucaoGeral,  psFronteiraGeral, psSolucaoExec, psFronteiraExec);
 			psSolucaoGeral.println();
 			psFronteiraGeral.println();
-			System.out.println();
-			
+		
 			System.out.println();
 			System.out.println("Numero de avaliacoes: " + problema.avaliacoes);
-		}
-		
-		
-		System.out.print("\n" + "Piores Objetivos: ");
-		for (int j = 0; j < maioresObjetivos.length; j++) {
-			System.out.print(maioresObjetivos[j] + "\t");
+			
+			System.out.println("Piores Objetivos: ");
+			for (int j = 0; j < maioresObjetivos.length; j++) {
+				System.out.print(maioresObjetivos[j] + "\t");
+				
+			}
+			System.out.println("\n");
 			
 		}
-		System.out.println();
+		
+		
+		
 		
 		Hipervolume hiper = new Hipervolume(m, caminhoDir, id+S, limitesHiper);
 		hiper.preencherObjetivosMaxMin(maxmimObjetivos);
@@ -330,6 +344,9 @@ public class Principal {
 			if(tag.equals("maxobjhiper"))
 				maxobjhiper = new Integer(valor).intValue();
 			
+			if(tag.equals("numeroavaliacoes"))
+				numeroavaliacoes = new Integer(valor).intValue();
+			
 			
 			if(tag.equals("problema")){
 				prob = valor;
@@ -395,6 +412,7 @@ public class Principal {
 		buff.append("m: " + m + "\n");
 		buff.append("n: " + n + "\n");
 		buff.append("Geracoes: " + geracoes + "\n");
+		buff.append("Avaliacoes: " + numeroavaliacoes + "\n");
 		buff.append("Populacao: " + populacao + "\n");
 		buff.append("S: " + S + "\n");
 		return buff.toString();

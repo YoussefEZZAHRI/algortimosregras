@@ -316,7 +316,7 @@ public class Particula {
 	 * Método que cálcula a nova velocidade da particula
 	 * @param iter Número da iteração da execução do algoritmo
 	 */
-	public void calcularNovaVelocidade(int iter){
+	public void calcularNovaVelocidade(){
 		//omega*velocidade
 		double[] parte1 = multiplicacao(getOmega(),velocidade);
 		//phi1*(localBest - posicao);

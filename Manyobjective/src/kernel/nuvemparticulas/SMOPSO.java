@@ -28,8 +28,8 @@ public class SMOPSO extends MOPSO{
 	
 	
 		
-	public SMOPSO(int n, Problema prob, int g, int t, double s, boolean r){
-		super(n,prob,g,t,s);
+	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, boolean r){
+		super(n,prob,g,a,t,s);
 		tamanhoRepositorio = tamanhoPopulacao;
 		rank = r;
 		
@@ -59,46 +59,7 @@ public class SMOPSO extends MOPSO{
 		for(int i = 0; i<geracoes; i++){
 			if(i%10 == 0)
 				System.out.print(i + " ");
-			//Itera sobre todas as partículas da população
- 			for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
-				Particula particula = (Particula) iter.next();
-				//Calcula a nova velocidade
-				particula.calcularNovaVelocidadeConstriction();
-				//Calcula a nova posição
-				particula.calcularNovaPosicao();
-				if(particula.mutacao){
-					mutacaoPolinomial(PROB_MUT_COD,particula.posicao);
-					particula.mutacao = false;
-				}
-				
-				particula.truncar();
-				//Avalia a partícula
-				problema.calcularObjetivos(particula.solucao);
-				//Define o melhor local
-				particula.escolherLocalBest();
-			}
- 			//Obtém as melhores particulas da população
-			atualizarRepositorio();
-			
-			if(rank)
-				averageRank(pareto.fronteira);			
-			calcularCrowdingDistance(pareto.fronteira);
-			
-			Avaliacao aval = new Avaliacao(pareto.fronteira, problema.m);
-			double[] medidas = aval.avaliar();
-			
-			//if(i %10 == 0)
-			//	psMedidas.println(i + "\t" + new Double(medidas[0]).toString().replace('.', ',') + "\t" + new Double(medidas[1]).toString().replace('.', ',') + "\t" + new Double(medidas[2]).toString().replace('.', ',') + "\t" + new Double(medidas[3]).toString().replace('.', ','));
-			
-			//pareto.podarLideresCrowd(tamanhoRepositorio);
-			pareto.podarLideresCrowdOperatorParticula(tamanhoRepositorio);
-			//Recalcula a Crowding distance dos lideres
-			calcularCrowdingDistance(pareto.fronteira);
-			
-			//Escolhe os novos melhores globais
-			escolherLideres();
-			
-			escolherParticulasMutacao();
+			lacoEvolutivo();
 		}
 		
 		
@@ -106,6 +67,81 @@ public class SMOPSO extends MOPSO{
 		}catch(IOException ex){ex.printStackTrace();}
 		return pareto.getFronteira();
 		
+	}
+	
+	public ArrayList<Solucao> executarAvaliacoes(){
+		
+		String arquivoSaida = "medidas.txt";
+	
+		
+		try{
+		PrintStream psMedidas = new PrintStream(arquivoSaida);
+		
+		//Apaga todas as listas antes do inicio da execução
+		reiniciarExecucao();
+		//Inicia a populçao
+		inicializarPopulacao();
+		//Obtém as melhores partículas da população
+		atualizarRepositorio();		
+		//Obtém os melhores globais para todas as partículas da população
+		escolherLideres();
+		
+		escolherParticulasMutacao();
+		//Inícia o laço evolutivo
+		while(problema.avaliacoes < numeroavalicoes){
+			if(problema.avaliacoes%1000 == 0)
+				System.out.print(problema.avaliacoes + " - " + numeroavalicoes + " ");
+			lacoEvolutivo();
+		}
+		
+		
+		pareto.retornarFronteiraNuvem();
+		}catch(IOException ex){ex.printStackTrace();}
+		return pareto.getFronteira();
+		
+	}
+
+	private void lacoEvolutivo() {
+		//Itera sobre todas as partículas da população
+		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
+			Particula particula = (Particula) iter.next();
+			//Calcula a nova velocidade
+			particula.calcularNovaVelocidadeConstriction();
+			//Calcula a nova posição
+			particula.calcularNovaPosicao();
+			if(particula.mutacao){
+				mutacaoPolinomial(PROB_MUT_COD,particula.posicao);
+				particula.mutacao = false;
+			}
+			
+			particula.truncar();
+			//Avalia a partícula
+			problema.calcularObjetivos(particula.solucao);
+			//Define o melhor local
+			particula.escolherLocalBest();
+		}
+		//Obtém as melhores particulas da população
+		atualizarRepositorio();
+		
+		if(rank)
+			averageRank(pareto.fronteira);			
+		calcularCrowdingDistance(pareto.fronteira);
+		
+		Avaliacao aval = new Avaliacao(pareto.fronteira, problema.m);
+		double[] medidas = aval.avaliar();
+		
+		//if(i %10 == 0)
+		//	psMedidas.println(i + "\t" + new Double(medidas[0]).toString().replace('.', ',') + "\t" + new Double(medidas[1]).toString().replace('.', ',') + "\t" + new Double(medidas[2]).toString().replace('.', ',') + "\t" + new Double(medidas[3]).toString().replace('.', ','));
+		
+		//pareto.podarLideresCrowd(tamanhoRepositorio);
+		pareto.podarLideresCrowdOperatorParticula(tamanhoRepositorio);
+		//Recalcula a Crowding distance dos lideres
+		calcularCrowdingDistance(pareto.fronteira);
+		
+		//Escolhe os novos melhores globais
+		escolherLideres();
+		
+		escolherParticulasMutacao();
 	}
 	
 	/**
@@ -139,8 +175,9 @@ public class SMOPSO extends MOPSO{
 		int n = 10;
 		int g = 250;
 		int t = 100;
+		int a = -1;
 		for(int i = 0; i<5; i++){
-			SMOPSO nuvem = new SMOPSO(n, prob, g, t, 0.25, true);
+			SMOPSO nuvem = new SMOPSO(n, prob, g, a, t, 0.25, true);
 			ArrayList<Solucao> fronteira = nuvem.executar();
 			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
 				Solucao solucao = (Solucao) iterator.next();

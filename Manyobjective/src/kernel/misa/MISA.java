@@ -48,8 +48,8 @@ public class MISA extends AlgoritmoAprendizado {
 	 * @param tc Taxa de clonagem
 	 * * @param pg Número de partes da divisão do grid da população secundária
 	 */
-	public MISA(int n, Problema prob, int g, int t, double s, int tc, int pg){
-		super(n,prob,g,t);
+	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg){
+		super(n,prob,g,a,t);
 		pareto = new FronteiraPareto(s);
 		taxaClonagem = tc;
 		totalClonagem = taxaClonagem * tamanhoPopulacao;
@@ -77,31 +77,54 @@ public class MISA extends AlgoritmoAprendizado {
 			if(g%10 == 0)
 				System.out.print(g + " ");
 			//Seleção das melhores soluções
-			encontrarSolucoesNaoDominadas(populacao, pareto);
-			ArrayList<Solucao> melhores = obterMelhoresAnticorpos(pareto, populacao, 0.05);
-			//Adiciona as melhores soluções do problema no grid da populacao secundaria
-			for (Iterator<Solucao> iterator = melhores.iterator(); iterator.hasNext();) {
-				Solucao solucao = (Solucao) iterator.next();
-				solucao.aceita = populacaoSecundaria.add(solucao);
-			}
-			//Obtém as soluções presentes no grid
-			clones = populacaoSecundaria.getAll();
-			
-			//Colna os melhores anticorpos
-			clonarMelhoresAnticorpos(clones);	
-			//Aplica uma mutação em todos os clones
-			mutacao(clones, PROB_MUT_COD);
-			//Aplica uma mutação não uniform nos clones dominados
-			//mutacaoSolucoesNaoTaoBoas(clones);			
-			//Adiciona todos os clones na população atual
-			populacao.addAll(clones);
-			//Obtém os novos líderes da população
-			FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S);
-			encontrarSolucoesNaoDominadas(populacao, paretoTemp);
-			//Reduz a população com o tamanho passado como parametro
-			reduzirPopulacao(populacao, paretoTemp);	
+			lacoEvolutivo();	
 		}
 		return populacao;
+	}
+	
+	public ArrayList<Solucao> executarAvaliacoes() {
+		
+		//Inicio aleatório da população
+		iniciarPopulacao();
+		
+		problema.avaliacoes = 0;
+		
+		
+		//Laço evolutivo
+		while(problema.avaliacoes<numeroavalicoes){
+			lacoEvolutivo();
+			System.out.println(problema.avaliacoes);
+		}
+		
+		
+	
+		return populacao;
+	}
+
+	private void lacoEvolutivo() {
+		encontrarSolucoesNaoDominadas(populacao, pareto);
+		ArrayList<Solucao> melhores = obterMelhoresAnticorpos(pareto, populacao, 0.05);
+		//Adiciona as melhores soluções do problema no grid da populacao secundaria
+		for (Iterator<Solucao> iterator = melhores.iterator(); iterator.hasNext();) {
+			Solucao solucao = (Solucao) iterator.next();
+			solucao.aceita = populacaoSecundaria.add(solucao);
+		}
+		//Obtém as soluções presentes no grid
+		clones = populacaoSecundaria.getAll();
+		
+		//Colna os melhores anticorpos
+		clonarMelhoresAnticorpos(clones);	
+		//Aplica uma mutação em todos os clones
+		mutacao(clones, PROB_MUT_COD);
+		//Aplica uma mutação não uniform nos clones dominados
+		//mutacaoSolucoesNaoTaoBoas(clones);			
+		//Adiciona todos os clones na população atual
+		populacao.addAll(clones);
+		//Obtém os novos líderes da população
+		FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S);
+		encontrarSolucoesNaoDominadas(populacao, paretoTemp);
+		//Reduz a população com o tamanho passado como parametro
+		reduzirPopulacao(populacao, paretoTemp);
 	}
 	
 	/*for (Iterator iterator = clones.iterator(); iterator.hasNext();) {
@@ -341,7 +364,9 @@ public class MISA extends AlgoritmoAprendizado {
 		int g = 50;
 		int t = 100;
 		
-		MISA misa = new MISA(n, prob, g, t, 0.25, 7, 25);
+		int a = -1;
+		
+		MISA misa = new MISA(n, prob, g, a,t, 0.25, 7, 25);
 		
 		misa.executar();
 		
