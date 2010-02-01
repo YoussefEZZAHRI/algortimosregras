@@ -29,8 +29,8 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	Problema problema = null;
 	
 	
-	public MOPSO(int n, Problema prob, int g, int t, double s){
-		super(n,prob,g ,t);
+	public MOPSO(int n, Problema prob, int g, int a, int t, double s){
+		super(n,prob,g, a,t);
 		populacao = new ArrayList<Particula>();
 		//repositorio = new ArrayList<Particula>();
 		pareto = new FronteiraPareto(s);
@@ -44,6 +44,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	public void reiniciarExecucao(){
 		populacao = new ArrayList<Particula>();
 		pareto = new FronteiraPareto(pareto.S);
+		problema.avaliacoes =0; 
 	}
 	
 	/**

@@ -57,6 +57,8 @@ public class PrepararArquivos {
 		PrintStream spreSaida = new PrintStream(dir + "resultados/" + metodo + problema + "_spread_" + objetivo + "_indicadores.txt");
 		PrintStream gdSaida = new PrintStream(dir + "resultados/" + metodo + problema + "_gd_" + objetivo + "_indicadores.txt");
 		
+		
+		
 		for(int j = 0; j<exec; j++){
 			for (int i = 0; i < algoritmos.length; i++) {
 			try{
@@ -66,11 +68,13 @@ public class PrepararArquivos {
 				gdSaida.print(gd[i][j].toString().replace(".", ",") + "\t");	
 			}catch(NullPointerException ex){ex.printStackTrace();}
 			}
-		}
+			
 			if(obj<4)
 				hypSaida.println();
 			spreSaida.println();
 			gdSaida.println();
+		}
+			
 		
 	}
 	
@@ -268,8 +272,8 @@ public void preparArquivosComandosFriedman(String dir, String dirR, String probl
 		String dir = "E:\\Andre\\evoCOP2010\\";
 		String dirR = "E:\\\\Andre\\\\evoCOP2010\\\\";
 		//String dir = "/media/disk/Andre/evoCOP2010/";
-		String objetivo = "4";
-		String problema  = "DTLZ4";
+		String objetivo = "7";
+		String problema  = "DTLZ2";
 		String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
 		String metodo = "sigma";
 		int exec = 50;

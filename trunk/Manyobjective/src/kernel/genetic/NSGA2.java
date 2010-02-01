@@ -14,6 +14,7 @@ import solucao.ComparetorRank;
 import solucao.Solucao;
 import sun.java2d.pipe.SolidTextRenderer;
 import kernel.AlgoritmoAprendizado;
+import kernel.Avaliacao;
 import kernel.misa.AdaptiveGrid;
 import kernel.nuvemparticulas.Particula;
 
@@ -27,8 +28,8 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	
 	
 	
-	public NSGA2(int n, Problema prob, int g, int t, double s){
-		super(n,prob,g,t);
+	public NSGA2(int n, Problema prob, int g, int a, int t, double s){
+		super(n,prob,g, a,t);
 		
 		pareto = new FronteiraPareto(s);
 		problema = prob;
@@ -50,24 +51,52 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		
 		for(int g = 0; g<geracoes; g++){
 			
-			populacaoCombinada.addAll(populacao);
-			populacaoCombinada.addAll(offspring);
-			atribuirRanking(populacaoCombinada);
-			//fastNonDominatedSort(populacaoCombinada);
-			calcularCrowdingDistance(populacaoCombinada);
-			Collections.sort(populacaoCombinada, compCrwd);
-			populacao.clear();
-			for(int i = 0; i<tamanhoPopulacao; i++){
-				Solucao solucao = populacaoCombinada.get(i);
-				solucao.truncar();
-				populacao.add(solucao);
-			}
-			calcularCrowdingDistance(populacao);
-			gerarOffsping(populacao, compCrwd);
-			populacaoCombinada.clear();
+			lacoEvolutivo(populacaoCombinada);
 		}
 		
 		return populacao;
+	}
+	
+	
+	public ArrayList<Solucao> executarAvaliacoes() {
+		
+		populacao = new ArrayList<Solucao>();
+		offspring = new ArrayList<Solucao>();
+		
+		iniciarPopulacao();
+		atribuirRanking(populacao);
+		
+		problema.avaliacoes = 0;
+		//fastNonDominatedSort(populacao);
+		
+		gerarOffsping(populacao, compRank);
+		ArrayList<Solucao> populacaoCombinada = new ArrayList<Solucao>();
+		
+		while(problema.avaliacoes < numeroavalicoes){
+			if(problema.avaliacoes%1000 == 0)
+				System.out.print(problema.avaliacoes + " - " + numeroavalicoes + " ");
+			lacoEvolutivo(populacaoCombinada);
+		}
+		
+		return populacao;
+	}
+
+	private void lacoEvolutivo(ArrayList<Solucao> populacaoCombinada) {
+		populacaoCombinada.addAll(populacao);
+		populacaoCombinada.addAll(offspring);
+		atribuirRanking(populacaoCombinada);
+		//fastNonDominatedSort(populacaoCombinada);
+		calcularCrowdingDistance(populacaoCombinada);
+		Collections.sort(populacaoCombinada, compCrwd);
+		populacao.clear();
+		for(int i = 0; i<tamanhoPopulacao; i++){
+			Solucao solucao = populacaoCombinada.get(i);
+			solucao.truncar();
+			populacao.add(solucao);
+		}
+		calcularCrowdingDistance(populacao);
+		gerarOffsping(populacao, compCrwd);
+		populacaoCombinada.clear();
 	}
 	
 	public void gerarOffsping(ArrayList<Solucao> solucoes, Comparator<Solucao> comp){
