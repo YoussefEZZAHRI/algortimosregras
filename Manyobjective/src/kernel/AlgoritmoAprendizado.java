@@ -24,6 +24,8 @@ public abstract class AlgoritmoAprendizado {
 	//Tamanho inicial da população
 	public int tamanhoPopulacao;
 	
+	public int numeroavalicoes;
+	
 	public FronteiraPareto pareto = null;
 	
 	public final double PROB_MUT_COD;
@@ -34,15 +36,19 @@ public abstract class AlgoritmoAprendizado {
 	public boolean rank = false;
 	
 	
-	public AlgoritmoAprendizado(int n, Problema p, int g, int t){
+	public AlgoritmoAprendizado(int n, Problema p, int g, int avaliacoes, int t){
 		this.n = n;
 		problema = p;
 		geracoes = g;
 		tamanhoPopulacao = t;
 		PROB_MUT_COD = 1.0/(double)n;
+		
+		numeroavalicoes = avaliacoes;
 	}
 	
 	public abstract ArrayList<Solucao> executar();
+	
+	public abstract ArrayList<Solucao> executarAvaliacoes();
 	
 	public double distanciaEuclidiana(double[] vetor1, double[] vetor2){
 		double soma = 0;
