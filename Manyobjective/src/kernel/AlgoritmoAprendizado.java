@@ -106,6 +106,30 @@ public abstract class AlgoritmoAprendizado {
 	}
 	
 	/**
+	 * Mutação probabilística
+	 * @param prob_mutacao Probabilidade de efetuar a mutação em uma posição
+	 * @param 
+	 */
+	public void mutacaoPolinomial(double prob_mutacao, Solucao solucao){
+		for (int i = 0; i < solucao.n; i++) {
+			double pos = solucao.getVariavel(i);
+			double prob = Math.random();
+			double delta;
+			if(prob<prob_mutacao){
+				double u = Math.random();
+				if(u<0.5){
+					delta = Math.pow(2*u, 1.0/(solucao.n+1)) - 1;
+				} else{
+					delta = 1- Math.pow(2*(1-u), 1.0/(solucao.n+1));
+				}
+				
+			} else
+				delta = 0;
+			solucao.setVariavel(i, pos + delta*MAX_MUT); 
+		}
+	}
+	
+	/**
 	 * Método que executa a mutação simples, pos = pos + random(0,1)*pos
 	 * @param prob_mutacao Probabilidade de efetuar a mutação em uma posição
 	 * @param vetor1 Vetor que irá sofre a mutação

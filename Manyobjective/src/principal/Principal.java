@@ -344,7 +344,7 @@ public class Principal {
 			if(tag.equals("maxobjhiper"))
 				maxobjhiper = new Integer(valor).intValue();
 			
-			if(tag.equals("numeroavaliacoes"))
+			if(tag.equals("avaliacoes"))
 				numeroavaliacoes = new Integer(valor).intValue();
 			
 			
