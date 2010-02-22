@@ -106,7 +106,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 			Solucao pai1 = escolherPaiBinaryTournament(solucoes, comp); 
 			Solucao pai2 = escolherPaiBinaryTournament(solucoes, comp);
 			Solucao filho = recombinacao(pai1, pai2);
-			mutacaoPolinomial(PROB_MUT_COD, filho.variaveis);
+			mutacaoPolinomial(PROB_MUT_COD, filho);
 			filho.truncar();
 			problema.calcularObjetivos(filho);
 			offspring.add(filho);
@@ -195,8 +195,8 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		int fator = (int)Math.ceil(Math.log10(n));
 		int pontoJuncao = (int)((Math.random()*fator) % n);
 		Solucao novaSolucao = (Solucao)solucao1.clone();
-		for (int i = pontoJuncao; i < solucao2.variaveis.length; i++) {
-			novaSolucao.variaveis[i] = solucao2.variaveis[i];
+		for (int i = pontoJuncao; i < solucao2.n; i++) {
+			novaSolucao.setVariavel(i,  solucao2.getVariavel(i));
 		}
 		return novaSolucao;
 	}

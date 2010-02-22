@@ -70,7 +70,7 @@ public class Particula {
 	 */
 	public void iniciarParticulaAleatoriamente(Problema prob, Solucao s){
 		solucao = s;
-		posicao = localBest = s.variaveis;
+		posicao = localBest = s.getVariaveis();
 		velocidade = new double[posicao.length];
 		inicializarVelocidadeAleatoria();
 			
@@ -387,13 +387,13 @@ public class Particula {
 	public void truncar() {
 	
 		for (int i = 0; i < posicao.length; i++) {
-			solucao.variaveis[i] = posicao[i];
+			solucao.setVariavel(i, posicao[i]);
 		}
 		
 		boolean over_limits = solucao.truncar();
 		
 		for (int i = 0; i < posicao.length; i++) {
-			 posicao[i] = solucao.variaveis[i];
+			 posicao[i] = solucao.getVariavel(i);
 		}
 		
 		//Caso algum limite seja extrapolado, a velocidade eh reduzida em 0.001
@@ -551,7 +551,7 @@ public class Particula {
 	
 	public void atualizarSolucao(){
 		for (int i = 0; i < posicao.length; i++) {
-			solucao.variaveis[i] = posicao[i];
+			solucao.setVariavel(i, posicao[i]);
 		}
 	}
 	

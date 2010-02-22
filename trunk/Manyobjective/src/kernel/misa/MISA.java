@@ -93,8 +93,10 @@ public class MISA extends AlgoritmoAprendizado {
 		//Laço evolutivo
 		while(problema.avaliacoes<numeroavalicoes){
 			lacoEvolutivo();
-			System.out.println(problema.avaliacoes);
+			if(problema.avaliacoes % 10 == 0)
+				System.out.print(problema.avaliacoes + " - ");
 		}
+		System.out.println();
 		
 		
 	
@@ -329,7 +331,10 @@ public class MISA extends AlgoritmoAprendizado {
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			Solucao solucao = (Solucao) iterator.next();
 
-			mutacaoPolinomial(prob, solucao.variaveis);
+			mutacaoPolinomial(prob, solucao);
+			
+			solucao.truncar();
+			
 			problema.calcularObjetivos(solucao);		
 
 		}

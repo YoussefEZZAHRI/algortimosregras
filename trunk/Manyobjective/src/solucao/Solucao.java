@@ -10,7 +10,7 @@ import sun.java2d.pipe.SolidTextRenderer;
 public class Solucao {
 	
 	//Array contendo as variaves da solucao
-	public double[] variaveis;
+	private double[] variaveis;
 	
 	//Variaveis utilizadas para o cálculo dos objetivos dos problemas DTLZ
 	public double[] xm;
@@ -89,13 +89,13 @@ public class Solucao {
 			buff.append(new Double(variaveis[i]).toString().replace('.', ',') + "\t");
 			//buff.append(variaveis[i] + "\t");
 		}
-		buff.append("\t");
+		/*buff.append("\t");
 		if(objetivos.length>0){
 			for (int i = 0; i < objetivos.length; i++) {
 				//buff.append(new Double(variaveis[i]).toString().replace('.', ',') + "\n");
 				buff.append(objetivos[i] + "\t");
 			}	
-		}
+		}*/
 		
 		//if(rank!=-1)
 		//	buff.append("\n" + rank + "\t");
@@ -170,9 +170,20 @@ public class Solucao {
 	}
 	
 	public void setVariavel(int i, double valor){
+		
+		
+	
 		variaveis[i] = valor;
 		if(i>=(m-1))
 			xm[i-(m-1)] = variaveis[i];
+	}
+	
+	public double getVariavel(int i){
+		return variaveis[i];
+	}
+	
+	public double[] getVariaveis(){
+		return variaveis;
 	}
 
 }
