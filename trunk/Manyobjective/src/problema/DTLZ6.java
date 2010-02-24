@@ -5,6 +5,7 @@ import java.util.Random;
 
 import pareto.FronteiraPareto;
 import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 /**
  * Classe que representa o problema DTLZ2
@@ -19,14 +20,15 @@ public class DTLZ6 extends Problema {
 	 * @param m Numero de objetivos do problema
 	 */
 	public DTLZ6(int m){
-		this.m = m;
+		super(m);
 	}
 	
 	/**
 	 * Metodo que calcula os objetivos da solucao passada como parametro
 	 * Equacao 9 do artigo "Scalable Multi-Objective Optimization Test Problems"
 	 */
-	public double[] calcularObjetivos(Solucao solucao) {
+	public double[] calcularObjetivos(Solucao sol) {
+		SolucaoNumerica solucao = (SolucaoNumerica) sol;
 		if(solucao.objetivos == null)
 		   solucao.objetivos = new double[m];
 		
@@ -36,7 +38,7 @@ public class DTLZ6 extends Problema {
 		double f0 = (1+g);
 		
 		for(int i = 0; i<m-1; i++){
-			double fi0 = fi(solucao.variaveis[0],g);
+			double fi0 = fi(solucao.getVariavel(0),g);
 			f0 *= Math.cos(fi0*pi_2);
 		}
 	   
@@ -44,7 +46,7 @@ public class DTLZ6 extends Problema {
 		for(int i = 1; i<(m); i++){
 			//System.out.print("f(" + i + "): ");
 			double fxi = (1+g);
-			double fiI = fi(solucao.variaveis[i],g);
+			double fiI = fi(solucao.getVariavel(i),g);
 			int j = 1;
 			for(j = 0; j<(m-1-i);j++){
 				fxi*=(Math.cos(fiI*pi_2));
@@ -66,14 +68,14 @@ public class DTLZ6 extends Problema {
 		
 	}
 	
-	public  ArrayList<Solucao> obterFronteira(int n, int numSol){
-		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
+	public  ArrayList<SolucaoNumerica> obterFronteira(int n, int numSol){
+		ArrayList<SolucaoNumerica> melhores = new ArrayList<SolucaoNumerica>();
 		
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
 		while(melhores.size()<numSol){
-			Solucao melhor = new Solucao(n, m);
+			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
 
 			for (int i = m-1; i <n; i++) {
 				melhor.setVariavel(i, 0);
@@ -100,7 +102,7 @@ public class DTLZ6 extends Problema {
 		
 		DTLZ6 dtlz2 = new DTLZ6(m);
 		for(int i = 0; i<2; i++){
-			Solucao sol = new Solucao(5, m);
+			SolucaoNumerica sol = new SolucaoNumerica(5, m);
 			sol.iniciarSolucaoAleatoria();
 			dtlz2.calcularObjetivos(sol);
 			System.out.println(sol);

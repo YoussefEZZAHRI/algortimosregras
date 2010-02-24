@@ -11,7 +11,7 @@ import pareto.FronteiraPareto;
 import problema.Problema;
 import solucao.ComparetorObjetivo;
 import solucao.ComparetorRank;
-import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 public abstract class AlgoritmoAprendizado {
 	
@@ -46,9 +46,9 @@ public abstract class AlgoritmoAprendizado {
 		numeroavalicoes = avaliacoes;
 	}
 	
-	public abstract ArrayList<Solucao> executar();
+	public abstract ArrayList<SolucaoNumerica> executar();
 	
-	public abstract ArrayList<Solucao> executarAvaliacoes();
+	public abstract ArrayList<SolucaoNumerica> executarAvaliacoes();
 	
 	public double distanciaEuclidiana(double[] vetor1, double[] vetor2){
 		double soma = 0;
@@ -58,23 +58,23 @@ public abstract class AlgoritmoAprendizado {
 		return Math.sqrt(soma);
 	}
 	
-	public void calcularCrowdingDistance(ArrayList<Solucao> solucoes){
-		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
-			Solucao solucao = (Solucao) iterator.next();
+	public void calcularCrowdingDistance(ArrayList<SolucaoNumerica> solucoes){
+		for (Iterator<SolucaoNumerica> iterator = solucoes.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 			solucao.crowdDistance = 0;
 		}
 		
 		for(int m = 0; m<problema.m; m++){
 			ComparetorObjetivo comp = new ComparetorObjetivo(m);
 			Collections.sort(solucoes, comp);
-			Solucao sol1 = solucoes.get(0);
-			Solucao solN = solucoes.get(solucoes.size()-1);
+			SolucaoNumerica sol1 = solucoes.get(0);
+			SolucaoNumerica solN = solucoes.get(solucoes.size()-1);
 			sol1.crowdDistance = Double.MAX_VALUE;
 			solN.crowdDistance = Double.MAX_VALUE;
 			for(int i = 1; i<solucoes.size()-1; i++){
-				Solucao sol = solucoes.get(i);
-				Solucao solProx = solucoes.get(i+1);
-				Solucao solAnt = solucoes.get(i-1);
+				SolucaoNumerica sol = solucoes.get(i);
+				SolucaoNumerica solProx = solucoes.get(i+1);
+				SolucaoNumerica solAnt = solucoes.get(i-1);
 				sol.crowdDistance += solProx.objetivos[m] - solAnt.objetivos[m];
 			}
 		}
@@ -110,7 +110,7 @@ public abstract class AlgoritmoAprendizado {
 	 * @param prob_mutacao Probabilidade de efetuar a mutação em uma posição
 	 * @param 
 	 */
-	public void mutacaoPolinomial(double prob_mutacao, Solucao solucao){
+	public void mutacaoPolinomial(double prob_mutacao, SolucaoNumerica solucao){
 		for (int i = 0; i < solucao.n; i++) {
 			double pos = solucao.getVariavel(i);
 			double prob = Math.random();
@@ -145,13 +145,13 @@ public abstract class AlgoritmoAprendizado {
 		}	
 	}
 	
-	public void averageRank(ArrayList<Solucao> solucoes){
+	public void averageRank(ArrayList<SolucaoNumerica> solucoes){
 		int[][][] A = new int[problema.m][solucoes.size()][solucoes.size()];
 		for(int k = 0; k<problema.m; k++){
 			for(int i = 0; i<solucoes.size()-1; i++){
-				Solucao solucaoi = solucoes.get(i);
+				SolucaoNumerica solucaoi = solucoes.get(i);
 				for(int j = i+1; j<solucoes.size(); j++){
-					Solucao solucaoj = solucoes.get(j);
+					SolucaoNumerica solucaoj = solucoes.get(j);
 					if(solucaoi.objetivos[k]<solucaoj.objetivos[k]){
 						A[k][i][j] = 1;
 						A[k][j][i] = -1;
@@ -169,7 +169,7 @@ public abstract class AlgoritmoAprendizado {
 		}
 		
 		for(int i = 0; i<solucoes.size(); i++){
-			Solucao solucaoi = solucoes.get(i);
+			SolucaoNumerica solucaoi = solucoes.get(i);
 			for(int k = 0; k<problema.m; k++){
 				for(int j = 0; j<solucoes.size(); j++){
 					if(i!=j){
@@ -184,9 +184,9 @@ public abstract class AlgoritmoAprendizado {
 	 * Método que busca as soluções não dominadas da população atual
 	 * @return Soluções não dominadas da população
 	 */
-	public void encontrarSolucoesNaoDominadas(ArrayList<Solucao> solucoes, FronteiraPareto pareto){
-		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
-			Solucao solucao =  iter.next();
+	public void encontrarSolucoesNaoDominadas(ArrayList<SolucaoNumerica> solucoes, FronteiraPareto pareto){
+		for (Iterator<SolucaoNumerica> iter = solucoes.iterator(); iter.hasNext();) {
+			SolucaoNumerica solucao =  iter.next();
 			pareto.add(solucao);
 		}
 	}

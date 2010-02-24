@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 
-import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 /**
  * Classe que representa um grid adaptativo proposto por Knowles e Corne utilizado como a população secundária no algoritmo MISA
@@ -18,7 +18,7 @@ public class AdaptiveGrid {
 	//Array de número reais que representa os pontos do grid
 	public double[][] grid = null;
 	//Tabela hash que contém as soluções de cada célula do grid
-	public HashMap<Integer, ArrayList<Solucao>> solucoes = null;
+	public HashMap<Integer, ArrayList<SolucaoNumerica>> solucoes = null;
 	//Tabela hash que contém qtas soluções existem em cada célula
 	public HashMap<Integer, Integer> lotacao = null;
 	//Número de intervalos do grid passado como parâmetro
@@ -40,7 +40,7 @@ public class AdaptiveGrid {
 		
 		numIntervalos = p;
 		
-		solucoes = new HashMap<Integer, ArrayList<Solucao>>();
+		solucoes = new HashMap<Integer, ArrayList<SolucaoNumerica>>();
 		lotacao = new HashMap<Integer, Integer>();
 	}
 	
@@ -68,19 +68,19 @@ public class AdaptiveGrid {
 					grid[i][j] = grid[i][j-1] + intervalo;		 
 			}
 			//Reinsere os elementos no novo grid
-			HashMap<Integer, ArrayList<Solucao>> clone = new HashMap<Integer, ArrayList<Solucao>>();
+			HashMap<Integer, ArrayList<SolucaoNumerica>> clone = new HashMap<Integer, ArrayList<SolucaoNumerica>>();
 			clone.putAll(solucoes);
-			solucoes = new HashMap<Integer, ArrayList<Solucao>>();
+			solucoes = new HashMap<Integer, ArrayList<SolucaoNumerica>>();
 			lotacao = new HashMap<Integer, Integer>();
-			for (Iterator<ArrayList<Solucao>> iterator = clone.values().iterator(); iterator.hasNext();) {
-				ArrayList<Solucao> sols = iterator.next();
-				for (Iterator<Solucao> iterator2 = sols.iterator(); iterator2.hasNext();) {
-					Solucao solucao = (Solucao) iterator2.next();
+			for (Iterator<ArrayList<SolucaoNumerica>> iterator = clone.values().iterator(); iterator.hasNext();) {
+				ArrayList<SolucaoNumerica> sols = iterator.next();
+				for (Iterator<SolucaoNumerica> iterator2 = sols.iterator(); iterator2.hasNext();) {
+					SolucaoNumerica solucao = (SolucaoNumerica) iterator2.next();
 					//add(solucao);
 					Integer cel = new Integer(obterCelula(solucao.objetivos));
-					ArrayList<Solucao> solKey = solucoes.get(cel);
+					ArrayList<SolucaoNumerica> solKey = solucoes.get(cel);
 					if(solKey == null){
-						solKey = new ArrayList<Solucao>();
+						solKey = new ArrayList<SolucaoNumerica>();
 					}
 					solKey.add(solucao);
 					solucoes.put(cel, solKey);
@@ -138,12 +138,12 @@ public class AdaptiveGrid {
 	 * @param solucao Solução a ser adicionada
 	 * @return True caso sim, false caso não
 	 */
-	public boolean add(Solucao solucao){
+	public boolean add(SolucaoNumerica solucao){
 		construirGrid(solucao.objetivos);
 		Integer cel = new Integer(obterCelula(solucao.objetivos));
-		ArrayList<Solucao> solKey = solucoes.get(cel);
+		ArrayList<SolucaoNumerica> solKey = solucoes.get(cel);
 		if(solKey == null){
-			solKey = new ArrayList<Solucao>();
+			solKey = new ArrayList<SolucaoNumerica>();
 		}
 		//Se a solução já existe no hash não a adiciona
 		if(solKey.contains(solucao))
@@ -157,7 +157,7 @@ public class AdaptiveGrid {
 			if(cel.equals(mostCrowded))
 			   return false;
 			//Retira uma solução da célula mais cheia aleatoriamente
-			ArrayList<Solucao> celulaCrowded = solucoes.get(mostCrowded);
+			ArrayList<SolucaoNumerica> celulaCrowded = solucoes.get(mostCrowded);
 			int elementoEliminado = (int)((Math.random() * MAX_POP) % celulaCrowded.size());
 			celulaCrowded.remove(elementoEliminado);
 			solucoes.put(mostCrowded, celulaCrowded);
@@ -201,7 +201,7 @@ public class AdaptiveGrid {
 		return new Integer(crowdedCel);
 	}
 	
-	public int obterLotacao(Integer celula, Solucao solucao){
+	public int obterLotacao(Integer celula, SolucaoNumerica solucao){
 		Integer lot = lotacao.get(celula);
 		return lot.intValue();
 	}
@@ -225,10 +225,10 @@ public class AdaptiveGrid {
 	 * Método que retorna todas as soluções dso grid em uma só lista	
 	 * @return Lista com todas as soluções do grid
 	 */
-	public ArrayList<Solucao> getAll(){
-		ArrayList<Solucao> retorno = new ArrayList<Solucao>();
-		for (Iterator<ArrayList<Solucao>> iterator = solucoes.values().iterator(); iterator.hasNext();) {
-			ArrayList<Solucao> sols = iterator.next();
+	public ArrayList<SolucaoNumerica> getAll(){
+		ArrayList<SolucaoNumerica> retorno = new ArrayList<SolucaoNumerica>();
+		for (Iterator<ArrayList<SolucaoNumerica>> iterator = solucoes.values().iterator(); iterator.hasNext();) {
+			ArrayList<SolucaoNumerica> sols = iterator.next();
 			retorno.addAll(sols);
 		}
 		return retorno;
@@ -253,10 +253,10 @@ public class AdaptiveGrid {
 	}
 	
 	public int contains(Object o){
-		Solucao solucao = (Solucao) o;
+		SolucaoNumerica solucao = (SolucaoNumerica) o;
 		for (Iterator<Integer> iterator = lotacao.keySet().iterator(); iterator.hasNext();) {
 			Integer celula = (Integer) iterator.next();
-			ArrayList<Solucao> solKey = solucoes.get(celula);
+			ArrayList<SolucaoNumerica> solKey = solucoes.get(celula);
 			if(solKey.contains(solucao)){
 				return celula;
 			}

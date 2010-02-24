@@ -4,16 +4,21 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 public abstract class Problema {
 	
 	public int m;
 	public int avaliacoes;
 	
+	public Problema(int m){
+		this.m = m;
+		avaliacoes = 0;
+	}
 	
 	public abstract double[] calcularObjetivos(Solucao solucao);
 	
-	public abstract ArrayList<Solucao> obterFronteira(int n, int numSol);
+	public abstract ArrayList<SolucaoNumerica> obterFronteira(int n, int numSol);
 	
 	/**
 	 * Equacao 8 do artigo "Scalable Multi-Objective Optimization Test Problems"
@@ -73,7 +78,7 @@ public abstract class Problema {
 		return soma;
 	}
 	
-	public void imprimirVetoresScilab(ArrayList<Solucao> melhores){
+	public void imprimirVetoresScilab(ArrayList<SolucaoNumerica> melhores){
 		StringBuffer comandoX = new StringBuffer();
 		StringBuffer comandoY = new StringBuffer();
 		StringBuffer comandoZ = new StringBuffer();
@@ -81,8 +86,8 @@ public abstract class Problema {
 		comandoX.append("x = [\n");
 		comandoY.append("y = [\n");
 		comandoZ.append("z = [\n");
-		for (Iterator<Solucao> iterator = melhores.iterator(); iterator.hasNext();) {
-			Solucao solucao = (Solucao) iterator.next();
+		for (Iterator<SolucaoNumerica> iterator = melhores.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 			
 			comandoX.append(solucao.objetivos[0]+  "\n");
 			comandoY.append(solucao.objetivos[1]+  "\n");

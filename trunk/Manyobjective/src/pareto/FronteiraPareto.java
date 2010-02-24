@@ -11,12 +11,12 @@ import kernel.nuvemparticulas.Particula;
 import solucao.ComparetorCrowdDistance;
 import solucao.ComparetorCrowdedOperator;
 import solucao.ComparetorRank;
-import solucao.Solucao;
+import solucao.SolucaoNumerica;
 import sun.java2d.pipe.SolidTextRenderer;
 
 public class FronteiraPareto {
 	
-	public ArrayList<Solucao> fronteira = null;
+	public ArrayList<SolucaoNumerica> fronteira = null;
 	
 	public ArrayList<Particula> fronteiraNuvem = null;
 	
@@ -24,15 +24,15 @@ public class FronteiraPareto {
 
 	
 	public FronteiraPareto(double s){
-		fronteira = new ArrayList<Solucao>();
+		fronteira = new ArrayList<SolucaoNumerica>();
 		fronteiraNuvem = new ArrayList<Particula>();
 		S = s;
 	}
 	
-	public void setFronteira(ArrayList<Solucao> temp){
+	public void setFronteira(ArrayList<SolucaoNumerica> temp){
 		fronteira.clear();
-		for (Iterator<Solucao> iter = temp.iterator(); iter.hasNext();) {
-			Solucao s = (Solucao) iter.next();
+		for (Iterator<SolucaoNumerica> iter = temp.iterator(); iter.hasNext();) {
+			SolucaoNumerica s = (SolucaoNumerica) iter.next();
 			fronteira.add(s);
 			
 		}
@@ -60,7 +60,7 @@ public class FronteiraPareto {
 	 * @param regra Regra a ser adicionada
 	 * @return Valor booleano que especifica se o elemento foi inserido ou nao na fronteira 
 	 */
-	public double add(Solucao solucao){
+	public double add(SolucaoNumerica solucao){
 		//Só adiciona na fronteira caso a regra seja da classe passada como parametro
 		solucao.numDominacao = 0;
 		if(fronteira.size()==0){
@@ -70,7 +70,7 @@ public class FronteiraPareto {
 		
 		int comp;
 		
-		ArrayList<Solucao> cloneFronteira = (ArrayList<Solucao>)fronteira.clone();
+		ArrayList<SolucaoNumerica> cloneFronteira = (ArrayList<SolucaoNumerica>)fronteira.clone();
 		
 		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
 
@@ -80,8 +80,8 @@ public class FronteiraPareto {
 		}
 		
 		
-		for (Iterator<Solucao> iter = cloneFronteira.iterator(); iter.hasNext();) {
-			Solucao temp = (Solucao) iter.next();
+		for (Iterator<SolucaoNumerica> iter = cloneFronteira.iterator(); iter.hasNext();) {
+			SolucaoNumerica temp = (SolucaoNumerica) iter.next();
 			
 			double[] novosObjetivosTemp = new double[temp.objetivos.length];
 		
@@ -119,7 +119,7 @@ public class FronteiraPareto {
 		
 		ArrayList<Particula> cloneFronteira = (ArrayList<Particula>)fronteiraNuvem.clone();
 		
-		Solucao solucao = particula.solucao;
+		SolucaoNumerica solucao = particula.solucao;
 		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
 		
 		double r = r(solucao.objetivos);
@@ -202,7 +202,7 @@ public class FronteiraPareto {
 	
 	
 	
-	public ArrayList<Solucao> getFronteira(){
+	public ArrayList<SolucaoNumerica> getFronteira(){
 		return fronteira;
 	}
 	
@@ -278,7 +278,7 @@ public class FronteiraPareto {
 	 * @param solucao Solução a ser contada o numero de dominação		
 	 * @return Quantas soluções a solução passada como parametro é dominada
 	 */
-	public double obterNumDomincao(Solucao solucao, ArrayList<Solucao> solucoes){
+	public double obterNumDomincao(SolucaoNumerica solucao, ArrayList<SolucaoNumerica> solucoes){
 		
 		int numDominacao = 0;
 		
@@ -291,8 +291,8 @@ public class FronteiraPareto {
 			novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
 		}
 		
-		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
-			Solucao temp = (Solucao) iter.next();
+		for (Iterator<SolucaoNumerica> iter = solucoes.iterator(); iter.hasNext();) {
+			SolucaoNumerica temp = (SolucaoNumerica) iter.next();
 			
 			double[] novosObjetivosTemp = new double[temp.objetivos.length];
 

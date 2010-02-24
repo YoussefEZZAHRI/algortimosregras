@@ -1,10 +1,14 @@
 package problema;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Random;
 
 import pareto.FronteiraPareto;
+import solucao.ComparetorObjetivo;
 import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 /**
  * Classe que representa o problema DTLZ2
@@ -19,24 +23,25 @@ public class DTLZ2 extends Problema {
 	 * @param m Numero de objetivos do problema
 	 */
 	public DTLZ2(int m){
-		this.m = m;
+		super(m);
 	}
 	
 	/**
 	 * Metodo que calcula os objetivos da solucao passada como parametro
 	 * Equacao 9 do artigo "Scalable Multi-Objective Optimization Test Problems"
 	 */
-	public double[] calcularObjetivos(Solucao solucao) {
+	public double[] calcularObjetivos(Solucao sol) {
+		SolucaoNumerica solucao = (SolucaoNumerica) sol;
 		if(solucao.objetivos == null)
 		   solucao.objetivos = new double[m];
 		
 		double g = g2(solucao.xm);
 		double pi_2 = Math.PI/2.0;
 		//System.out.print("f(0): ");
-		double f0 = (1+g)*Math.cos(solucao.variaveis[0]*pi_2);
+		double f0 = (1+g)*Math.cos(solucao.getVariavel(0)*pi_2);
 		//System.out.print("Cos 0 ");
 		for(int i = 1; i<m-1; i++){
-			f0 *= Math.cos(solucao.variaveis[i]*pi_2);
+			f0 *= Math.cos(solucao.getVariavel(i)*pi_2);
 			//System.out.print("Cos " + i  + " ");
 		}
 	   
@@ -46,27 +51,32 @@ public class DTLZ2 extends Problema {
 			double fxi = (1+g);
 			int j = 1;
 			for(j = 0; j<(m-1-i);j++){
-				fxi*=(Math.cos(solucao.variaveis[j]*pi_2));
+				fxi*=(Math.cos(solucao.getVariavel(j)*pi_2));
 				//System.out.print("Cos " + j  + " ");
 			}
-			fxi *= (Math.sin(solucao.variaveis[j]*pi_2));
+			fxi *= (Math.sin(solucao.getVariavel(j)*pi_2));
 			//System.out.print("Sen " + j  + " ");
 			//System.out.println();
 			solucao.objetivos[i] = fxi;
 		}
 		
 		avaliacoes++;
+		
+		for (int i = 0; i < solucao.objetivos.length; i++) {
+			if(solucao.objetivos[i] <0)
+				System.out.println();
+		}
 		return solucao.objetivos;
 	}
 	
-	public ArrayList<Solucao> obterFronteira(int n, int numSol){
-		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
+	public ArrayList<SolucaoNumerica> obterFronteira(int n, int numSol){
+		ArrayList<SolucaoNumerica> melhores = new ArrayList<SolucaoNumerica>();
 		
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
 		while(melhores.size()<numSol){
-			Solucao melhor = new Solucao(n, m);
+			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
 
 			for (int i = m-1; i <n; i++) {
 				melhor.setVariavel(i, 0.5);
@@ -91,7 +101,7 @@ public class DTLZ2 extends Problema {
 		return melhores;
 	}
 	
-	public boolean validarSolucaoFronteira(Solucao s){
+	public boolean validarSolucaoFronteira(SolucaoNumerica s){
 		double soma = 0;
 		for (int i = 0; i < s.objetivos.length; i++) {
 			soma += s.objetivos[i];
@@ -107,9 +117,20 @@ public class DTLZ2 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int m = 3;
+		int m = 2;
 		DTLZ2 dtlz2 = new DTLZ2(m);
-		dtlz2.obterFronteira(12, 250);
+		ArrayList<SolucaoNumerica> solucoes =  dtlz2.obterFronteira(12, 250);
+		ComparetorObjetivo comp = new ComparetorObjetivo(0);
+		Collections.sort(solucoes, comp);
+		
+		for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+			for (int i = 0; i < solucao.objetivos.length; i++) {
+				System.out.print((""+solucao.objetivos[i]).replace('.', ',') + "\t");
+			}
+			
+			System.out.println();
+		}
 		
 		/*FronteiraPareto pareto = new FronteiraPareto(0.25, false);
 		

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import pareto.FronteiraPareto;
-import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 /**
  * Classe que representa um indicador para mensurar a qualidade de uma fronteira de Pareto
