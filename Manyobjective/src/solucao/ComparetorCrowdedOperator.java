@@ -7,9 +7,9 @@ import java.util.Comparator;
  * @author Andre
  *
  */
-public class ComparetorCrowdedOperator implements Comparator<Solucao>{
+public class ComparetorCrowdedOperator implements Comparator<SolucaoNumerica>{
 	
-	public int compare(Solucao s1, Solucao s2){
+	public int compare(SolucaoNumerica s1, SolucaoNumerica s2){
 		if(s1.rank<s2.rank)
 			return -1;
 		else

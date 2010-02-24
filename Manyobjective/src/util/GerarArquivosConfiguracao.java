@@ -10,12 +10,12 @@ public class GerarArquivosConfiguracao {
 	public static void gerarArquivos(int m) throws IOException{
 		
 		
-		String problema  = "dtlz2";
+		String problema  = "dtlz4";
 		String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
-		String metodo = "smopso";
+		String metodo = "misa";
 		String exec = "30";
 		String g = "100";
-		String a = "150000";
+		String a = "250000";
 		String p = "100";
 		String rank = "false";
 		String taxaclonagem = "7";
@@ -44,6 +44,7 @@ public class GerarArquivosConfiguracao {
 			ps.println("m = " + m);
 			ps.println("n = " + n);
 			ps.println("geracoes = " + g);
+			ps.println("avaliacoes = " + a);
 			ps.println("populacao = " + p);
 			ps.println("numexec = " + exec);
 			ps.println("S = " + s);
@@ -64,7 +65,7 @@ public class GerarArquivosConfiguracao {
 	}
 	
 	public static void main(String[] args) {
-		int m = 4;
+		int m = 3;
 		try{
 			gerarArquivos(m);
 		} catch (Exception e) {

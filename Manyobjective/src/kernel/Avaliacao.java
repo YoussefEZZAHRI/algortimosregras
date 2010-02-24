@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 
-import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 public class Avaliacao {
 	
-	public ArrayList<Solucao> fronteira = null;
+	public ArrayList<SolucaoNumerica> fronteira = null;
 	
 	public double numDominatedSolutions;
 	public double minSum;
@@ -22,7 +22,7 @@ public class Avaliacao {
 	public PrintStream saidaSol;
 	
 	
-	public Avaliacao(ArrayList<Solucao> f, int m){
+	public Avaliacao(ArrayList<SolucaoNumerica> f, int m){
 		fronteira = f;
 		numDominatedSolutions = 0;
 		minSum = Double.MAX_VALUE;
@@ -31,7 +31,7 @@ public class Avaliacao {
 		this.m = m;
 	}
 	
-	public Avaliacao(ArrayList<Solucao> f, int m, String caminho, String id){
+	public Avaliacao(ArrayList<SolucaoNumerica> f, int m, String caminho, String id){
 		fronteira = f;
 		numDominatedSolutions = 0;
 		minSum = Double.MAX_VALUE;
@@ -62,8 +62,8 @@ public class Avaliacao {
 	}
 	
 	public double getMinSum(){
-		for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
-			Solucao solucao =  iterator.next();
+		for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucao =  iterator.next();
 			double soma = 0;
 			for (int i = 0; i < solucao.objetivos.length; i++) {
 				soma += solucao.objetivos[i];
@@ -77,8 +77,8 @@ public class Avaliacao {
 	public double getSumMin(){
 		for(int i=0; i<m; i++){
 			double min = Double.MAX_VALUE;
-			for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
-				Solucao solucao = (Solucao) iterator.next();
+			for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 				min = Math.min(min, solucao.objetivos[i]);			
 			}
 			sumMin += min;
@@ -90,8 +90,8 @@ public class Avaliacao {
 		for(int i=0; i<m; i++){
 			double min = Double.MAX_VALUE;
 			double max = 0;
-			for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
-				Solucao solucao = (Solucao) iterator.next();
+			for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 				min = Math.min(min, solucao.objetivos[i]);
 				max = Math.max(max, solucao.objetivos[i]);
 			}

@@ -35,7 +35,7 @@ import problema.DTLZ5;
 import problema.DTLZ6;
 import problema.Problema;
 import solucao.ComparetorObjetivo;
-import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 public class Principal {
 	
@@ -142,11 +142,11 @@ public class Principal {
 		String idExec = alg + prob + "_" + m + alg1;
 		Indicador ind;
 		if(indicador.equals("gd")){
-			ArrayList<Solucao> fronteira =  problema.obterFronteira(n, populacao);
+			ArrayList<SolucaoNumerica> fronteira =  problema.obterFronteira(n, populacao);
 			ArrayList<PontoFronteira> pftrue= new ArrayList<PontoFronteira>();
 			
-			for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
-				Solucao solucao = (Solucao) iterator.next();
+			for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 				PontoFronteira temp = new PontoFronteira(solucao.objetivos);
 				pftrue.add(temp);
 			}
@@ -208,7 +208,7 @@ public class Principal {
 			
 			psTempo.print(i +":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
 			
-			ArrayList<Solucao> solucoes = null;
+			ArrayList<SolucaoNumerica> solucoes = null;
 			if(numeroavaliacoes==-1)
 				solucoes =  algoritmo.executar();
 			else
@@ -220,8 +220,8 @@ public class Principal {
 				maioresObjetivos[j] = 0;
 			}
 			
-			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
-				Solucao solucao = (Solucao) iterator.next();
+			for (Iterator<SolucaoNumerica> iterator = solucoes.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 				
 				for(int j = 0; j<m; j++){
 					if(solucao.objetivos[j]>maioresObjetivos[j])
@@ -231,8 +231,8 @@ public class Principal {
 			
 			ArrayList<PontoFronteira> fronteira = new ArrayList<PontoFronteira>();
 			
-			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
-				Solucao solucao = iterator.next();
+			for (Iterator<SolucaoNumerica> iterator = solucoes.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucao = iterator.next();
 				PontoFronteira pf = new PontoFronteira(solucao.objetivos);
 				fronteira.add(pf);
 			}
@@ -280,11 +280,11 @@ public class Principal {
 		gd.calcularIndicadorArray(fronteiras);*/
 	}
 	
-	public void gerarSaida(ArrayList<Solucao> fronteira, PrintStream solGeral, PrintStream psFronteiraGeral, PrintStream solExecucao, PrintStream psFronteiraExec){
+	public void gerarSaida(ArrayList<SolucaoNumerica> fronteira, PrintStream solGeral, PrintStream psFronteiraGeral, PrintStream solExecucao, PrintStream psFronteiraExec){
 		
 		
-		for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
-			Solucao solucao = (Solucao) iterator.next();
+		for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 			solGeral.println(solucao);
 			solExecucao.println(solucao);
 			for(int i = 0; i<m; i++){				

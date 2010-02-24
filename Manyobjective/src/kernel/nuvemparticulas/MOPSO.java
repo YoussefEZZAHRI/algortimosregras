@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import problema.Problema;
 import pareto.FronteiraPareto;
-import solucao.Solucao;
+import solucao.SolucaoNumerica;
 import kernel.AlgoritmoAprendizado;
 
 
@@ -50,7 +50,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	/**
 	 * Método principal que executa as operaçoes do MOPSO
 	 */
-	public abstract ArrayList<Solucao> executar();
+	public abstract ArrayList<SolucaoNumerica> executar();
 	
 	public abstract void escolherLideres();
 	
@@ -65,7 +65,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			//Contador utilizada para a criação da regra não ficar presa no laço
 			int cont = 0;
 			do{
-				Solucao s = new Solucao(n, problema.m);
+				SolucaoNumerica s = new SolucaoNumerica(n, problema.m);
 				s.iniciarSolucaoAleatoria();
 				particula.iniciarParticulaAleatoriamente(problema, s);
 				problema.calcularObjetivos(s);

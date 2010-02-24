@@ -2,9 +2,9 @@ package solucao;
 
 import java.util.Comparator;
 
-public class ComparetorDominacao implements Comparator<Solucao>{
+public class ComparetorDominacao implements Comparator<SolucaoNumerica>{
 	
-	public int compare(Solucao s1, Solucao s2){
+	public int compare(SolucaoNumerica s1, SolucaoNumerica s2){
 		if(s1.numDominacao<s2.numDominacao)
 			return -1;
 		else

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 /**
  * Classe que representa o problema DTLZ1
@@ -22,15 +23,15 @@ public class DTLZ1 extends Problema {
 	
 	
 	public DTLZ1(int m){
-		this.m = m;
-		avaliacoes = 0;
+		super(m);
 	}
 	
 	/**
 	 * Metodo que calcula os objetivos da solucao passada como parametro
 	 * Equacao 7 do artigo "Scalable Multi-Objective Optimization Test Problems"
 	 */
-	public double[] calcularObjetivos(Solucao solucao) {
+	public double[] calcularObjetivos(Solucao sol) {
+		SolucaoNumerica solucao = (SolucaoNumerica) sol;
 		if(solucao.objetivos == null)
 		   solucao.objetivos = new double[m];
 		
@@ -41,10 +42,10 @@ public class DTLZ1 extends Problema {
 			double fxi = 0.5*(1+g);
 			int j;
 			for(j = 0; j<(m-1-i);j++){
-				fxi*=solucao.variaveis[j];
+				fxi*=solucao.getVariavel(j);
 			}
 			if(j!=m-1){
-			  fxi *= (1-solucao.variaveis[j]);
+			  fxi *= (1-solucao.getVariavel(j));
 			}
 			solucao.objetivos[i] = fxi;
 		}
@@ -55,14 +56,14 @@ public class DTLZ1 extends Problema {
 	
 		
 		
-	public  ArrayList<Solucao> obterFronteira(int n, int numSol){
-		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
+	public  ArrayList<SolucaoNumerica> obterFronteira(int n, int numSol){
+		ArrayList<SolucaoNumerica> melhores = new ArrayList<SolucaoNumerica>();
 		
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
 		while(melhores.size()<numSol){
-			Solucao melhor = new Solucao(n, m);
+			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
 
 			for (int i = m-1; i <n; i++) {
 				melhor.setVariavel(i, 0.5);
@@ -84,9 +85,7 @@ public class DTLZ1 extends Problema {
 			}
 			
 		}
-		
-		
-		
+			
 		return melhores;
 	}
 	

@@ -7,6 +7,7 @@ import com.sun.org.apache.bcel.internal.generic.DLOAD;
 
 import pareto.FronteiraPareto;
 import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 /**
  * Classe que representa o problema DTLZ3
@@ -21,24 +22,25 @@ public class DTLZ3 extends Problema {
 	 * @param m Numero de objetivos do problema
 	 */
 	public DTLZ3(int m){
-		this.m = m;
+		super(m);
 	}
 	
 	/**
 	 * Metodo que calcula os objetivos da solucao passada como parametro
 	 * Equacao 9 do artigo "Scalable Multi-Objective Optimization Test Problems" utilizado a equacao 8 como g
 	 */
-	public double[] calcularObjetivos(Solucao solucao) {
+	public double[] calcularObjetivos(Solucao sol) {
+		SolucaoNumerica solucao = (SolucaoNumerica) sol;
 		if(solucao.objetivos == null)
 		   solucao.objetivos = new double[m];
 		
 		double g = g1(solucao.xm);
 		double pi_2 = Math.PI/2.0;
 		//System.out.print("f(0): ");
-		double f0 = (1+g)*Math.cos(solucao.variaveis[0]*pi_2);
+		double f0 = (1+g)*Math.cos(solucao.getVariavel(0)*pi_2);
 		//System.out.print("Cos 0 ");
 		for(int i = 1; i<m-1; i++){
-			f0 *= Math.cos(solucao.variaveis[i]*pi_2);
+			f0 *= Math.cos(solucao.getVariavel(i)*pi_2);
 			//System.out.print("Cos " + i  + " ");
 		}
 	   solucao.objetivos[0] = f0;
@@ -47,10 +49,10 @@ public class DTLZ3 extends Problema {
 			double fxi = (1+g);
 			int j = 1;
 			for(j = 0; j<(m-1-i);j++){
-				fxi*=(Math.cos(solucao.variaveis[j]*pi_2));
+				fxi*=(Math.cos(solucao.getVariavel(j)*pi_2));
 				//System.out.print("Cos " + j  + " ");
 			}
-			fxi *= (Math.sin(solucao.variaveis[j]*pi_2));
+			fxi *= (Math.sin(solucao.getVariavel(j)*pi_2));
 			//System.out.print("Sen " + j  + " ");
 			//System.out.println();
 			solucao.objetivos[i] = fxi;
@@ -59,14 +61,14 @@ public class DTLZ3 extends Problema {
 		return solucao.objetivos;
 	}
 	
-	public  ArrayList<Solucao> obterFronteira(int n, int numSol){
-		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
+	public  ArrayList<SolucaoNumerica> obterFronteira(int n, int numSol){
+		ArrayList<SolucaoNumerica> melhores = new ArrayList<SolucaoNumerica>();
 		
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
 		while(melhores.size()<numSol){
-			Solucao melhor = new Solucao(n, m);
+			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
 
 			for (int i = m-1; i <n; i++) {
 				melhor.setVariavel(i, 0.5);
@@ -98,7 +100,7 @@ public class DTLZ3 extends Problema {
 		int m = 3;
 
 		DTLZ3 dtlz3 = new DTLZ3(m);
-		ArrayList<Solucao> melhores =  dtlz3.obterFronteira(11, 250);
+		ArrayList<SolucaoNumerica> melhores =  dtlz3.obterFronteira(11, 250);
 		dtlz3.imprimirVetoresScilab(melhores);
 		
 		

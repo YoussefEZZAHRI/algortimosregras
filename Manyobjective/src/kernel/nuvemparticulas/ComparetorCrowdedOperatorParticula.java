@@ -2,7 +2,7 @@ package kernel.nuvemparticulas;
 
 import java.util.Comparator;
 
-import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 /**
  * Comparetor que equivale ao operador <n proposto no artigo do nsga2
@@ -12,8 +12,8 @@ import solucao.Solucao;
 public class ComparetorCrowdedOperatorParticula implements Comparator<Particula>{
 	
 	public int compare(Particula p1, Particula p2){
-		Solucao s1 = p1.solucao;
-		Solucao s2 = p2.solucao;
+		SolucaoNumerica s1 = p1.solucao;
+		SolucaoNumerica s2 = p2.solucao;
 		if(s1.rank<s2.rank)
 			return -1;
 		else

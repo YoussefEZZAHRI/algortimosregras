@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 import problema.DTLZ2;
 import problema.Problema;
-import solucao.Solucao;
+import solucao.SolucaoNumerica;
 import kernel.Avaliacao;
 
 /**
@@ -28,7 +28,7 @@ public class SigmaMOPSO extends MOPSO{
 	/**
 	 * Método principal que executa as operaçoes do MOPSO
 	 */
-	public ArrayList<Solucao> executar(){
+	public ArrayList<SolucaoNumerica> executar(){
 		//Apaga todas as listas antes do inicio da execução
 		reiniciarExecucao();
 		//Inicia a populçao
@@ -52,7 +52,7 @@ public class SigmaMOPSO extends MOPSO{
 	/**
 	 * Método principal que executa as operaçoes do MOPSO
 	 */
-	public ArrayList<Solucao> executarAvaliacoes(){
+	public ArrayList<SolucaoNumerica> executarAvaliacoes(){
 		//Apaga todas as listas antes do inicio da execução
 		reiniciarExecucao();
 		//Inicia a populçao
@@ -122,9 +122,9 @@ public class SigmaMOPSO extends MOPSO{
 		int a = -1;
 		for(int i = 0; i<5; i++){
 			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25);
-			ArrayList<Solucao> fronteira= nuvem.executar();
-			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
-				Solucao solucao = (Solucao) iterator.next();
+			ArrayList<SolucaoNumerica> fronteira= nuvem.executar();
+			for (Iterator<SolucaoNumerica> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 				prob.calcularObjetivos(solucao);
 				//System.out.println(solucao);
 				

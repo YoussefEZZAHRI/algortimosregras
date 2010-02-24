@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import pareto.FronteiraPareto;
 import problema.Problema;
-import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 
 /**
@@ -16,7 +16,7 @@ import solucao.Solucao;
 public class Particula {
 	
 	//Solução a qual a partícula representa
-	public Solucao solucao = null;
+	public SolucaoNumerica solucao = null;
 	//Velocidade atual da partícula
 	public double[] velocidade = null;
 	//Posição atual da partícula
@@ -68,7 +68,7 @@ public class Particula {
 	 * Método que inicializa a particula de forma aleatoria
 	 * 
 	 */
-	public void iniciarParticulaAleatoriamente(Problema prob, Solucao s){
+	public void iniciarParticulaAleatoriamente(Problema prob, SolucaoNumerica s){
 		solucao = s;
 		posicao = localBest = s.getVariaveis();
 		velocidade = new double[posicao.length];
@@ -543,7 +543,7 @@ public class Particula {
 			}
 		}
 		
-		novaParticula.solucao = (Solucao)solucao.clone();
+		novaParticula.solucao = (SolucaoNumerica)solucao.clone();
 		problema.calcularObjetivos(solucao);
 		
 		return novaParticula;

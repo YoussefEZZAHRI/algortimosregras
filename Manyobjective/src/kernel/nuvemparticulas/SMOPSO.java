@@ -10,7 +10,7 @@ import java.util.Iterator;
 
 import problema.DTLZ2;
 import problema.Problema;
-import solucao.Solucao;
+import solucao.SolucaoNumerica;
 import kernel.Avaliacao;
 
 /**
@@ -38,7 +38,7 @@ public class SMOPSO extends MOPSO{
 	/**
 	 * Método principal que executa as operaçoes do MOPSO
 	 */
-	public ArrayList<Solucao> executar(){
+	public ArrayList<SolucaoNumerica> executar(){
 		
 		String arquivoSaida = "medidas.txt";
 		
@@ -69,7 +69,7 @@ public class SMOPSO extends MOPSO{
 		
 	}
 	
-	public ArrayList<Solucao> executarAvaliacoes(){
+	public ArrayList<SolucaoNumerica> executarAvaliacoes(){
 		
 		String arquivoSaida = "medidas.txt";
 	
@@ -178,9 +178,9 @@ public class SMOPSO extends MOPSO{
 		int a = -1;
 		for(int i = 0; i<5; i++){
 			SMOPSO nuvem = new SMOPSO(n, prob, g, a, t, 0.25, true);
-			ArrayList<Solucao> fronteira = nuvem.executar();
-			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
-				Solucao solucao = (Solucao) iterator.next();
+			ArrayList<SolucaoNumerica> fronteira = nuvem.executar();
+			for (Iterator<SolucaoNumerica> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 				prob.calcularObjetivos(solucao);
 				System.out.println(solucao);
 				
