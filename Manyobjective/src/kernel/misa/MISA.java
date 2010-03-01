@@ -30,6 +30,8 @@ public class MISA extends AlgoritmoAprendizado {
 	//Total de elementos após a clonagem
 	public int totalClonagem;
 	
+	public double s;
+	
 	//Taxa de clonagem
 	public int taxaClonagem = 1;
 	//Numero de divisoes do grid da populacaos secundaria
@@ -50,10 +52,12 @@ public class MISA extends AlgoritmoAprendizado {
 	 */
 	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg){
 		super(n,prob,g,a,t);
-		pareto = new FronteiraPareto(s);
+		
 		taxaClonagem = tc;
 		totalClonagem = taxaClonagem * tamanhoPopulacao;
 		partesGrid = pg;
+		
+		this.s = s;
 		
 		//Probabilidade inicial da mutacao não uniforme
 		non_uniform_prob = 0.6;
@@ -86,7 +90,7 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		//Inicio aleatório da população
 		iniciarPopulacao();
-		
+		//System.out.println(this.toString());
 		problema.avaliacoes = 0;
 		
 		
@@ -150,6 +154,8 @@ public class MISA extends AlgoritmoAprendizado {
 		}
 		
 		populacaoSecundaria = new AdaptiveGrid(problema.m, partesGrid);
+		clones = null;
+		pareto = new FronteiraPareto(s);
 	}
 	
 
@@ -357,6 +363,27 @@ public class MISA extends AlgoritmoAprendizado {
 		mutacao(dominadas, non_uniform_prob);
 		non_uniform_prob -= decremento;
 		
+	}
+	
+	public String toString(){
+		StringBuffer buff = new StringBuffer();
+		int tamPop = 0;
+		int tamClone = 0;
+		int tamSec = 0;
+		
+		
+		if(populacao !=null)
+			tamPop = populacao.size();
+		if(clones !=null)
+			tamClone = clones.size();
+		if(populacaoSecundaria!=null)	
+			tamSec = populacaoSecundaria.size();
+			
+		buff.append("Populacao: " +tamPop + "\n");
+		buff.append("Clones: " +tamClone + "\n");
+		buff.append("Secundaria: " + tamSec + "\n");
+		buff.append("Pareto: " + pareto.fronteira.size());
+		return buff.toString();
 	}
 	
 

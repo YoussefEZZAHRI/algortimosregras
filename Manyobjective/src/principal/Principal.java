@@ -197,6 +197,9 @@ public class Principal {
 		
 		ArrayList<ArrayList<PontoFronteira>> fronteiras = new ArrayList<ArrayList<PontoFronteira>>();
 		
+		long tinicial, tfinal;
+		
+		
 		for(int i = 0; i<numExec; i++){
 			
 			String caminhoDirExec = caminhoDir+i+"/";
@@ -207,14 +210,18 @@ public class Principal {
 			PrintStream psFronteiraExec = new PrintStream(caminhoDirExec+id+"_fronteira.txt");
 			
 			psTempo.print(i +":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
+			tinicial = Calendar.getInstance().getTimeInMillis();
 			
 			ArrayList<SolucaoNumerica> solucoes = null;
+
+			System.out.println("Execucao: " + i);
 			if(numeroavaliacoes==-1)
 				solucoes =  algoritmo.executar();
 			else
 				solucoes =  algoritmo.executarAvaliacoes();
 			
 			psTempo.print(Calendar.getInstance().getTimeInMillis()  + "\n");
+			
 			
 			for (int j = 0; j < maioresObjetivos.length; j++) {
 				maioresObjetivos[j] = 0;
@@ -250,8 +257,11 @@ public class Principal {
 				System.out.print(maioresObjetivos[j] + "\t");
 				
 			}
-			System.out.println("\n");
+			System.out.println();
+			tfinal = Calendar.getInstance().getTimeInMillis();
 			
+			System.out.println("Tempo Execucao: " + ((double)(tfinal - tinicial)/1000) + " (s)");
+			System.out.println();
 		}
 		
 		
