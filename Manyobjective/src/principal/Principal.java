@@ -3,6 +3,7 @@ package principal;
 import indicadores.Dominance;
 import indicadores.GD;
 import indicadores.Hipervolume;
+import indicadores.IGD;
 import indicadores.Indicador;
 import indicadores.PontoFronteira;
 import indicadores.Spread;
@@ -61,7 +62,9 @@ public class Principal {
 	
 	public String alg1;
 	public String alg2;
+	public String dirExec = "";
 	public boolean dominance = false;
+	public int num_sol_fronteira = 0;;
 	
 	public String indicador = "";
 	
@@ -133,39 +136,56 @@ public class Principal {
 			System.err.println("Algoritmo para a execucao do indicador não foi definido (Tags alg1)");
 			System.exit(0);
 		}
-			
 		
-		String caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + alg1 +"/";
-		File dir = new File(caminhoDir);
-		dir.mkdirs();
 		
-		String idExec = alg + prob + "_" + m + alg1;
-		Indicador ind;
-		if(indicador.equals("gd")){
-			ArrayList<SolucaoNumerica> fronteira =  problema.obterFronteira(n, populacao);
-			ArrayList<PontoFronteira> pftrue= new ArrayList<PontoFronteira>();
-			
-			for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
-				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
-				PontoFronteira temp = new PontoFronteira(solucao.objetivos);
-				pftrue.add(temp);
+		String[] configuracoes = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
+		if(!alg1.equals("all")){
+			configuracoes = new String[1];
+			configuracoes[0] = alg1;
+		}
+		
+		for (int i = 0; i < configuracoes.length; i++) {
+			alg1 = configuracoes[i];
+			String diretorio = dirExec;
+			if(diretorio.equals(""))
+				diretorio = System.getProperty("user.dir");
+
+			String caminhoDir = diretorio + "/resultados/" + alg + "/" +prob + "/" + m + "/" + alg1 +"/";
+			File dir = new File(caminhoDir);
+			dir.mkdirs();
+
+			String idExec = alg + prob + "_" + m + alg1;
+			Indicador ind;
+			if(indicador.equals("gd") || indicador.equals("igd")){
+				if(num_sol_fronteira == 0)
+					num_sol_fronteira = populacao;
+				ArrayList<SolucaoNumerica> fronteira =  problema.obterFronteira(n, num_sol_fronteira);
+				ArrayList<PontoFronteira> pftrue= new ArrayList<PontoFronteira>();
+
+				for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
+					SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+					PontoFronteira temp = new PontoFronteira(solucao.objetivos);
+					pftrue.add(temp);
+				}
+
+				if(indicador.equals("gd"))
+					ind = new GD(m, caminhoDir, idExec, pftrue);
+				else
+					ind = new IGD(m, caminhoDir, idExec, pftrue);
 			}
-					
-			ind = new GD(m, caminhoDir, idExec, pftrue);
-			
+			else{
+				if(indicador.equals("hipervolume"))
+					ind = new Hipervolume(m, caminhoDir, idExec, limitesHiper);
+				else
+					ind = new Spread(m, caminhoDir, idExec);
+			}
+
+			ind.preencherObjetivosMaxMin(maxmimObjetivos);
+			String arquivo1 = caminhoDir + "/" + idExec  + "_fronteira.txt";
+			System.out.println("Indicador: " + ind.indicador);
+			System.out.println("S = " + alg1);
+			ind.calcularIndicadorArquivo(arquivo1);
 		}
-		else{
-			if(indicador.equals("hipervolume"))
-				ind = new Hipervolume(m, caminhoDir, idExec, limitesHiper);
-			else
-				ind = new Spread(m, caminhoDir, idExec);
-		}
-		
-		ind.preencherObjetivosMaxMin(maxmimObjetivos);
-		String arquivo1 = caminhoDir + "/" + idExec  + "_fronteira.txt";
-		
-		ind.calcularIndicadorArquivo(arquivo1);
-		
 	}
 
 	private  void executar()
@@ -337,6 +357,9 @@ public class Principal {
 			if(tag.equals("algoritmo"))
 				alg = valor;
 			
+			if(tag.equals("direxec"))
+				dirExec = valor;
+			
 			if(tag.equals("geracoes")){
 				geracoes = new Integer(valor).intValue();
 			}
@@ -348,6 +371,11 @@ public class Principal {
 				m = new Integer(valor).intValue();
 			if(tag.equals("n"))
 				n = new Integer(valor).intValue();
+			
+			if(tag.equals("num_sol_fronteira"))
+				num_sol_fronteira = new Integer(valor).intValue();
+			
+			
 			if(tag.equals("taxaclonagem"))
 				taxaclonagem = new Integer(valor).intValue();
 			
@@ -370,7 +398,7 @@ public class Principal {
 			}
 			
 			if(tag.equals("indicador"))
-			if(valor.equals("hipervolume") || valor.equals("gd") || valor.equals("spread")){
+			if(valor.equals("hipervolume") || valor.equals("gd") || valor.equals("spread") || valor.equals("igd")){
 					indicador = valor;
 			}
 			
