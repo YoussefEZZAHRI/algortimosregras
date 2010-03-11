@@ -1,5 +1,6 @@
 package problema;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -25,6 +26,7 @@ public class DTLZ4 extends Problema {
 	 */
 	public DTLZ4(int m){
 		super(m);
+		problema = "dtlz4";
 	}
 	
 	/**
@@ -98,7 +100,7 @@ public class DTLZ4 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int m = 2;
+		/*int m = 2;
 		FronteiraPareto pareto = new FronteiraPareto(0.25);
 		
 		DTLZ4 dtlz2 = new DTLZ4(m);
@@ -111,7 +113,19 @@ public class DTLZ4 extends Problema {
 		}
 		System.out.println("Fronteira:");
 		System.out.println(pareto);
+		*/
 		
+		int m = 10;
+		int numSol = 100;
+		int k = 10;
+		
+		int n = m + k - 1;
+		
+		DTLZ4 dtlz4 = new DTLZ4(m);
+		
+		try{
+			dtlz4.imprimirFronteirar(n, m, numSol);
+		} catch (IOException ex){ex.printStackTrace();}
 		
 		
 	}
