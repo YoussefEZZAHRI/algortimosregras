@@ -1,5 +1,7 @@
 package problema;
 
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -24,6 +26,7 @@ public class DTLZ2 extends Problema {
 	 */
 	public DTLZ2(int m){
 		super(m);
+		problema = "dtlz2";
 	}
 	
 	/**
@@ -118,19 +121,16 @@ public class DTLZ2 extends Problema {
 	public static void main(String[] args) {
 		
 		int m = 2;
-		DTLZ2 dtlz2 = new DTLZ2(m);
-		ArrayList<SolucaoNumerica> solucoes =  dtlz2.obterFronteira(12, 250);
-		ComparetorObjetivo comp = new ComparetorObjetivo(0);
-		Collections.sort(solucoes, comp);
+		int numSol = 100;
+		int k = 10;
 		
-		for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
-			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
-			for (int i = 0; i < solucao.objetivos.length; i++) {
-				System.out.print((""+solucao.objetivos[i]).replace('.', ',') + "\t");
-			}
-			
-			System.out.println();
-		}
+		int n = m + k - 1;
+		
+		DTLZ2 dtlz2 = new DTLZ2(m);
+		
+		try{
+			dtlz2.imprimirFronteirar(n, m, numSol);
+		} catch (IOException ex){ex.printStackTrace();}
 		
 		/*FronteiraPareto pareto = new FronteiraPareto(0.25, false);
 		

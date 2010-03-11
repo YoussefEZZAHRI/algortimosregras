@@ -1,5 +1,7 @@
 package problema;
 
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -10,6 +12,8 @@ public abstract class Problema {
 	
 	public int m;
 	public int avaliacoes;
+	
+	public String problema;
 	
 	public Problema(int m){
 		this.m = m;
@@ -109,6 +113,23 @@ public abstract class Problema {
 		
 	}
 	
+	
+	public void imprimirFronteirar(int n, int m, int numSol) throws IOException{
+		
+		ArrayList<SolucaoNumerica> fronteira =  obterFronteira(n, numSol);
+		
+		String arqFronteira = problema +"_" + m +"_fronteira.txt";
+		
+		PrintStream psFronteira = new PrintStream(arqFronteira);
+		
+		for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+			for(int i = 0; i<m; i++){
+				psFronteira.print(new Double( solucao.objetivos[i]).toString().replace('.', ',')+ " ");
+			}
+			psFronteira.println();
+		}
+	}
 	
 
 

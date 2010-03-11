@@ -10,7 +10,7 @@ public class GerarArquivosConfiguracao {
 	public static void gerarArquivos(int m) throws IOException{
 		
 		
-		String problema  = "dtlz4";
+		String problema  = "dtlz2";
 		String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
 		String metodo = "misa";
 		String exec = "30";
@@ -65,7 +65,7 @@ public class GerarArquivosConfiguracao {
 	}
 	
 	public static void main(String[] args) {
-		int m = 3;
+		int m = 10;
 		try{
 			gerarArquivos(m);
 		} catch (Exception e) {
