@@ -37,6 +37,10 @@ public abstract class Solucao {
 	
 	}
 	
+	public abstract boolean  isNumerica();
+	
+	public abstract boolean  isBinaria();
+	
 	
 	//Metodo que gera uma solucao aleatorio
 	public abstract void iniciarSolucaoAleatoria();

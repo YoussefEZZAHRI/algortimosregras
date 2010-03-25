@@ -177,5 +177,13 @@ public class SolucaoNumerica extends Solucao {
 	public double[] getVariaveis(){
 		return variaveis;
 	}
+	
+	public  boolean  isNumerica(){
+		return true;
+	}
+	
+	public  boolean  isBinaria(){
+		return false;
+	}
 
 }

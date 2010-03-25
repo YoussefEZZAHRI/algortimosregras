@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 import problema.DTLZ2;
 import problema.Problema;
+import solucao.Solucao;
 import solucao.SolucaoNumerica;
 import kernel.Avaliacao;
 
@@ -38,7 +39,7 @@ public class SMOPSO extends MOPSO{
 	/**
 	 * Método principal que executa as operaçoes do MOPSO
 	 */
-	public ArrayList<SolucaoNumerica> executar(){
+	public ArrayList<Solucao> executar(){
 		
 		String arquivoSaida = "medidas.txt";
 		
@@ -69,7 +70,7 @@ public class SMOPSO extends MOPSO{
 		
 	}
 	
-	public ArrayList<SolucaoNumerica> executarAvaliacoes(){
+	public ArrayList<Solucao> executarAvaliacoes(){
 		
 		String arquivoSaida = "medidas.txt";
 	
@@ -127,8 +128,8 @@ public class SMOPSO extends MOPSO{
 			averageRank(pareto.fronteira);			
 		calcularCrowdingDistance(pareto.fronteira);
 		
-		Avaliacao aval = new Avaliacao(pareto.fronteira, problema.m);
-		double[] medidas = aval.avaliar();
+		//Avaliacao aval = new Avaliacao(pareto.fronteira, problema.m);
+		//double[] medidas = aval.avaliar();
 		
 		//if(i %10 == 0)
 		//	psMedidas.println(i + "\t" + new Double(medidas[0]).toString().replace('.', ',') + "\t" + new Double(medidas[1]).toString().replace('.', ',') + "\t" + new Double(medidas[2]).toString().replace('.', ',') + "\t" + new Double(medidas[3]).toString().replace('.', ','));
@@ -178,16 +179,16 @@ public class SMOPSO extends MOPSO{
 		int a = -1;
 		for(int i = 0; i<5; i++){
 			SMOPSO nuvem = new SMOPSO(n, prob, g, a, t, 0.25, true);
-			ArrayList<SolucaoNumerica> fronteira = nuvem.executar();
-			for (Iterator<SolucaoNumerica> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
+			ArrayList<Solucao> fronteira = nuvem.executar();
+			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 				prob.calcularObjetivos(solucao);
 				System.out.println(solucao);
 				
 			}
 			//System.out.println();
-			Avaliacao aval = new Avaliacao(fronteira, m);
-			aval.avaliar();	
+			//Avaliacao aval = new Avaliacao(fronteira, m);
+			//aval.avaliar();	
 		}
 		
 		
