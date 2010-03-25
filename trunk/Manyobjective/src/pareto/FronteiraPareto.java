@@ -11,12 +11,13 @@ import kernel.nuvemparticulas.Particula;
 import solucao.ComparetorCrowdDistance;
 import solucao.ComparetorCrowdedOperator;
 import solucao.ComparetorRank;
+import solucao.Solucao;
 import solucao.SolucaoNumerica;
 import sun.java2d.pipe.SolidTextRenderer;
 
 public class FronteiraPareto {
 	
-	public ArrayList<SolucaoNumerica> fronteira = null;
+	public ArrayList<Solucao> fronteira = null;
 	
 	public ArrayList<Particula> fronteiraNuvem = null;
 	
@@ -24,7 +25,7 @@ public class FronteiraPareto {
 
 	
 	public FronteiraPareto(double s){
-		fronteira = new ArrayList<SolucaoNumerica>();
+		fronteira = new ArrayList<Solucao>();
 		fronteiraNuvem = new ArrayList<Particula>();
 		S = s;
 	}
@@ -60,7 +61,7 @@ public class FronteiraPareto {
 	 * @param regra Regra a ser adicionada
 	 * @return Valor booleano que especifica se o elemento foi inserido ou nao na fronteira 
 	 */
-	public double add(SolucaoNumerica solucao){
+	public double add(Solucao solucao){
 		//Só adiciona na fronteira caso a regra seja da classe passada como parametro
 		solucao.numDominacao = 0;
 		if(fronteira.size()==0){
@@ -202,7 +203,7 @@ public class FronteiraPareto {
 	
 	
 	
-	public ArrayList<SolucaoNumerica> getFronteira(){
+	public ArrayList<Solucao> getFronteira(){
 		return fronteira;
 	}
 	
@@ -278,7 +279,7 @@ public class FronteiraPareto {
 	 * @param solucao Solução a ser contada o numero de dominação		
 	 * @return Quantas soluções a solução passada como parametro é dominada
 	 */
-	public double obterNumDomincao(SolucaoNumerica solucao, ArrayList<SolucaoNumerica> solucoes){
+	public double obterNumDomincao(Solucao solucao, ArrayList<Solucao> solucoes){
 		
 		int numDominacao = 0;
 		
@@ -291,8 +292,8 @@ public class FronteiraPareto {
 			novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
 		}
 		
-		for (Iterator<SolucaoNumerica> iter = solucoes.iterator(); iter.hasNext();) {
-			SolucaoNumerica temp = (SolucaoNumerica) iter.next();
+		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
+			Solucao temp = iter.next();
 			
 			double[] novosObjetivosTemp = new double[temp.objetivos.length];
 

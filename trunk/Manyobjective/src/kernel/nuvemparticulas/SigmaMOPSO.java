@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import problema.DTLZ2;
 import problema.Problema;
+import solucao.Solucao;
 import solucao.SolucaoNumerica;
 import kernel.Avaliacao;
 
@@ -28,7 +29,7 @@ public class SigmaMOPSO extends MOPSO{
 	/**
 	 * Método principal que executa as operaçoes do MOPSO
 	 */
-	public ArrayList<SolucaoNumerica> executar(){
+	public ArrayList<Solucao> executar(){
 		//Apaga todas as listas antes do inicio da execução
 		reiniciarExecucao();
 		//Inicia a populçao
@@ -52,7 +53,7 @@ public class SigmaMOPSO extends MOPSO{
 	/**
 	 * Método principal que executa as operaçoes do MOPSO
 	 */
-	public ArrayList<SolucaoNumerica> executarAvaliacoes(){
+	public ArrayList<Solucao> executarAvaliacoes(){
 		//Apaga todas as listas antes do inicio da execução
 		reiniciarExecucao();
 		//Inicia a populçao
@@ -122,16 +123,16 @@ public class SigmaMOPSO extends MOPSO{
 		int a = -1;
 		for(int i = 0; i<5; i++){
 			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25);
-			ArrayList<SolucaoNumerica> fronteira= nuvem.executar();
-			for (Iterator<SolucaoNumerica> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
+			ArrayList<Solucao> fronteira= nuvem.executar();
+			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 				prob.calcularObjetivos(solucao);
 				//System.out.println(solucao);
 				
 			}
 			//System.out.println();
-			Avaliacao aval = new Avaliacao(fronteira, m);
-			aval.avaliar();	
+			//Avaliacao aval = new Avaliacao(fronteira, m);
+			//aval.avaliar();	
 		}
 		
 		

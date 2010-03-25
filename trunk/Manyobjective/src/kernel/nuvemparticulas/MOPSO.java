@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import problema.Problema;
 import pareto.FronteiraPareto;
+import solucao.Solucao;
 import solucao.SolucaoNumerica;
 import kernel.AlgoritmoAprendizado;
 
@@ -50,7 +51,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	/**
 	 * Método principal que executa as operaçoes do MOPSO
 	 */
-	public abstract ArrayList<SolucaoNumerica> executar();
+	public abstract ArrayList<Solucao> executar();
 	
 	public abstract void escolherLideres();
 	

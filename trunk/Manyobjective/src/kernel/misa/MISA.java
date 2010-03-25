@@ -10,6 +10,7 @@ import problema.Problema;
 
 import solucao.ComparetorDominacao;
 import solucao.ComparetorRank;
+import solucao.Solucao;
 import solucao.SolucaoNumerica;
 import kernel.AlgoritmoAprendizado;
 
@@ -23,9 +24,9 @@ an Artificial Immune System
 public class MISA extends AlgoritmoAprendizado {
 
 	
-	public ArrayList<SolucaoNumerica> populacao = null;
+	public ArrayList<Solucao> populacao = null;
 	public AdaptiveGrid populacaoSecundaria = null;
-	public ArrayList<SolucaoNumerica> clones = null;
+	public ArrayList<Solucao> clones = null;
 	
 	//Total de elementos após a clonagem
 	public int totalClonagem;
@@ -68,7 +69,7 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	@Override
 	
-	public ArrayList<SolucaoNumerica> executar() {
+	public ArrayList<Solucao> executar() {
 		
 		//Inicio aleatório da população
 		iniciarPopulacao();
@@ -86,7 +87,7 @@ public class MISA extends AlgoritmoAprendizado {
 		return populacao;
 	}
 	
-	public ArrayList<SolucaoNumerica> executarAvaliacoes() {
+	public ArrayList<Solucao> executarAvaliacoes() {
 		
 		//Inicio aleatório da população
 		iniciarPopulacao();
@@ -109,9 +110,9 @@ public class MISA extends AlgoritmoAprendizado {
 
 	private void lacoEvolutivo() {
 		encontrarSolucoesNaoDominadas(populacao, pareto);
-		ArrayList<SolucaoNumerica> melhores = obterMelhoresAnticorpos(pareto, populacao, 0.05);
+		ArrayList<Solucao> melhores = obterMelhoresAnticorpos(pareto, populacao, 0.05);
 		//Adiciona as melhores soluções do problema no grid da populacao secundaria
-		for (Iterator<SolucaoNumerica> iterator = melhores.iterator(); iterator.hasNext();) {
+		for (Iterator<Solucao> iterator = melhores.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 			solucao.aceita = populacaoSecundaria.add(solucao);
 		}
@@ -145,7 +146,7 @@ public class MISA extends AlgoritmoAprendizado {
 	 * Método que inicia a população aleatoriamente e inicia a população secundária como vazia
 	 */
 	public void iniciarPopulacao(){
-		populacao = new ArrayList<SolucaoNumerica>();
+		populacao = new ArrayList<Solucao>();
 		for(int i = 0; i<tamanhoPopulacao; i++){
 			SolucaoNumerica s = new SolucaoNumerica(n, problema.m);
 			s.iniciarSolucaoAleatoria();
@@ -164,17 +165,17 @@ public class MISA extends AlgoritmoAprendizado {
 	 * @param populacaoFinal População final da iteração
 	 * @param paretoTemp Conjunto das melhore soluçõs encontradas até então
 	 */
-	public void reduzirPopulacao(ArrayList<SolucaoNumerica> populacaoFinal, FronteiraPareto paretoTemp){
+	public void reduzirPopulacao(ArrayList<Solucao> populacaoFinal, FronteiraPareto paretoTemp){
 		//Se o número das melhores soluções é menor que o tamanho máximo, todas as soluções são adicionadas na população final 
 		//e as melhores soluções (domindas por menos soluções) dominadas da população
 		//Caso contrário somente as melhore soluções são adicionadas na população final
 		if(paretoTemp.fronteira.size()<tamanhoPopulacao){
-			ArrayList<SolucaoNumerica> temp = obterMelhoresAnticorpos(paretoTemp, populacaoFinal, 1.0);
+			ArrayList<Solucao> temp = obterMelhoresAnticorpos(paretoTemp, populacaoFinal, 1.0);
 			populacaoFinal.clear();
 			populacaoFinal.addAll(temp);
 		}
 		else{
-			ArrayList<SolucaoNumerica> solucoesFinais = paretoTemp.fronteira;
+			ArrayList<Solucao> solucoesFinais = paretoTemp.fronteira;
 			//Escolhe as melhores soluções atraves do metodo AR 
 			averageRank(solucoesFinais);
 			ComparetorRank comp = new ComparetorRank();
@@ -194,14 +195,14 @@ public class MISA extends AlgoritmoAprendizado {
 	 * @param porcentagemaMinima Porcentagem mínima de soluções que devem ser retornadas
 	 * @return
 	 */
-	public ArrayList<SolucaoNumerica> obterMelhoresAnticorpos(FronteiraPareto paretoAtual, ArrayList<SolucaoNumerica> populacao,  double porcentagemaMinima){
-		ArrayList<SolucaoNumerica> melhores = new ArrayList<SolucaoNumerica>();
+	public ArrayList<Solucao> obterMelhoresAnticorpos(FronteiraPareto paretoAtual, ArrayList<Solucao> populacao,  double porcentagemaMinima){
+		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
 		melhores.addAll(paretoAtual.fronteira);
 		int maxMelhores = (int)(porcentagemaMinima*tamanhoPopulacao);
 		//Caso o número das melhores soluções seja menor que a porcentamge tamanhoMelhores da população deve-se preencher os array das melhores soluções
 		if(melhores.size()< maxMelhores){
-			ArrayList<SolucaoNumerica> dominadas = new ArrayList<SolucaoNumerica>();
-			for (Iterator<SolucaoNumerica> iterator = populacao.iterator(); iterator.hasNext();) {
+			ArrayList<Solucao> dominadas = new ArrayList<Solucao>();
+			for (Iterator<Solucao> iterator = populacao.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 				if(!melhores.contains(solucao)){
 					dominadas.add(solucao);
@@ -222,10 +223,10 @@ public class MISA extends AlgoritmoAprendizado {
 	 * Clona as melhores soluções da iteração
 	 * @param clones Melhores solucoes da iteração
 	 */
-	public void clonarMelhoresAnticorpos(ArrayList<SolucaoNumerica> clones){
+	public void clonarMelhoresAnticorpos(ArrayList<Solucao> clones){
 		//Calcula o numero estimado de clones para cada elemento a ser colnado
 		int numEstimadoClones = (taxaClonagem*populacao.size())/populacaoSecundaria.size();
-		clones = new ArrayList<SolucaoNumerica>();
+		clones = new ArrayList<Solucao>();
 		if(populacaoSecundaria.isFull())
 			clonarFull(numEstimadoClones, populacaoSecundaria.getAll());
 		else
@@ -238,8 +239,8 @@ public class MISA extends AlgoritmoAprendizado {
 	 * @param numBase Número estimado de clones para cada solução
 	 * @param melhores Soluções que serão clonadas
 	 */
-	public void clonarFull(int numBase, ArrayList<SolucaoNumerica> melhores){
-		for (Iterator<SolucaoNumerica> iterator = melhores.iterator(); iterator.hasNext();) {
+	public void clonarFull(int numBase, ArrayList<Solucao> melhores){
+		for (Iterator<Solucao> iterator = melhores.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 			double fator = 1;
 			if(!solucao.aceita)
@@ -268,15 +269,15 @@ public class MISA extends AlgoritmoAprendizado {
 	 * @param numBase Número estimado de clones para cada solução
 	 * @param melhores Soluções que serão clonadas
 	 */
-	public void clonarNotFull(int numBase, ArrayList<SolucaoNumerica> melhores){
+	public void clonarNotFull(int numBase, ArrayList<Solucao> melhores){
 		double[][] distancias = new double[melhores.size()][melhores.size()];
 		double[] mediasIndividuais = new double[melhores.size()];
 		double mediaDistancias = 0;
 		double numDist = 0;
 		for(int i = 0; i< melhores.size()-1;i++){
-			SolucaoNumerica solucao1 = melhores.get(i);
+			SolucaoNumerica solucao1 = (SolucaoNumerica)melhores.get(i);
 			for(int j = i+1; j<melhores.size(); j++){
-				SolucaoNumerica solucao2 = melhores.get(j);
+				SolucaoNumerica solucao2 = (SolucaoNumerica)melhores.get(j);
 				distancias[i][j] = distanciaEuclidiana(solucao1.objetivos, solucao2.objetivos);
 				mediaDistancias+= distancias[i][j];
 				mediasIndividuais[i] += distancias[i][j];
@@ -301,7 +302,7 @@ public class MISA extends AlgoritmoAprendizado {
 		}
 		
 		int i = 0;
-		for (Iterator<SolucaoNumerica> iterator = melhores.iterator(); iterator.hasNext();) {
+		for (Iterator<Solucao> iterator = melhores.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 			double fator = 1;
 			//Se a solução pertence à parte de baixo
@@ -333,8 +334,8 @@ public class MISA extends AlgoritmoAprendizado {
 	 * Aplica uma mutação polinomial com probabilidade prob em todos os clones
 	 * @param solucoes
 	 */
-	public void mutacao(ArrayList<SolucaoNumerica> solucoes, double prob){
-		for (Iterator<SolucaoNumerica> iterator = solucoes.iterator(); iterator.hasNext();) {
+	public void mutacao(ArrayList<Solucao> solucoes, double prob){
+		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 
 			mutacaoPolinomial(prob, solucao);
@@ -346,14 +347,14 @@ public class MISA extends AlgoritmoAprendizado {
 		}
 	}
 	
-	public void mutacaoSolucoesNaoTaoBoas(ArrayList<SolucaoNumerica> clones){
+	public void mutacaoSolucoesNaoTaoBoas(ArrayList<Solucao> clones){
 		
 		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S);
 		encontrarSolucoesNaoDominadas(clones, clonesNaoDominados);
-		ArrayList<SolucaoNumerica> melhores = clonesNaoDominados.getFronteira();
+		ArrayList<Solucao> melhores = clonesNaoDominados.getFronteira();
 		
-		ArrayList<SolucaoNumerica> dominadas = new ArrayList<SolucaoNumerica>();
-		for (Iterator<SolucaoNumerica> iterator = clones.iterator(); iterator.hasNext();) {
+		ArrayList<Solucao> dominadas = new ArrayList<Solucao>();
+		for (Iterator<Solucao> iterator = clones.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 			if(!melhores.contains(solucao)){
 				dominadas.add(solucao);

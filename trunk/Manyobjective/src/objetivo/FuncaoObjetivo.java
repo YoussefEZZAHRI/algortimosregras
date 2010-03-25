@@ -1,4 +1,4 @@
-package problema;
+package objetivo;
 
 import solucao.Solucao;
 

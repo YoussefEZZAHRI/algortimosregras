@@ -40,5 +40,13 @@ public class SolucaoBinaria extends Solucao {
 		SolucaoBinaria sol = new SolucaoBinaria(10, 3);
 		sol.iniciarSolucaoAleatoria();
 	}
+	
+	public boolean  isNumerica(){
+		return false;
+	}
+	
+	public boolean  isBinaria(){
+		return true;
+	}
 
 }

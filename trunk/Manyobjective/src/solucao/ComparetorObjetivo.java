@@ -2,7 +2,7 @@ package solucao;
 
 import java.util.Comparator;
 
-public class ComparetorObjetivo implements Comparator<SolucaoNumerica>{
+public class ComparetorObjetivo implements Comparator<Solucao>{
 	
 	public int objetivoVez;
 	
@@ -10,7 +10,7 @@ public class ComparetorObjetivo implements Comparator<SolucaoNumerica>{
 		objetivoVez = i;
 	}
 	
-	public int compare(SolucaoNumerica s1, SolucaoNumerica s2){
+	public int compare(Solucao s1, Solucao s2){
 		double objetivo1 = s1.objetivos[objetivoVez];
 		double objetivo2 = s2.objetivos[objetivoVez];
 		if(objetivo1<objetivo2)
