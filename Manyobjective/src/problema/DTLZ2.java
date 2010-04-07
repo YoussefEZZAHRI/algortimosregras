@@ -19,6 +19,9 @@ import solucao.SolucaoNumerica;
  */
 
 public class DTLZ2 extends Problema {
+	
+	
+
 
 	/**
 	 * Construtor da classe
@@ -118,19 +121,23 @@ public class DTLZ2 extends Problema {
 	
 
 	
+
+	
 	public static void main(String[] args) {
 		
-		int m = 2;
-		int numSol = 100;
+		int m = 3;
+		int numSol = 100000;
 		int k = 10;
 		
 		int n = m + k - 1;
 		
 		DTLZ2 dtlz2 = new DTLZ2(m);
 		
-		try{
+		/*try{
 			dtlz2.imprimirFronteirar(n, m, numSol);
-		} catch (IOException ex){ex.printStackTrace();}
+		} catch (IOException ex){ex.printStackTrace();}*/
+		
+		
 		
 		/*FronteiraPareto pareto = new FronteiraPareto(0.25, false);
 		
