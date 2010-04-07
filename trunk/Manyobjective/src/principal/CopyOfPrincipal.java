@@ -40,7 +40,7 @@ import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
-public class Principal {
+public class CopyOfPrincipal {
 	
 	public String alg = null;
 	public String prob = null;
@@ -81,7 +81,7 @@ public class Principal {
 	
 	 
 	public static void main(String[] args) {	
-		Principal principal = new Principal();
+		CopyOfPrincipal principal = new CopyOfPrincipal();
 		try{			
 			principal.carregarArquivoConf(args[0]);
 			principal.setProblema();

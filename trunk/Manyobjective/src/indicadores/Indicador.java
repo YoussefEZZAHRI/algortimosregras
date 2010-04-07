@@ -86,8 +86,12 @@ public abstract class Indicador {
 		
 		carregarArrayList(nomeArquivo, fronteiras);
 		
-		calcularIndicadorArray(fronteiras);
-		
+		if(!indicador.equals("tchebycheff"))
+			calcularIndicadorArray(fronteiras);
+		else{
+			Tchebycheff tcheb = (Tchebycheff) this;
+			tcheb.calcularTchebycheff(fronteiras);
+		}
 		fecharArquivosSaida();
 	}
 
