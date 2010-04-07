@@ -36,6 +36,7 @@ import problema.DTLZ4;
 import problema.DTLZ5;
 import problema.DTLZ6;
 import problema.Problema;
+import problema.TestCaseSelection;
 import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
@@ -79,6 +80,12 @@ public class Principal {
 	public int taxaclonagem;
 	public int partesgrid;
 	
+	public String programaes; 
+	public int numeroCasosTeste;
+	public String funcoesobjetivo;
+	
+	public String tipoSolucao;
+	
 	 
 	public static void main(String[] args) {	
 		Principal principal = new Principal();
@@ -98,7 +105,7 @@ public class Principal {
 					if(principal.alg.equals("misa"))
 						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid);
 					if(principal.alg.equals("nsga2"))
-						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, "numerica");
+						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao);
 					
 					
 					principal.executar();
@@ -152,7 +159,7 @@ public class Principal {
 			if(diretorio.equals(""))
 				diretorio = System.getProperty("user.dir");
 
-			String caminhoDir = diretorio + "/resultados/" + alg + "/" +prob + "/" + m + "/" + alg1 +"/";
+			String caminhoDir = diretorio + "resultados/" + alg + "/" +prob + "/" + m + "/" + alg1 +"/";
 			File dir = new File(caminhoDir);
 			dir.mkdirs();
 
@@ -190,7 +197,7 @@ public class Principal {
 					}
 				}
 			}
-			
+
 			if(ind!=null){
 				ind.preencherObjetivosMaxMin(maxmimObjetivos);
 				String arquivo1 = caminhoDir + "/" + idExec  + "_fronteira.txt";
@@ -260,8 +267,13 @@ public class Principal {
 				maioresObjetivos[j] = 0;
 			}
 			
+			ArrayList<PontoFronteira> fronteira = new ArrayList<PontoFronteira>();
+			
 			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
-				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+				Solucao solucao = iterator.next();
+				
+				PontoFronteira pf = new PontoFronteira(solucao.objetivos);
+				fronteira.add(pf);
 				
 				for(int j = 0; j<m; j++){
 					if(solucao.objetivos[j]>maioresObjetivos[j])
@@ -269,13 +281,7 @@ public class Principal {
 				}
 			}
 			
-			ArrayList<PontoFronteira> fronteira = new ArrayList<PontoFronteira>();
 			
-			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
-				SolucaoNumerica solucao = (SolucaoNumerica)iterator.next();
-				PontoFronteira pf = new PontoFronteira(solucao.objetivos);
-				fronteira.add(pf);
-			}
 			fronteiras.add(fronteira);
 			
 			gerarSaida(solucoes, psSolucaoGeral,  psFronteiraGeral, psSolucaoExec, psFronteiraExec);
@@ -309,10 +315,10 @@ public class Principal {
 		spread.preencherObjetivosMaxMin(maxmimObjetivos);
 		spread.calcularIndicadorArray(fronteiras);
 	
-		/*ArrayList<Solucao> fronteira =  problema.obterFronteira(n, populacao);
+		ArrayList<SolucaoNumerica> fronteira =  problema.obterFronteira(n, populacao);
 		ArrayList<PontoFronteira> pftrue= new ArrayList<PontoFronteira>();
 		
-		for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
+		for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
 			Solucao solucao = (Solucao) iterator.next();
 			PontoFronteira temp = new PontoFronteira(solucao.objetivos);
 			pftrue.add(temp);
@@ -320,18 +326,28 @@ public class Principal {
 				
 		GD gd = new GD(m, caminhoDir, id+S, pftrue);
 		gd.preencherObjetivosMaxMin(maxmimObjetivos);
-		gd.calcularIndicadorArray(fronteiras);*/
+		gd.calcularIndicadorArray(fronteiras);
+		
+		IGD igd = new IGD(m, caminhoDir, id+S, pftrue);
+		igd.preencherObjetivosMaxMin(maxmimObjetivos);
+		igd.calcularIndicadorArray(fronteiras);
+		
+		double[] j =  problema.getJoelho(n);
+		double[] l = problema.getLambda(n);
+		Tchebycheff tcheb = new Tchebycheff(m, caminhoDir, id+S, j , l);
+		tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
+		tcheb.calcularIndicadorArray(fronteiras);
 	}
 	
 	public void gerarSaida(ArrayList<Solucao> fronteira, PrintStream solGeral, PrintStream psFronteiraGeral, PrintStream solExecucao, PrintStream psFronteiraExec){
 		
 		
 		for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
-			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+			Solucao solucao = iterator.next();
 			solGeral.println(solucao);
 			solExecucao.println(solucao);
 			for(int i = 0; i<m; i++){				
-				psFronteiraExec.print(new Double( solucao.objetivos[i]).toString().replace('.', ',')+ "\t");
+				psFronteiraExec.print(new Double( solucao.objetivos[i]).toString().replace('.', ',')+ " ");
 				psFronteiraGeral.print(new Double(solucao.objetivos[i]).toString().replace('.', ',') + " ");	
 			}
 			psFronteiraExec.println();
@@ -341,6 +357,12 @@ public class Principal {
 	
 	public void setProblema(){
 		prob = prob.toUpperCase();
+		if(prob.equals("TESTSELECTION")){
+			problema = new TestCaseSelection(m, funcoesobjetivo, programaes, dirExec, numeroCasosTeste);
+			tipoSolucao = "binaria";
+			n = numeroCasosTeste;
+		} else{
+		tipoSolucao = "numerica";
 		if(prob.equals("DTLZ1"))
 			problema = new DTLZ1(m);
 		if(prob.equals("DTLZ2"))
@@ -353,94 +375,107 @@ public class Principal {
 			problema = new DTLZ5(m);
 		if(prob.equals("DTLZ6"))
 			problema = new DTLZ6(m);
+		}
 	}
 	
 	public void carregarArquivoConf(String nomeArquivo)throws IOException{
 		Reader reader = new FileReader(nomeArquivo);
 		BufferedReader buff = new BufferedReader(reader);
 		while(buff.ready()){
-			String linhaString = buff.readLine(); 
-			String linha[] = linhaString.split("=");
-			if(linha.length!=2){
-				System.err.println("Erro no arquivo de configuração. Linha: " + linhaString);
-				System.exit(0);
-			}
-			String tag = linha[0].trim().toLowerCase();
-			String valor = linha[1].trim();
-			if(tag.equals("algoritmo"))
-				alg = valor;
-			
-			if(tag.equals("direxec"))
-				dirExec = valor;
-			
-			if(tag.equals("geracoes")){
-				geracoes = new Integer(valor).intValue();
-			}
-			if(tag.equals("populacao"))
-				populacao = new Integer(valor).intValue();
-			if(tag.equals("numexec"))
-				numExec = new Integer(valor).intValue();
-			if(tag.equals("m"))
-				m = new Integer(valor).intValue();
-			if(tag.equals("n"))
-				n = new Integer(valor).intValue();
-			
-			if(tag.equals("num_sol_fronteira"))
-				num_sol_fronteira = new Integer(valor).intValue();
-			
-			
-			if(tag.equals("taxaclonagem"))
-				taxaclonagem = new Integer(valor).intValue();
-			
-			if(tag.equals("maxobjhiper"))
-				maxobjhiper = new Integer(valor).intValue();
-			
-			if(tag.equals("avaliacoes"))
-				numeroavaliacoes = new Integer(valor).intValue();
-			
-			
-			if(tag.equals("problema")){
-				prob = valor;
-			}
-			
-			if(tag.equals("dominance")){
-				if(valor.equals("true"))
-					dominance = true;
-				else
-					dominance = false;
-			}
-			
-			if(tag.equals("indicador"))
-			if(valor.equals("hipervolume") || valor.equals("gd") || valor.equals("spread") || valor.equals("igd") || valor.equals("tchebycheff")){
-					indicador = valor;
-			}
-			
-			if(tag.equals("alg1")){
-				alg1 = valor;
-			}
-			
-			if(tag.equals("alg2")){
-				alg2 = valor;
-			}
-			
-			if(tag.equals("s"))
-				S = new Double(valor).doubleValue();
-			if(tag.equals("partesgrid")){
-				partesgrid = new Integer(valor).intValue();
-			}
-			
-			if(tag.equals("limites_objetivos")){
-				setLimitesHiper(valor);
-			}
-			if(tag.equals("objetivos")){
-				maxmimObjetivos = valor.split(" ");
-			}
-			
-			if(tag.equals("ordenacao")){
-				if(valor.equals("true"))
-					rank = true;
-				else
-				   	rank = false;
+			String linhaString = buff.readLine();
+			if(!linhaString.isEmpty()){
+				String linha[] = linhaString.split("=");
+
+				if(linha.length!=2){
+					System.err.println("Erro no arquivo de configuração. Linha: " + linhaString);
+					System.exit(0);
+				}
+				String tag = linha[0].trim().toLowerCase();
+				String valor = linha[1].trim();
+				if(tag.equals("algoritmo"))
+					alg = valor;
+
+				if(tag.equals("direxec"))
+					dirExec = valor;
+
+				if(tag.equals("programaes"))
+					programaes = valor;
+
+				if(tag.equals("funcoesobjetivo"))
+					funcoesobjetivo = valor;
+
+				if(tag.equals("numerocasosteste"))
+					numeroCasosTeste = new Integer(valor).intValue();
+
+				if(tag.equals("geracoes")){
+					geracoes = new Integer(valor).intValue();
+				}
+				if(tag.equals("populacao"))
+					populacao = new Integer(valor).intValue();
+				if(tag.equals("numexec"))
+					numExec = new Integer(valor).intValue();
+				if(tag.equals("m"))
+					m = new Integer(valor).intValue();
+				if(tag.equals("n"))
+					n = new Integer(valor).intValue();
+
+				if(tag.equals("num_sol_fronteira"))
+					num_sol_fronteira = new Integer(valor).intValue();
+
+
+				if(tag.equals("taxaclonagem"))
+					taxaclonagem = new Integer(valor).intValue();
+
+				if(tag.equals("maxobjhiper"))
+					maxobjhiper = new Integer(valor).intValue();
+
+				if(tag.equals("avaliacoes"))
+					numeroavaliacoes = new Integer(valor).intValue();
+
+
+				if(tag.equals("problema")){
+					prob = valor;
+				}
+
+				if(tag.equals("dominance")){
+					if(valor.equals("true"))
+						dominance = true;
+					else
+						dominance = false;
+				}
+
+				if(tag.equals("indicador"))
+					if(valor.equals("hipervolume") || valor.equals("gd") || valor.equals("spread") || valor.equals("igd") || valor.equals("tchebycheff")){
+						indicador = valor;
+					}
+
+				if(tag.equals("alg1")){
+					alg1 = valor;
+				}
+
+				if(tag.equals("alg2")){
+					alg2 = valor;
+				}
+
+				if(tag.equals("s"))
+					S = new Double(valor).doubleValue();
+				if(tag.equals("partesgrid")){
+					partesgrid = new Integer(valor).intValue();
+				}
+
+				if(tag.equals("limites_objetivos")){
+					setLimitesHiper(valor);
+				}
+				if(tag.equals("objetivos")){
+					maxmimObjetivos = valor.split(" ");
+				}
+
+				if(tag.equals("ordenacao")){
+					if(valor.equals("true"))
+						rank = true;
+					else
+						rank = false;
+				}
 			}
 		}
 		
