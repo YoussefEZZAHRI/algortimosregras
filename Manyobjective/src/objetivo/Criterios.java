@@ -30,11 +30,15 @@ public abstract class Criterios extends FuncaoObjetivo {
 	public void preencherMatrizDados(BufferedReader buff) throws IOException{
 		int i = 0;
 		while(buff.ready()){
-			String[] linha = (buff.readLine().trim()).split("\t");
-			for (int j = 0; j < linha.length; j++) {
-				dados[i][j] = new Integer(linha[j]);
+			String linha = buff.readLine().trim();
+			if(!linha.isEmpty()){
+				String[] linhaArray = linha.split("\t");
+				for (int j = 0; j < linhaArray.length; j++) {
+					dados[i][j] = new Integer(linhaArray[j]);
+				}
+
+				i++;
 			}
-			i++;
 		}
 	}
 	

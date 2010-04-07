@@ -12,6 +12,7 @@ import problema.Problema;
 import solucao.ComparetorObjetivo;
 import solucao.ComparetorRank;
 import solucao.Solucao;
+import solucao.SolucaoBinaria;
 import solucao.SolucaoNumerica;
 
 public abstract class AlgoritmoAprendizado {
@@ -61,21 +62,21 @@ public abstract class AlgoritmoAprendizado {
 	
 	public void calcularCrowdingDistance(ArrayList<Solucao> solucoes){
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
-			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+			Solucao solucao =  iterator.next();
 			solucao.crowdDistance = 0;
 		}
 		
 		for(int m = 0; m<problema.m; m++){
 			ComparetorObjetivo comp = new ComparetorObjetivo(m);
 			Collections.sort(solucoes, comp);
-			SolucaoNumerica sol1 = (SolucaoNumerica)solucoes.get(0);
-			SolucaoNumerica solN = (SolucaoNumerica)solucoes.get(solucoes.size()-1);
+			Solucao sol1 = solucoes.get(0);
+			Solucao solN = solucoes.get(solucoes.size()-1);
 			sol1.crowdDistance = Double.MAX_VALUE;
 			solN.crowdDistance = Double.MAX_VALUE;
 			for(int i = 1; i<solucoes.size()-1; i++){
-				SolucaoNumerica sol = (SolucaoNumerica)solucoes.get(i);
-				SolucaoNumerica solProx = (SolucaoNumerica)solucoes.get(i+1);
-				SolucaoNumerica solAnt = (SolucaoNumerica)solucoes.get(i-1);
+				Solucao sol = solucoes.get(i);
+				Solucao solProx = solucoes.get(i+1);
+				Solucao solAnt = solucoes.get(i-1);
 				sol.crowdDistance += solProx.objetivos[m] - solAnt.objetivos[m];
 			}
 		}
@@ -106,11 +107,11 @@ public abstract class AlgoritmoAprendizado {
 		}
 	}
 	
-	public void mutacaoPolinomial(double prob_mutacao, Solucao solucao){
+	public void mutacao(double prob_mutacao, Solucao solucao){
 		if(solucao.isNumerica())
 			mutacaoPolinomialNumerica(prob_mutacao, (SolucaoNumerica)solucao);
 		else
-			;
+			((SolucaoBinaria) solucao).mutacaoSimples(prob_mutacao);
 	}
 	
 	/**
@@ -152,6 +153,8 @@ public abstract class AlgoritmoAprendizado {
 			}
 		}	
 	}
+	
+	
 	
 	public void averageRank(ArrayList<Solucao> solucoes){
 		int[][][] A = new int[problema.m][solucoes.size()][solucoes.size()];

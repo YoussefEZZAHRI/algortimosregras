@@ -18,7 +18,7 @@ public class Tempo extends FuncaoObjetivo {
 			BufferedReader buff = new BufferedReader(new FileReader(arquivoTempo));
 			int k = 0;
 			while(buff.ready()){
-				String linha = buff.readLine();
+				String linha = buff.readLine().trim();
 				if(!linha.isEmpty()){
 					tempo[k++] = new Long(linha);
 					
