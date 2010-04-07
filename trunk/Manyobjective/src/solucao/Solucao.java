@@ -21,8 +21,6 @@ public abstract class Solucao {
 	
 	public double rank = -1;
 	
-	public double[] limitesPosicaoSuperior;
-	
 	
 	/**
 	 * Construtor da classe

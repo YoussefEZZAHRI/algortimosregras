@@ -56,7 +56,8 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		ArrayList<Solucao> populacaoCombinada = new ArrayList<Solucao>();
 		
 		for(int g = 0; g<geracoes; g++){
-			
+			if(g%10 == 0)
+				System.out.print(g + " ");
 			lacoEvolutivo(populacaoCombinada);
 		}
 		
@@ -96,8 +97,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		Collections.sort(populacaoCombinada, compCrwd);
 		populacao.clear();
 		for(int i = 0; i<tamanhoPopulacao; i++){
-			SolucaoNumerica solucao = (SolucaoNumerica)populacaoCombinada.get(i);
-			solucao.truncar();
+			Solucao solucao = populacaoCombinada.get(i);
 			populacao.add(solucao);
 		}
 		calcularCrowdingDistance(populacao);
@@ -111,7 +111,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 			Solucao pai1 = escolherPaiBinaryTournament(solucoes, comp); 
 			Solucao pai2 = escolherPaiBinaryTournament(solucoes, comp);
 			Solucao filho = recombinacao(pai1, pai2);
-			mutacaoPolinomial(PROB_MUT_COD, filho);
+			mutacao(PROB_MUT_COD, filho);
 			if(filho.isNumerica())
 				((SolucaoNumerica)filho).truncar();
 			problema.calcularObjetivos(filho);
@@ -125,6 +125,8 @@ public class NSGA2 extends AlgoritmoAprendizado {
 			Solucao s = null;
 			if(tipoSolucao.equals("numerica"))
 				s = new SolucaoNumerica(n, problema.m);
+			else
+				s = new SolucaoBinaria(n, problema.m);
 			s.iniciarSolucaoAleatoria();
 			problema.calcularObjetivos(s);
 			populacao.add(s);
@@ -157,15 +159,15 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		}
 	}
 	
-	public void fastNonDominatedSort(ArrayList<SolucaoNumerica> solucoes){
-		ArrayList<SolucaoNumerica> dominadas = new ArrayList<SolucaoNumerica>();
-		ArrayList<SolucaoNumerica> naoDominadas = new ArrayList<SolucaoNumerica>();
+	public void fastNonDominatedSort(ArrayList<Solucao> solucoes){
+		ArrayList<Solucao> dominadas = new ArrayList<Solucao>();
+		ArrayList<Solucao> naoDominadas = new ArrayList<Solucao>();
 		int rank = 0;
-		for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
-			SolucaoNumerica p = (SolucaoNumerica) iterator.next();
+		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
+			Solucao p =  iterator.next();
 			p.numDominacao = 0;
-			for (Iterator iterator2 = solucoes.iterator(); iterator2.hasNext();) {
-				SolucaoNumerica q = (SolucaoNumerica) iterator2.next();
+			for (Iterator<Solucao> iterator2 = solucoes.iterator(); iterator2.hasNext();) {
+				Solucao q =  iterator2.next();
 				int comp = pareto.compararMedidas(p.objetivos, q.objetivos);
 				if(comp == 1)
 					dominadas.add(q);
@@ -181,12 +183,12 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		
 		
 		while(naoDominadas.size()>0){
-			ArrayList<SolucaoNumerica> H = new ArrayList<SolucaoNumerica>();
-			for (Iterator iterator = naoDominadas.iterator(); iterator.hasNext();) {
+			ArrayList<Solucao> H = new ArrayList<Solucao>();
+			for (Iterator<Solucao> iterator = naoDominadas.iterator(); iterator.hasNext();) {
 				rank++;
-				SolucaoNumerica p = (SolucaoNumerica) iterator.next();
-				for (Iterator iterator2 = dominadas.iterator(); iterator2.hasNext();) {
-					SolucaoNumerica q = (SolucaoNumerica) iterator2.next();
+				Solucao p =  iterator.next();
+				for (Iterator<Solucao> iterator2 = dominadas.iterator(); iterator2.hasNext();) {
+					Solucao q =  iterator2.next();
 					q.numDominacao--;
 					if(q.numDominacao == 0){
 						H.add(q);
@@ -204,7 +206,20 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		if(solucao1.isNumerica())
 			novaSolucao = recombinacaoNumerica((SolucaoNumerica)solucao1, (SolucaoNumerica)solucao2);
 		else
-			;
+			novaSolucao = recombinacaoBinaria((SolucaoBinaria) solucao1, (SolucaoBinaria) solucao2);
+		return novaSolucao;
+	}
+	
+	public SolucaoBinaria recombinacaoBinaria(SolucaoBinaria solucao1, SolucaoBinaria solucao2){
+		int fator = (int)Math.ceil(Math.log10(n));
+		int pontoJuncao = (int)((Math.random()*fator) % n);
+		SolucaoBinaria novaSolucao = (SolucaoBinaria)solucao1.clone();
+		
+		
+		for (int i = pontoJuncao; i < solucao2.n; i++) {
+			novaSolucao.setVariavel(i,  solucao2.getVariavel(i));
+		}
+		
 		return novaSolucao;
 	}
 

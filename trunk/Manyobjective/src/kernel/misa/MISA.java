@@ -338,7 +338,7 @@ public class MISA extends AlgoritmoAprendizado {
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 
-			mutacaoPolinomial(prob, solucao);
+			mutacao(prob, solucao);
 			
 			solucao.truncar();
 			
