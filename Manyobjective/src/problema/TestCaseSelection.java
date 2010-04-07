@@ -24,8 +24,9 @@ public class TestCaseSelection extends Problema {
 		funcoesObjetivos = new ArrayList<FuncaoObjetivo>();
 		programa = p;
 		diretorio = dir;
-		addFuncoesObjetivos(fo);
 		numCasosTeste = nct;
+		addFuncoesObjetivos(fo);
+		
 		
 	}
 	
@@ -55,10 +56,10 @@ public class TestCaseSelection extends Problema {
 		int i = 0;
 		for (Iterator<FuncaoObjetivo> iterator = funcoesObjetivos.iterator(); iterator.hasNext();) {
 			FuncaoObjetivo funcao = (FuncaoObjetivo) iterator.next();
-			objetivos[i++] = funcao.calcularObjetivo(solucao); 
+			solucao.objetivos[i++] = funcao.calcularObjetivo(solucao); 
 		}
-		
-		return objetivos;
+		avaliacoes++;
+		return solucao.objetivos;
 	}
 
 	@Override
