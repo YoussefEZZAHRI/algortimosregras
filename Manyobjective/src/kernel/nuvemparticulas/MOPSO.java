@@ -2,6 +2,7 @@ package kernel.nuvemparticulas;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 import problema.Problema;
@@ -24,17 +25,18 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	//Arraylist que representa o repositório com as soluções não dominadas
 	//public ArrayList<Particula> repositorio = null;
 	
-	
+	private String[] maxmim = null;
 	
 	
 	Problema problema = null;
 	
 	
-	public MOPSO(int n, Problema prob, int g, int a, int t, double s){
+	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, boolean r){
 		super(n,prob,g, a,t);
 		populacao = new ArrayList<Particula>();
 		//repositorio = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(s);
+		pareto = new FronteiraPareto(s, maxmim,r);
+		this.maxmim = maxmim;
 		problema = prob;
 	}
 	
@@ -44,7 +46,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 */
 	public void reiniciarExecucao(){
 		populacao = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(pareto.S);
+		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank);
 		problema.avaliacoes =0; 
 	}
 	
@@ -83,6 +85,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 *
 	 */
 	public void atualizarRepositorio(){
+		
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula =  iter.next();
 			if(!pareto.fronteiraNuvem.contains(particula)){

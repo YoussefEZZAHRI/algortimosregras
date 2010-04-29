@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import objetivo.CriterioFuncional;
 import objetivo.FuncaoObjetivo;
+import objetivo.TamanhoSolucao;
 import objetivo.Tempo;
 
 import solucao.Solucao;
@@ -44,6 +45,11 @@ public class TestCaseSelection extends Problema {
 			if(funcao.equals("tempo")){
 				Tempo tempo = new Tempo(arquivo, numCasosTeste);
 				funcoesObjetivos.add(tempo);
+			}
+			
+			if(funcao.equals("tamanho")){
+				TamanhoSolucao tamanho = new TamanhoSolucao();
+				funcoesObjetivos.add(tamanho);
 			}
 		}
 		

@@ -449,9 +449,10 @@ public class Particula {
 	 * Caso sim os novos objetivos são setados.
 	 *
 	 */
-	public void escolherLocalBest(){
+	public void escolherLocalBest(FronteiraPareto pareto){
 		double[] objetivos = solucao.objetivos;
-		int retorno = FronteiraPareto.compararMedidas(objetivos,localBestObjetivos);
+		
+		int retorno = pareto.compararMedidas(objetivos,localBestObjetivos);
 		if(retorno == 1 || retorno == 0){
 			localBestObjetivos = objetivos;
 			localBest = posicao;
@@ -511,7 +512,7 @@ public class Particula {
 		str.deleteCharAt(str.length()-1);
 		str.deleteCharAt(str.length()-1);
 		str.append(">\n");
-		str.append("Dominacao: " + solucao.numDominacao);
+		str.append("Rank: " + solucao.rank);
 		
 		return str.toString();
 	}

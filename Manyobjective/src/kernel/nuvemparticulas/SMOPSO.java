@@ -29,11 +29,11 @@ public class SMOPSO extends MOPSO{
 	
 	
 		
-	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, boolean r){
-		super(n,prob,g,a,t,s);
-		tamanhoRepositorio = tamanhoPopulacao;
-		rank = r;
+	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, boolean r){
+		super(n,prob,g,a,t,s, maxmim, r);
+		tamanhoRepositorio = tamanhoPopulacao;	
 		
+		rank = r;
 	}
 		
 	/**
@@ -119,7 +119,7 @@ public class SMOPSO extends MOPSO{
 			//Avalia a partícula
 			problema.calcularObjetivos(particula.solucao);
 			//Define o melhor local
-			particula.escolherLocalBest();
+			particula.escolherLocalBest(pareto);
 		}
 		//Obtém as melhores particulas da população
 		atualizarRepositorio();
@@ -128,14 +128,8 @@ public class SMOPSO extends MOPSO{
 			averageRank(pareto.fronteira);			
 		calcularCrowdingDistance(pareto.fronteira);
 		
-		//Avaliacao aval = new Avaliacao(pareto.fronteira, problema.m);
-		//double[] medidas = aval.avaliar();
-		
-		//if(i %10 == 0)
-		//	psMedidas.println(i + "\t" + new Double(medidas[0]).toString().replace('.', ',') + "\t" + new Double(medidas[1]).toString().replace('.', ',') + "\t" + new Double(medidas[2]).toString().replace('.', ',') + "\t" + new Double(medidas[3]).toString().replace('.', ','));
-		
-		//pareto.podarLideresCrowd(tamanhoRepositorio);
 		pareto.podarLideresCrowdOperatorParticula(tamanhoRepositorio);
+		
 		//Recalcula a Crowding distance dos lideres
 		calcularCrowdingDistance(pareto.fronteira);
 		
@@ -177,8 +171,10 @@ public class SMOPSO extends MOPSO{
 		int g = 250;
 		int t = 100;
 		int a = -1;
+		
+		String[] mm = {"-","-","-"};
 		for(int i = 0; i<5; i++){
-			SMOPSO nuvem = new SMOPSO(n, prob, g, a, t, 0.25, true);
+			SMOPSO nuvem = new SMOPSO(n, prob, g, a, t, 0.25,  mm, false);
 			ArrayList<Solucao> fronteira = nuvem.executar();
 			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();

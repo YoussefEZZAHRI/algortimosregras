@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import kernel.nuvemparticulas.Particula;
+
 import pareto.FronteiraPareto;
 import problema.Problema;
 import solucao.ComparetorObjetivo;
@@ -154,15 +156,26 @@ public abstract class AlgoritmoAprendizado {
 		}	
 	}
 	
-	
+	public void averageRankParticula(ArrayList<Particula> particulas){
+		ArrayList<Solucao> solucoes = new ArrayList<Solucao>();
+		for (Iterator<Particula> iterator = particulas.iterator(); iterator.hasNext();) {
+			Particula particula = (Particula) iterator.next();
+			solucoes.add(particula.solucao);
+		}
+		
+		averageRank(solucoes);
+		
+		solucoes.clear();
+		solucoes = null;
+	}
 	
 	public void averageRank(ArrayList<Solucao> solucoes){
 		int[][][] A = new int[problema.m][solucoes.size()][solucoes.size()];
 		for(int k = 0; k<problema.m; k++){
 			for(int i = 0; i<solucoes.size()-1; i++){
-				SolucaoNumerica solucaoi = (SolucaoNumerica)solucoes.get(i);
+				Solucao solucaoi = solucoes.get(i);
 				for(int j = i+1; j<solucoes.size(); j++){
-					SolucaoNumerica solucaoj = (SolucaoNumerica) solucoes.get(j);
+					Solucao solucaoj =  solucoes.get(j);
 					if(solucaoi.objetivos[k]<solucaoj.objetivos[k]){
 						A[k][i][j] = 1;
 						A[k][j][i] = -1;
@@ -180,7 +193,7 @@ public abstract class AlgoritmoAprendizado {
 		}
 		
 		for(int i = 0; i<solucoes.size(); i++){
-			SolucaoNumerica solucaoi = (SolucaoNumerica)solucoes.get(i);
+			Solucao solucaoi = solucoes.get(i);
 			for(int k = 0; k<problema.m; k++){
 				for(int j = 0; j<solucoes.size(); j++){
 					if(i!=j){

@@ -99,13 +99,13 @@ public class Principal {
 					principal.executarIndicador();
 				else{
 					if(principal.alg.equals("sigma"))
-						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S);
+						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.rank);
 					if(principal.alg.equals("smopso"))
-						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.rank);
+						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.rank);
 					if(principal.alg.equals("misa"))
-						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid);
+						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.rank);
 					if(principal.alg.equals("nsga2"))
-						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao);
+						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao, principal.maxmimObjetivos, principal.rank);
 					
 					
 					principal.executar();
@@ -318,25 +318,28 @@ public class Principal {
 		ArrayList<SolucaoNumerica> fronteira =  problema.obterFronteira(n, populacao);
 		ArrayList<PontoFronteira> pftrue= new ArrayList<PontoFronteira>();
 		
-		for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
-			Solucao solucao = (Solucao) iterator.next();
-			PontoFronteira temp = new PontoFronteira(solucao.objetivos);
-			pftrue.add(temp);
+		if(fronteira!=null){
+			for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
+				Solucao solucao = (Solucao) iterator.next();
+				PontoFronteira temp = new PontoFronteira(solucao.objetivos);
+				pftrue.add(temp);
+			}
+
+			GD gd = new GD(m, caminhoDir, id+S, pftrue);
+			gd.preencherObjetivosMaxMin(maxmimObjetivos);
+			gd.calcularIndicadorArray(fronteiras);
+
+			IGD igd = new IGD(m, caminhoDir, id+S, pftrue);
+			igd.preencherObjetivosMaxMin(maxmimObjetivos);
+			igd.calcularIndicadorArray(fronteiras);
+
+
+			double[] j =  problema.getJoelho(n);
+			double[] l = problema.getLambda(n);
+			Tchebycheff tcheb = new Tchebycheff(m, caminhoDir, id+S, j , l);
+			tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
+			tcheb.calcularIndicadorArray(fronteiras);
 		}
-				
-		GD gd = new GD(m, caminhoDir, id+S, pftrue);
-		gd.preencherObjetivosMaxMin(maxmimObjetivos);
-		gd.calcularIndicadorArray(fronteiras);
-		
-		IGD igd = new IGD(m, caminhoDir, id+S, pftrue);
-		igd.preencherObjetivosMaxMin(maxmimObjetivos);
-		igd.calcularIndicadorArray(fronteiras);
-		
-		double[] j =  problema.getJoelho(n);
-		double[] l = problema.getLambda(n);
-		Tchebycheff tcheb = new Tchebycheff(m, caminhoDir, id+S, j , l);
-		tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
-		tcheb.calcularIndicadorArray(fronteiras);
 	}
 	
 	public void gerarSaida(ArrayList<Solucao> fronteira, PrintStream solGeral, PrintStream psFronteiraGeral, PrintStream solExecucao, PrintStream psFronteiraExec){
@@ -470,7 +473,7 @@ public class Principal {
 					maxmimObjetivos = valor.split(" ");
 				}
 
-				if(tag.equals("ordenacao")){
+				if(tag.equals("rank")){
 					if(valor.equals("true"))
 						rank = true;
 					else

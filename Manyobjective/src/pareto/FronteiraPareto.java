@@ -22,12 +22,39 @@ public class FronteiraPareto {
 	public ArrayList<Particula> fronteiraNuvem = null;
 	
 	public double S;
-
 	
-	public FronteiraPareto(double s){
+	public boolean rank;
+	
+	public double[] objetivosMaxMin = null;
+	
+	
+	/*public FronteiraPareto(double s){
 		fronteira = new ArrayList<Solucao>();
 		fronteiraNuvem = new ArrayList<Particula>();
 		S = s;
+		
+	}*/
+	
+	public FronteiraPareto(double s, String[] maxmim, boolean r){
+		fronteira = new ArrayList<Solucao>();
+		fronteiraNuvem = new ArrayList<Particula>();
+		S = s;
+		rank= r;
+		preencherObjetivosMaxMin(maxmim);
+	}
+	
+	/**
+	 * Método que define para cada objetivo se ele é de maximização ou minimização
+	 * @param maxmim
+	 */
+	public void preencherObjetivosMaxMin(String[] maxmim){
+		objetivosMaxMin = new double[maxmim.length];
+		for (int i = 0; i < maxmim.length; i++) {
+			if(maxmim[i].equals("+"))
+				objetivosMaxMin[i] = 1;
+			else
+				objetivosMaxMin[i] = -1;
+		}
 	}
 	
 	public void setFronteira(ArrayList<SolucaoNumerica> temp){
@@ -93,6 +120,7 @@ public class FronteiraPareto {
 		
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
+			
 			if(comp == -1)
 				solucao.numDominacao++;
 			if(comp == 1)
@@ -138,8 +166,10 @@ public class FronteiraPareto {
 				novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.solucao.objetivos[i], r, S);
 			}
 
-
+			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
+			
+			
 			if(comp == -1){
 				particula.solucao.numDominacao++;
 			}
@@ -211,12 +241,12 @@ public class FronteiraPareto {
 		return fronteira.toString();
 	}
 	/**
-	 * Método que verifica se uma solução domina a outra (Minimização)
+	 * Método que verifica se uma solução domina a outra
 	 * @param sol1 Solução que será comparada com as regras pertencentes a fronteira de pareto
 	 * @param sol2 Solução pertencente a fronteira de pareto
 	 * @return -1 Se sol1 for dominada, 0 se a sol1 nao domina nem eh dominada, 1 sol1 domina sol2 
 	 */
-	public static int compararMedidas(double[] sol1, double[] sol2){
+	public int compararMedidas(double[] sol1, double[] sol2){
 		//Contador que marca quantos valores da regra 1 sao maiores que os da regra2
 		//Se cont for igual ao tamanho dos elementos da regra 1 entao a regra 2 eh dominada pela regra1
 		//Se cont for igual a 0 a regra2 domina a regra1
@@ -224,7 +254,7 @@ public class FronteiraPareto {
 		int cont = 0; 
 		int cont2 = sol1.length;
 		for (int i = 0; i < sol1.length; i++) {
-			if(sol1[i]<sol2[i]){
+			if(sol1[i]*objetivosMaxMin[i]>sol2[i]*objetivosMaxMin[i]){
 				++cont;
 			} else {
 				if(sol1[i]==sol2[i]){
@@ -244,6 +274,17 @@ public class FronteiraPareto {
 			else return 1;
 		}
 	}
+	
+	/*public int compararMedidas(Solucao sol1, Solucao sol2){
+		if(sol1.rank>sol2.rank)
+			return -1;
+		else{
+			if(sol1.rank<sol2.rank)
+				return 1;
+				else
+					return 0;
+		}
+	}*/
 	
 	/**
 	 * Modificação da modificação da dominância de Pareto proposta por Sato
