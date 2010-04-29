@@ -20,8 +20,8 @@ public class SigmaMOPSO extends MOPSO{
 
 
 	
-	public SigmaMOPSO(int n, Problema prob, int g, int a, int t, double s){
-		super(n,prob,g, a,t, s);
+	public SigmaMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, boolean r){
+		super(n,prob,g, a,t, s, maxmim, r);
 
 	}
 	
@@ -88,7 +88,7 @@ public class SigmaMOPSO extends MOPSO{
 			//Avalia a partícula
 			problema.calcularObjetivos(particula.solucao);
 			//Define o melhor local
-			particula.escolherLocalBest();
+			particula.escolherLocalBest(pareto);
 		}
 		//Obtém as melhores particulas da população
 		atualizarRepositorio();
@@ -121,8 +121,9 @@ public class SigmaMOPSO extends MOPSO{
 		int g = 50;
 		int t = 100;
 		int a = -1;
+		String[] mm = {"-","-","-"};
 		for(int i = 0; i<5; i++){
-			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25);
+			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25, mm, false);
 			ArrayList<Solucao> fronteira= nuvem.executar();
 			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();

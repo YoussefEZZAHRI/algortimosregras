@@ -32,10 +32,10 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	
 	
 	
-	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts){
+	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts, String[] maxmim, boolean r){
 		super(n,prob,g, a,t);
 		
-		pareto = new FronteiraPareto(s);
+		pareto = new FronteiraPareto(s, maxmim, r);
 		problema = prob;
 		
 		tipoSolucao = ts;

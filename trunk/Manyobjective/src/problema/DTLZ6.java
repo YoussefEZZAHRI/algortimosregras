@@ -97,20 +97,7 @@ public class DTLZ6 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int m = 2;
-		FronteiraPareto pareto = new FronteiraPareto(0.25);
-		
-		DTLZ6 dtlz2 = new DTLZ6(m);
-		for(int i = 0; i<2; i++){
-			SolucaoNumerica sol = new SolucaoNumerica(5, m);
-			sol.iniciarSolucaoAleatoria();
-			dtlz2.calcularObjetivos(sol);
-			System.out.println(sol);
-			pareto.add(sol);
-		}
-		System.out.println("Fronteira:");
-		System.out.println(pareto);
-		
+	
 		
 		
 	}

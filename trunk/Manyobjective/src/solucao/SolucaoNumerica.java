@@ -20,7 +20,6 @@ public class SolucaoNumerica extends Solucao {
 	//Variável que marca se a solução foi aceita na inserção da população secundária do MISA
 	public boolean aceita;
 	
-	public double rank = -1;
 	
 	//Limites que definem o espaço de busca dos atributos da partícula
 	public double[] limitesPosicaoInferior;

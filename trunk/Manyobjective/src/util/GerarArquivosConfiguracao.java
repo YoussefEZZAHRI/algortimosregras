@@ -12,11 +12,11 @@ public class GerarArquivosConfiguracao {
 		
 		String problema  = "dtlz2";
 		String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
-		String metodo = "misa";
-		String exec = "30";
+		String metodo = "smopso";
+		String exec = "50";
 		String g = "100";
-		String a = "250000";
-		String p = "100";
+		String a = "-1";
+		String p = "250";
 		String rank = "false";
 		String taxaclonagem = "7";
 		String partesgrid = "25";
@@ -65,7 +65,7 @@ public class GerarArquivosConfiguracao {
 	}
 	
 	public static void main(String[] args) {
-		int m = 10;
+		int m = 20;
 		try{
 			gerarArquivos(m);
 		} catch (Exception e) {

@@ -59,7 +59,7 @@ public abstract class Indicador {
 	public void preencherObjetivosMaxMin(String[] maxmim){
 		objetivosMaxMin = new double[maxmim.length];
 		for (int i = 0; i < maxmim.length; i++) {
-			if(maxmim.equals("+"))
+			if(maxmim[i].equals("+"))
 				objetivosMaxMin[i] = 1;
 			else
 				objetivosMaxMin[i] = -1;
