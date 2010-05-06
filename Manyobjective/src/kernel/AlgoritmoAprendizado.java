@@ -194,6 +194,7 @@ public abstract class AlgoritmoAprendizado {
 		
 		for(int i = 0; i<solucoes.size(); i++){
 			Solucao solucaoi = solucoes.get(i);
+			solucaoi.rank = 0;
 			for(int k = 0; k<problema.m; k++){
 				for(int j = 0; j<solucoes.size(); j++){
 					if(i!=j){

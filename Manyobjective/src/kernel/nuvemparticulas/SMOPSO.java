@@ -29,9 +29,9 @@ public class SMOPSO extends MOPSO{
 	
 	
 		
-	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, boolean r){
+	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, boolean r, int tr){
 		super(n,prob,g,a,t,s, maxmim, r);
-		tamanhoRepositorio = tamanhoPopulacao;	
+		tamanhoRepositorio = tr;	
 		
 		rank = r;
 	}
@@ -51,7 +51,10 @@ public class SMOPSO extends MOPSO{
 		//Inicia a populçao
 		inicializarPopulacao();
 		//Obtém as melhores partículas da população
-		atualizarRepositorio();		
+		if(!rank)
+			atualizarRepositorio();
+		else
+			iniciarRepositorioRank();	
 		//Obtém os melhores globais para todas as partículas da população
 		escolherLideres();
 		
@@ -83,7 +86,10 @@ public class SMOPSO extends MOPSO{
 		//Inicia a populçao
 		inicializarPopulacao();
 		//Obtém as melhores partículas da população
-		atualizarRepositorio();		
+		if(!rank)
+			atualizarRepositorio();
+		else
+			iniciarRepositorioRank();
 		//Obtém os melhores globais para todas as partículas da população
 		escolherLideres();
 		
@@ -121,11 +127,12 @@ public class SMOPSO extends MOPSO{
 			//Define o melhor local
 			particula.escolherLocalBest(pareto);
 		}
+		if(rank)
+			averageRankParticula(populacao);
 		//Obtém as melhores particulas da população
 		atualizarRepositorio();
 		
-		if(rank)
-			averageRank(pareto.fronteira);			
+					
 		calcularCrowdingDistance(pareto.fronteira);
 		
 		pareto.podarLideresCrowdOperatorParticula(tamanhoRepositorio);
@@ -164,6 +171,18 @@ public class SMOPSO extends MOPSO{
 		}
 	}
 	
+	public void iniciarRepositorioRank(){
+		ComparetorRankParticula comp = new ComparetorRankParticula();
+		Collections.sort(populacao, comp);
+		for(int i = 0; i<tamanhoRepositorio; i++){
+			Particula particula = populacao.get(i);
+			pareto.fronteiraNuvem.add((Particula)particula.clone());
+		}
+		
+		pareto.retornarFronteiraNuvem();
+		
+	}
+	
 	public static void main(String[] args) {
 		int m = 3;
 		Problema prob = new DTLZ2(m);
@@ -174,7 +193,7 @@ public class SMOPSO extends MOPSO{
 		
 		String[] mm = {"-","-","-"};
 		for(int i = 0; i<5; i++){
-			SMOPSO nuvem = new SMOPSO(n, prob, g, a, t, 0.25,  mm, false);
+			SMOPSO nuvem = new SMOPSO(n, prob, g, a, t, 0.25,  mm, false, t);
 			ArrayList<Solucao> fronteira = nuvem.executar();
 			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
