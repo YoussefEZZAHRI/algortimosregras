@@ -125,13 +125,28 @@ public class DTLZ2 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int m = 3;
-		int numSol = 100000;
+		int m = 5;
+		int numSol = 200;
 		int k = 10;
 		
 		int n = m + k - 1;
 		
 		DTLZ2 dtlz2 = new DTLZ2(m);
+		
+		ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
+		try{
+			PrintStream ps = new PrintStream("fronteira_dtlz2" + m);
+			for (Iterator iterator = f.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
+						.next();
+				for(int i = 0; i<m; i++){
+					ps.print(solucaoNumerica.objetivos[i] + " ");
+				}
+				ps.println();
+				
+			}
+		} catch (IOException ex){ex.printStackTrace();}
+		
 		
 		/*try{
 			dtlz2.imprimirFronteirar(n, m, numSol);

@@ -56,6 +56,8 @@ public class Principal {
 	public int m;
 	public int n;
 	
+	public int repositorio;
+	
 	public int numeroavaliacoes=-1;
 	
 	
@@ -101,7 +103,7 @@ public class Principal {
 					if(principal.alg.equals("sigma"))
 						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.rank);
 					if(principal.alg.equals("smopso"))
-						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.rank);
+						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.rank, principal.repositorio);
 					if(principal.alg.equals("misa"))
 						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.rank);
 					if(principal.alg.equals("nsga2"))
@@ -211,30 +213,35 @@ public class Principal {
 	private  void executar()
 			throws IOException {
 		System.out.println(this);
-		
 		String id = alg + prob + "_" + m;
 		
+		String caminhoDir = null;
+		String arquivoExec = null;
+		if(!rank){
+			caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "/" ;
+			arquivoExec = caminhoDir + id+ S +"_texec.txt";
+		}else{
+			caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" +S + "_rank/" ;
+			arquivoExec = caminhoDir + id+ S +"_rank_texec.txt";
+		}
 		
-		
-		String caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "/" ;
-		//String caminhoDir = "e:/Andre/testes/resultados/" + principal.alg + "/" + principal.prob + "/" ;
 		File dir = new File(caminhoDir);
 		dir.mkdirs();
-		
-		
-		
-		String arquivoExec = caminhoDir + id+ S +"_texec.txt";
-		
-		PrintStream psTempo = new PrintStream(arquivoExec);
-		
-		
-		//PrintStream psMedidasGeral = new PrintStream(caminhoDir +id+ "_" + idS + "_medidas.txt");
-		PrintStream psSolucaoGeral = new PrintStream(caminhoDir +id+  S +"_solucoes.txt");
-		PrintStream psFronteiraGeral = new PrintStream(caminhoDir+id+ S+"_fronteira.txt");
+		PrintStream psTempo = null;
+		PrintStream psSolucaoGeral = null;
+		PrintStream psFronteiraGeral = null;
+		if(!rank){
+			psTempo = new PrintStream(arquivoExec);
+			psSolucaoGeral = new PrintStream(caminhoDir +id+  S +"_solucoes.txt");
+			psFronteiraGeral = new PrintStream(caminhoDir+id+ S+"_fronteira.txt");
+		}else {
+
+			psTempo = new PrintStream(arquivoExec);
+			psSolucaoGeral = new PrintStream(caminhoDir +id+ S+ "_rank_solucoes.txt");
+			psFronteiraGeral = new PrintStream(caminhoDir+id+ S+"_rank_fronteira.txt");
+		}
 		
 		maioresObjetivos = new double[m];
-		
-		
 		ArrayList<ArrayList<PontoFronteira>> fronteiras = new ArrayList<ArrayList<PontoFronteira>>();
 		
 		long tinicial, tfinal;
@@ -304,14 +311,18 @@ public class Principal {
 		}
 		
 		
+		String idInd = null;
+		if(!rank)
+			idInd = id + S;
+		else
+			idInd = id + S + "_rank";
 		
-		
-		Hipervolume hiper = new Hipervolume(m, caminhoDir, id+S, limitesHiper);
+		Hipervolume hiper = new Hipervolume(m, caminhoDir, idInd, limitesHiper);
 		hiper.preencherObjetivosMaxMin(maxmimObjetivos);
 		if(m<=maxobjhiper)
 			hiper.calcularIndicadorArray(fronteiras);
 		
-		Spread spread = new Spread(m, caminhoDir, id+S);
+		Spread spread = new Spread(m, caminhoDir, idInd);
 		spread.preencherObjetivosMaxMin(maxmimObjetivos);
 		spread.calcularIndicadorArray(fronteiras);
 	
@@ -325,20 +336,20 @@ public class Principal {
 				pftrue.add(temp);
 			}
 
-			GD gd = new GD(m, caminhoDir, id+S, pftrue);
+			GD gd = new GD(m, caminhoDir, idInd, pftrue);
 			gd.preencherObjetivosMaxMin(maxmimObjetivos);
 			gd.calcularIndicadorArray(fronteiras);
 
-			IGD igd = new IGD(m, caminhoDir, id+S, pftrue);
+			IGD igd = new IGD(m, caminhoDir, idInd, pftrue);
 			igd.preencherObjetivosMaxMin(maxmimObjetivos);
 			igd.calcularIndicadorArray(fronteiras);
 
 
 			double[] j =  problema.getJoelho(n);
 			double[] l = problema.getLambda(n);
-			Tchebycheff tcheb = new Tchebycheff(m, caminhoDir, id+S, j , l);
+			Tchebycheff tcheb = new Tchebycheff(m, caminhoDir, idInd, j , l);
 			tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
-			tcheb.calcularIndicadorArray(fronteiras);
+			tcheb.calcularTchebycheff(fronteiras);
 		}
 	}
 	
@@ -415,6 +426,8 @@ public class Principal {
 				}
 				if(tag.equals("populacao"))
 					populacao = new Integer(valor).intValue();
+				if(tag.equals("repositorio"))
+					repositorio = new Integer(valor).intValue();
 				if(tag.equals("numexec"))
 					numExec = new Integer(valor).intValue();
 				if(tag.equals("m"))

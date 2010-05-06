@@ -135,6 +135,20 @@ public class FronteiraPareto {
 		
 	}
 	
+	public void addRank(Particula particula){
+		if(fronteiraNuvem.size()==0){
+			fronteiraNuvem.add(particula);
+		}
+		
+		for (Iterator<Particula> iter = fronteiraNuvem.iterator(); iter.hasNext();) {
+			Particula temp = (Particula) iter.next();
+			if(particula.solucao.rank< temp.solucao.rank){
+				fronteiraNuvem.add(particula);
+				break;
+			}
+		}
+		
+	}
 	
 	public double add(Particula particula){
 		//Só adiciona na fronteira caso a regra seja da classe passada como parametro
