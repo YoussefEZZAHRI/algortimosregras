@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import solucao.ComparetorObjetivo;
+import solucao.ComparetorRank;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -221,6 +222,40 @@ public abstract class Problema {
 			getJoelho(n);
 		return lambda;
 	}
+	
+	public ArrayList<SolucaoNumerica> obterSolucoesExtremas(int n, int s) {
+		ArrayList<SolucaoNumerica> retorno = new ArrayList<SolucaoNumerica>();
+		//Número de solucoes na fronteira
+		int numSol = 100000;
+		//Obtém a fronteira de pareto real para o problema
+		ArrayList<SolucaoNumerica> fronteiraReal = obterFronteira(n, numSol);
+		for(int i = 0; i<m; i++){
+			ComparetorObjetivo comp = new ComparetorObjetivo(i);
+			Collections.sort(fronteiraReal, comp);
+			for(int j = 1; j<=s; j++){
+				retorno.add(fronteiraReal.get(j));
+			}
+		}
+		
+		getJoelho(n);
+		 	
+		
+		for(int i = 0; i<numSol; i++){
+			Solucao temp = fronteiraReal.get(i);
+			double dist = distanciaEuclidiana(temp.objetivos, joelho);
+			temp.rank = dist;
+		}
+		
+		ComparetorRank comp = new ComparetorRank();
+		Collections.sort(fronteiraReal, comp);
+		for(int j = 1; j<=s; j++){
+			retorno.add(fronteiraReal.get(j));
+		}
+		return retorno;
+		
+		
+	}
+	
 	
 
 

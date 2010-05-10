@@ -43,18 +43,21 @@ public class SMOPSO extends MOPSO{
 		
 		String arquivoSaida = "medidas.txt";
 		
-		try{
-		PrintStream psMedidas = new PrintStream(arquivoSaida);
-		
+			
 		//Apaga todas as listas antes do inicio da execução
 		reiniciarExecucao();
+		
+		//iniciarPopulacaoTeste();
 		//Inicia a populçao
 		inicializarPopulacao();
+		
 		//Obtém as melhores partículas da população
+
 		if(!rank)
 			atualizarRepositorio();
 		else
 			iniciarRepositorioRank();	
+
 		//Obtém os melhores globais para todas as partículas da população
 		escolherLideres();
 		
@@ -68,7 +71,7 @@ public class SMOPSO extends MOPSO{
 		
 		
 		pareto.retornarFronteiraNuvem();
-		}catch(IOException ex){ex.printStackTrace();}
+		
 		return pareto.getFronteira();
 		
 	}
@@ -171,6 +174,9 @@ public class SMOPSO extends MOPSO{
 		}
 	}
 	
+
+	
+
 	public void iniciarRepositorioRank(){
 		ComparetorRankParticula comp = new ComparetorRankParticula();
 		Collections.sort(populacao, comp);
@@ -183,6 +189,41 @@ public class SMOPSO extends MOPSO{
 		
 	}
 	
+	public void iniciarPopulacaoTeste(){
+		int sl = 3;
+		ArrayList<SolucaoNumerica> temp =  problema.obterSolucoesExtremas(n, sl);
+		
+		for (Iterator iterator = temp.iterator(); iterator.hasNext();) {
+			Particula particula = new Particula();
+			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
+			particula.iniciarParticulaAleatoriamente(problema, solucaoNumerica);
+			problema.calcularObjetivos(solucaoNumerica);
+			particula.localBestObjetivos = particula.solucao.objetivos;
+			populacao.add(particula);
+				
+		}
+		
+		for(int i = 0; i<3; i++){
+			Particula particula = new Particula();
+			//Contador utilizada para a criação da regra não ficar presa no laço
+			int cont = 0;
+			do{
+				SolucaoNumerica s = new SolucaoNumerica(n, problema.m);
+				s.iniciarSolucaoAleatoria();
+				particula.iniciarParticulaAleatoriamente(problema, s);
+				problema.calcularObjetivos(s);
+				cont++;
+			}while(populacao.contains(particula) && (cont<20));
+			//Avaliando os objetivos da particula;
+			particula.localBestObjetivos = particula.solucao.objetivos;
+			populacao.add(particula);	
+		}
+		
+		if(rank)
+			averageRankParticula(populacao);
+	}
+	
+
 	public static void main(String[] args) {
 		int m = 3;
 		Problema prob = new DTLZ2(m);

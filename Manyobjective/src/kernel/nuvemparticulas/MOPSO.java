@@ -88,6 +88,8 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 */
 	public void atualizarRepositorio(){
 		
+		
+		
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula =  iter.next();
 			if(!pareto.fronteiraNuvem.contains(particula)){
