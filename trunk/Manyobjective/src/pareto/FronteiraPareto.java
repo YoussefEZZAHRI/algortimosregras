@@ -135,6 +135,8 @@ public class FronteiraPareto {
 		
 	}
 	
+
+
 	public void addRank(Particula particula){
 		if(fronteiraNuvem.size()==0){
 			fronteiraNuvem.add(particula);
@@ -149,6 +151,8 @@ public class FronteiraPareto {
 		}
 		
 	}
+
+	
 	
 	public double add(Particula particula){
 		//Só adiciona na fronteira caso a regra seja da classe passada como parametro
