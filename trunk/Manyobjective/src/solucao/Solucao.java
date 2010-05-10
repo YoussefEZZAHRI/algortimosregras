@@ -20,6 +20,7 @@ public abstract class Solucao {
 	public double crowdDistance;
 	
 	public double rank = -1;
+	public double rank2 = -1;
 	
 	
 	/**

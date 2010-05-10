@@ -80,16 +80,17 @@ public class SolucaoNumerica extends Solucao {
 			buff.append(new Double(variaveis[i]).toString().replace('.', ',') + "\t");
 			//buff.append(variaveis[i] + "\t");
 		}
-		/*buff.append("\t");
+		buff.append("\n");
 		if(objetivos.length>0){
 			for (int i = 0; i < objetivos.length; i++) {
 				//buff.append(new Double(variaveis[i]).toString().replace('.', ',') + "\n");
 				buff.append(objetivos[i] + "\t");
 			}	
-		}*/
+		}
 		
 		//if(rank!=-1)
-		//	buff.append("\n" + rank + "\t");
+			buff.append("\nr: " + rank + "\t");
+			buff.append("\nr2: " + rank2 + "\t");
 		
 		//buff.append("\n" + crowdDistance + "\t");
 		

@@ -163,29 +163,30 @@ public abstract class AlgoritmoAprendizado {
 			solucoes.add(particula.solucao);
 		}
 		
-		averageRank(solucoes);
 		
+		averageRank(solucoes);
 		solucoes.clear();
 		solucoes = null;
 	}
 	
 	public void averageRank(ArrayList<Solucao> solucoes){
-		int[][][] A = new int[problema.m][solucoes.size()][solucoes.size()];
-		for(int k = 0; k<problema.m; k++){
-			for(int i = 0; i<solucoes.size()-1; i++){
-				Solucao solucaoi = solucoes.get(i);
-				for(int j = i+1; j<solucoes.size(); j++){
-					Solucao solucaoj =  solucoes.get(j);
+		int[][][] A = new int[solucoes.size()][solucoes.size()][problema.m];
+		
+		for(int i = 0; i<solucoes.size()-1; i++){
+			Solucao solucaoi = solucoes.get(i);
+			for(int j = i+1; j<solucoes.size(); j++){
+				Solucao solucaoj =  solucoes.get(j);
+				for(int k = 0; k<problema.m; k++){
 					if(solucaoi.objetivos[k]<solucaoj.objetivos[k]){
-						A[k][i][j] = 1;
-						A[k][j][i] = -1;
+						A[i][j][k] = 1;
+						A[j][i][k] = -1;
 					} else {
 						if(solucaoi.objetivos[k]>solucaoj.objetivos[k]){
-							A[k][i][j] = -1;
-							A[k][j][i] = 1;
+							A[i][j][k] = -1;
+							A[j][i][k] = 1;
 						} else {
-							A[k][i][j] = 0;
-							A[k][j][i] = 0;
+							A[i][j][k] = 0;
+							A[j][i][k] = 0;
 						}
 					}
 				}
@@ -195,15 +196,91 @@ public abstract class AlgoritmoAprendizado {
 		for(int i = 0; i<solucoes.size(); i++){
 			Solucao solucaoi = solucoes.get(i);
 			solucaoi.rank = 0;
-			for(int k = 0; k<problema.m; k++){
+		}
+		
+		for(int i = 0; i<solucoes.size(); i++){
+			Solucao solucaoi = solucoes.get(i);
+			
+		for(int k = 0; k<problema.m; k++){
+				double rank = 0;
 				for(int j = 0; j<solucoes.size(); j++){
 					if(i!=j){
-						solucaoi.rank+=((solucoes.size()+1)-A[k][i][j]);
+						if(A[i][j][k]==1)
+							rank++;
+					}
+				}
+				
+				double rankObj = (solucoes.size()) - rank;
+				solucaoi.rank+= rankObj;
+				
+				
+			}
+		
+	
+		}
+		
+	}
+	
+	public void averageRankModificado(ArrayList<Solucao> solucoes){
+		int[][][] A = new int[solucoes.size()][solucoes.size()][problema.m];
+		
+		for(int i = 0; i<solucoes.size()-1; i++){
+			Solucao solucaoi = solucoes.get(i);
+			for(int j = i+1; j<solucoes.size(); j++){
+				Solucao solucaoj =  solucoes.get(j);
+				for(int k = 0; k<problema.m; k++){
+					if(solucaoi.objetivos[k]<solucaoj.objetivos[k]){
+						A[i][j][k] = 1;
+						A[j][i][k] = -1;
+					} else {
+						if(solucaoi.objetivos[k]>solucaoj.objetivos[k]){
+							A[i][j][k] = -1;
+							A[j][i][k] = 1;
+						} else {
+							A[i][j][k] = 0;
+							A[j][i][k] = 0;
+						}
 					}
 				}
 			}
 		}
+		
+		for(int i = 0; i<solucoes.size(); i++){
+			Solucao solucaoi = solucoes.get(i);
+			solucaoi.rank = 0;
+		}
+		
+		for(int i = 0; i<solucoes.size(); i++){
+			Solucao solucaoi = solucoes.get(i);
+			double maiorRank = Double.NEGATIVE_INFINITY;
+			double menorRank = Double.POSITIVE_INFINITY;
+		for(int k = 0; k<problema.m; k++){
+				double rank = 0;
+				for(int j = 0; j<solucoes.size(); j++){
+					if(i!=j){
+						if(A[i][j][k]==1)
+							rank++;
+					}
+				}
+				
+				double rankObj = (solucoes.size()) - rank;
+				solucaoi.rank+= rankObj;
+				
+				if (rankObj >maiorRank)
+					maiorRank = rankObj;
+				if(rankObj<menorRank)
+					menorRank = rankObj;
+			}
+		
+		double diff = (maiorRank - menorRank)/ solucoes.size();
+
+		solucaoi.rank = solucaoi.rank * diff;	
+		}
+		
 	}
+	
+	
+
 	
 	/**
 	 * Método que busca as soluções não dominadas da população atual
