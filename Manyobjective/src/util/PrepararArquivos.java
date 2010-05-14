@@ -583,7 +583,7 @@ public void preparArquivosComandosFriedmanVis(String dir, String dirR, String pr
 		//String dir = "/media/disk/Andre/evoCOP2010/";
 		String objetivo = "20";
 		String problema  = "DTLZ2";
-		String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
+		String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75", "0.5_ar", "0.5_war", "0.5_ar2", "0.5_war2"};
 		//String[] algs = {"0.4"};
 		String[] algsVis = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
 		String metodo = "smopso";

@@ -11,19 +11,16 @@ import indicadores.Tchebycheff;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.Stack;
+
 
 import kernel.AlgoritmoAprendizado;
-import kernel.Avaliacao;
 import kernel.genetic.NSGA2;
 import kernel.misa.MISA;
 import kernel.nuvemparticulas.SMOPSO;
@@ -37,7 +34,6 @@ import problema.DTLZ5;
 import problema.DTLZ6;
 import problema.Problema;
 import problema.TestCaseSelection;
-import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -64,6 +60,7 @@ public class Principal {
 	public double S;
 	
 	public boolean rank;
+	public String tipoRank;
 	
 	public String alg1;
 	public String alg2;
@@ -103,7 +100,7 @@ public class Principal {
 					if(principal.alg.equals("sigma"))
 						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.rank);
 					if(principal.alg.equals("smopso"))
-						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.rank, principal.repositorio);
+						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.rank, principal.tipoRank, principal.repositorio);
 					if(principal.alg.equals("misa"))
 						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.rank);
 					if(principal.alg.equals("nsga2"))
@@ -221,8 +218,8 @@ public class Principal {
 			caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "/" ;
 			arquivoExec = caminhoDir + id+ S +"_texec.txt";
 		}else{
-			caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" +S + "_rank/" ;
-			arquivoExec = caminhoDir + id+ S +"_rank_texec.txt";
+			caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" +S  + "_" + tipoRank +"/" ;
+			arquivoExec = caminhoDir + id+ S + "_" + tipoRank + "_texec.txt";
 		}
 		
 		File dir = new File(caminhoDir);
@@ -237,8 +234,8 @@ public class Principal {
 		}else {
 
 			psTempo = new PrintStream(arquivoExec);
-			psSolucaoGeral = new PrintStream(caminhoDir +id+ S+ "_rank_solucoes.txt");
-			psFronteiraGeral = new PrintStream(caminhoDir+id+ S+"_rank_fronteira.txt");
+			psSolucaoGeral = new PrintStream(caminhoDir +id+ S+ "_" + tipoRank + "_solucoes.txt");
+			psFronteiraGeral = new PrintStream(caminhoDir+id+ S+"_" + tipoRank + "_fronteira.txt");
 		}
 		
 		maioresObjetivos = new double[m];
@@ -315,7 +312,7 @@ public class Principal {
 		if(!rank)
 			idInd = id + S;
 		else
-			idInd = id + S + "_rank";
+			idInd = id + S + "_" + tipoRank;
 		
 		Hipervolume hiper = new Hipervolume(m, caminhoDir, idInd, limitesHiper);
 		hiper.preencherObjetivosMaxMin(maxmimObjetivos);
@@ -487,10 +484,12 @@ public class Principal {
 				}
 
 				if(tag.equals("rank")){
-					if(valor.equals("true"))
-						rank = true;
-					else
+					if(valor.equals("false"))
 						rank = false;
+					else{
+						rank = true;
+						tipoRank = valor;
+					}
 				}
 			}
 		}
