@@ -9,11 +9,8 @@ import kernel.nuvemparticulas.ComparetorRankParticula;
 import kernel.nuvemparticulas.Particula;
 
 import solucao.ComparetorCrowdDistance;
-import solucao.ComparetorCrowdedOperator;
-import solucao.ComparetorRank;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
-import sun.java2d.pipe.SolidTextRenderer;
 
 public class FronteiraPareto {
 	
@@ -88,6 +85,7 @@ public class FronteiraPareto {
 	 * @param regra Regra a ser adicionada
 	 * @return Valor booleano que especifica se o elemento foi inserido ou nao na fronteira 
 	 */
+	@SuppressWarnings("unchecked")
 	public double add(Solucao solucao){
 		//Só adiciona na fronteira caso a regra seja da classe passada como parametro
 		solucao.numDominacao = 0;
@@ -154,6 +152,7 @@ public class FronteiraPareto {
 
 	
 	
+	@SuppressWarnings("unchecked")
 	public double add(Particula particula){
 		//Só adiciona na fronteira caso a regra seja da classe passada como parametro
 		particula.solucao.numDominacao = 0;

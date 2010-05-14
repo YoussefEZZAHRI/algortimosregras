@@ -9,9 +9,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import pareto.FronteiraPareto;
-import solucao.SolucaoNumerica;
-
 /**
  * Classe que representa um indicador para mensurar a qualidade de uma fronteira de Pareto
  * Contém método para leitura das soluções e gravação dos resultados
@@ -256,6 +253,7 @@ public abstract class Indicador {
 		}		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public boolean add(PontoFronteira pf, ArrayList<PontoFronteira> fronteira){
 
 		if(fronteira.size()==0){
