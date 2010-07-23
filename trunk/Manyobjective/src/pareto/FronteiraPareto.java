@@ -172,7 +172,7 @@ public class FronteiraPareto {
 		for (int i = 0; i < solucao.objetivos.length; i++) {
 			novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
 		}
-			
+		
 		
 		for (Iterator<Particula> iter = cloneFronteira.iterator(); iter.hasNext();) {
 			Particula temp = (Particula) iter.next();
@@ -182,7 +182,6 @@ public class FronteiraPareto {
 			for (int i = 0; i < temp.solucao.objetivos.length; i++) {
 				novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.solucao.objetivos[i], r, S);
 			}
-
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
 			
@@ -320,6 +319,11 @@ public class FronteiraPareto {
 		//Formula: r*sen(Wi+SiPi)/sen(SiPi)
 		double numerador = r*((senWi*cosSiPi)+(cosWi*senSiPi));
 		double novoFix = numerador/senSiPi;
+		
+		/*double diff = fix - novoFix;
+		
+		novoFix = fix + diff;*/
+		
 		return Math.max(novoFix, 0);
 	}
 	
@@ -367,6 +371,76 @@ public class FronteiraPareto {
 		}
 		
 		return numDominacao;
+	}
+	
+	public void imprimir(){
+
+		
+		int j = 0;
+		for (Iterator<Particula> iterator = fronteiraNuvem.iterator(); iterator.hasNext();) {
+			Particula particula = (Particula) iterator.next();
+			System.out.print(j + "\t");
+			for (int i = 0; i < particula.solucao.objetivos.length; i++) {
+				System.out.print(new Double(particula.solucao.objetivos[i]).toString().replace('.', ',') + "\t");
+			}
+			System.out.print("\t");
+			
+			
+
+			SolucaoNumerica solucao = particula.solucao;
+			double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
+
+			double r = r(solucao.objetivos);
+			for (int i = 0; i < solucao.objetivos.length; i++) {
+				novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
+			}
+
+
+			System.out.print(j++ + "\t");
+			for (int i = 0; i < novosObjetivosSolucao.length; i++) {
+				System.out.print(new Double(novosObjetivosSolucao[i]).toString().replace('.', ',') + "\t");
+
+			}
+			
+			System.out.println();
+		}
+		
+		System.out.println();
+	}
+	
+public void imprimir(ArrayList<Particula> pop){
+
+		
+		int j = 0;
+		for (Iterator<Particula> iterator = pop.iterator(); iterator.hasNext();) {
+			Particula particula = (Particula) iterator.next();
+			System.out.print(j + "\t");
+			for (int i = 0; i < particula.solucao.objetivos.length; i++) {
+				System.out.print(new Double(particula.solucao.objetivos[i]).toString().replace('.', ',') + "\t");
+			}
+			System.out.print("\t");
+		
+
+			SolucaoNumerica solucao = particula.solucao;
+			double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
+
+			double r = r(solucao.objetivos);
+			for (int i = 0; i < solucao.objetivos.length; i++) {
+				novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
+			}
+			
+			
+			
+			System.out.print(j++ + "\t");
+			for (int i = 0; i < novosObjetivosSolucao.length; i++) {
+				System.out.print(new Double(novosObjetivosSolucao[i]).toString().replace('.', ',') + "\t");
+
+			}
+			
+			System.out.println();
+		}
+		
+		System.out.println();
 	}
 
 }

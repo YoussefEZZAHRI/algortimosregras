@@ -2,7 +2,6 @@ package kernel.nuvemparticulas;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 
 import problema.Problema;
@@ -31,11 +30,11 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	Problema problema = null;
 	
 	
-	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, boolean r){
-		super(n,prob,g, a,t);
+	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank){
+		super(n,prob,g, a,t, tRank);
 		populacao = new ArrayList<Particula>();
 		//repositorio = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(s, maxmim,r);
+		pareto = new FronteiraPareto(s, maxmim,rank);
 		this.maxmim = maxmim;
 		problema = prob;
 	}
@@ -79,7 +78,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			populacao.add(particula);	
 		}
 		if(rank)
-			averageRankParticula(populacao);
+			rankParticula(populacao);
 	}
 	
 	/**
@@ -93,10 +92,10 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula =  iter.next();
 			if(!pareto.fronteiraNuvem.contains(particula)){
-				if(!rank)
+				//if(!rank)
 					particula.solucao.numDominacao = pareto.add((Particula)particula.clone());
-				else
-					pareto.addRank((Particula)particula.clone());
+				//else
+					//pareto.addRank((Particula)particula.clone());
 				
 			}
 		}	

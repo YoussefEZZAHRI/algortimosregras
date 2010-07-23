@@ -9,7 +9,7 @@ import problema.DTLZ2;
 import problema.Problema;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
-import kernel.Avaliacao;
+
 
 /**
  * Classe que implementa o algoritmo da Otimização por nuvem de partículas multi-objetivo.
@@ -20,8 +20,8 @@ public class SigmaMOPSO extends MOPSO{
 
 
 	
-	public SigmaMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, boolean r){
-		super(n,prob,g, a,t, s, maxmim, r);
+	public SigmaMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank){
+		super(n,prob,g, a,t, s, maxmim,tRank);
 
 	}
 	
@@ -123,8 +123,8 @@ public class SigmaMOPSO extends MOPSO{
 		int a = -1;
 		String[] mm = {"-","-","-"};
 		for(int i = 0; i<5; i++){
-			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25, mm, false);
-			ArrayList<Solucao> fronteira= nuvem.executar();
+			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25, mm, "false");
+			nuvem.executar();
 			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 				prob.calcularObjetivos(solucao);

@@ -1,0 +1,49 @@
+package rank;
+
+import java.util.ArrayList;
+
+import pareto.FronteiraPareto;
+
+import solucao.Solucao;
+
+public abstract class Rank {
+	
+	public int m;
+	
+	protected FronteiraPareto pareto = null;
+	
+	public Rank(int m){
+		this.m = m;
+	}
+	
+	
+	public abstract void rankear(ArrayList<Solucao> solucoes);
+	
+	public void setPareto(FronteiraPareto p){
+		pareto = p;
+	}
+	
+	public void calcularWinningScore(ArrayList<Solucao> solucoes, int[][][] A) {
+		for(int i = 0; i<solucoes.size()-1; i++){
+			Solucao solucaoi = solucoes.get(i);
+			for(int j = i+1; j<solucoes.size(); j++){
+				Solucao solucaoj =  solucoes.get(j);
+				for(int k = 0; k<m; k++){
+					if(solucaoi.objetivos[k]<solucaoj.objetivos[k]){
+						A[i][j][k] = 1;
+						A[j][i][k] = -1;
+					} else {
+						if(solucaoi.objetivos[k]>solucaoj.objetivos[k]){
+							A[i][j][k] = -1;
+							A[j][i][k] = 1;
+						} else {
+							A[i][j][k] = 0;
+							A[j][i][k] = 0;
+						}
+					}
+				}
+			}
+		}
+	}
+
+}

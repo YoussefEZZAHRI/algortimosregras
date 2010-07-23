@@ -98,13 +98,13 @@ public class Principal {
 					principal.executarIndicador();
 				else{
 					if(principal.alg.equals("sigma"))
-						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.rank);
+						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank);
 					if(principal.alg.equals("smopso"))
-						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.rank, principal.tipoRank, principal.repositorio);
+						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank);
 					if(principal.alg.equals("misa"))
-						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.rank);
+						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank);
 					if(principal.alg.equals("nsga2"))
-						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao, principal.maxmimObjetivos, principal.rank);
+						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao, principal.maxmimObjetivos, principal.tipoRank);
 					
 					
 					principal.executar();

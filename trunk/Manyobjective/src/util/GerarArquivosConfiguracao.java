@@ -11,15 +11,15 @@ public class GerarArquivosConfiguracao {
 		
 		
 		String problema  = "dtlz2";
-		//String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
-		String[] algs = {"0.50"};
+		String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
+		//String[] algs = {"0.50"};
 		String metodo = "smopso";
 		String exec = "50";
 		String g = "100";
 		String a = "-1";
 		String p = "250";
 		String r = "250";
-		String rank = "ar2";
+		String rank = "false";
 		String taxaclonagem = "7";
 		String partesgrid = "25";
 		String maxobjhiper = "4";
@@ -33,7 +33,7 @@ public class GerarArquivosConfiguracao {
 		StringBuffer limitesObjetivos = new StringBuffer();
 		StringBuffer objetivos = new StringBuffer();
 		for(int i = 0; i<m; i++){
-			limitesObjetivos.append("4 ");
+			limitesObjetivos.append("3 ");
 			objetivos.append("- ");
 		}
 		
@@ -71,7 +71,7 @@ public class GerarArquivosConfiguracao {
 	}
 	
 	public static void main(String[] args) {
-		int m = 3;
+		int m = 20;
 		try{
 			gerarArquivos(m);
 		} catch (Exception e) {

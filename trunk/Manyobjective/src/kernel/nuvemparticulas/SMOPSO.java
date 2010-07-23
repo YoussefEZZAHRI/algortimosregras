@@ -1,6 +1,7 @@
 package kernel.nuvemparticulas;
 
 
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -8,11 +9,12 @@ import java.util.Collections;
 import java.util.Iterator;
 
 
+import pareto.FronteiraPareto;
 import problema.DTLZ2;
 import problema.Problema;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
-import kernel.Avaliacao;
+
 
 /**
  * Classe que implementa o algoritmo da Otimização por nuvem de partículas multi-objetivo.
@@ -26,14 +28,18 @@ public class SMOPSO extends MOPSO{
 	
 	public int tamanhoRepositorio;
 	
-	
+	PrintStream psSol;
 	
 		
-	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, boolean r, int tr){
-		super(n,prob,g,a,t,s, maxmim, r);
-		tamanhoRepositorio = tr;	
+	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank){
+		super(n,prob,g,a,t,s, maxmim, tRank);
+		tamanhoRepositorio = tamRep;	
+			
 		
-		rank = r;
+		try{
+
+			psSol = new PrintStream("solucoes_" + pareto.S);
+		}catch(IOException ex){ex.printStackTrace();}
 	}
 		
 	/**
@@ -41,17 +47,18 @@ public class SMOPSO extends MOPSO{
 	 */
 	public ArrayList<Solucao> executar(){
 		
-		String arquivoSaida = "medidas.txt";
-		
 			
 		//Apaga todas as listas antes do inicio da execução
 		reiniciarExecucao();
 		
-		//iniciarPopulacaoTeste();
+		iniciarPopulacaoTeste();
+		rankParticula(populacao);
 		//Inicia a populçao
-		inicializarPopulacao();
+		/*inicializarPopulacao();
 		
 		//Obtém as melhores partículas da população
+		
+				
 
 		if(!rank)
 			atualizarRepositorio();
@@ -66,9 +73,11 @@ public class SMOPSO extends MOPSO{
 		for(int i = 0; i<geracoes; i++){
 			if(i%10 == 0)
 				System.out.print(i + " ");
-			lacoEvolutivo();
+			if(i == 50)
+				System.out.println();
+			lacoEvolutivo(i);
 		}
-		
+		*/
 		
 		pareto.retornarFronteiraNuvem();
 		
@@ -78,40 +87,43 @@ public class SMOPSO extends MOPSO{
 	
 	public ArrayList<Solucao> executarAvaliacoes(){
 		
-		String arquivoSaida = "medidas.txt";
-	
-		
-		try{
-		PrintStream psMedidas = new PrintStream(arquivoSaida);
-		
+
+
+
+
+
 		//Apaga todas as listas antes do inicio da execução
 		reiniciarExecucao();
 		//Inicia a populçao
 		inicializarPopulacao();
 		//Obtém as melhores partículas da população
-		if(!rank)
+		//if(!rank)
 			atualizarRepositorio();
-		else
-			iniciarRepositorioRank();
+		//else
+			//iniciarRepositorioRank();
 		//Obtém os melhores globais para todas as partículas da população
 		escolherLideres();
-		
+
 		escolherParticulasMutacao();
 		//Inícia o laço evolutivo
 		while(problema.avaliacoes < numeroavalicoes){
 			if(problema.avaliacoes%1000 == 0)
 				System.out.print(problema.avaliacoes + " - " + numeroavalicoes + " ");
-			lacoEvolutivo();
+			lacoEvolutivo(problema.avaliacoes);
 		}
-		
-		
+
+
 		pareto.retornarFronteiraNuvem();
-		}catch(IOException ex){ex.printStackTrace();}
+
 		return pareto.getFronteira();
 		
 	}
 
-	private void lacoEvolutivo() {
+	private void lacoEvolutivo(int i) {
+		
+		
+			
+		
 		//Itera sobre todas as partículas da população
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = (Particula) iter.next();
@@ -130,18 +142,26 @@ public class SMOPSO extends MOPSO{
 			//Define o melhor local
 			particula.escolherLocalBest(pareto);
 		}
+		
+				
 		if(rank)
-			averageRankParticula(populacao);
+			rankParticula(populacao);
 		//Obtém as melhores particulas da população
 		atualizarRepositorio();
 		
 					
 		calcularCrowdingDistance(pareto.fronteira);
 		
+		psSol.println(i + "\t" + pareto.fronteira.size());
+		
 		pareto.podarLideresCrowdOperatorParticula(tamanhoRepositorio);
 		
 		//Recalcula a Crowding distance dos lideres
 		calcularCrowdingDistance(pareto.fronteira);
+		
+		//pareto.imprimir(populacao);
+		
+		//pareto.imprimir();
 		
 		//Escolhe os novos melhores globais
 		escolherLideres();
@@ -190,10 +210,10 @@ public class SMOPSO extends MOPSO{
 	}
 	
 	public void iniciarPopulacaoTeste(){
-		int sl = 3;
+		int sl = 2;
 		ArrayList<SolucaoNumerica> temp =  problema.obterSolucoesExtremas(n, sl);
 		
-		for (Iterator iterator = temp.iterator(); iterator.hasNext();) {
+		for (Iterator<SolucaoNumerica> iterator = temp.iterator(); iterator.hasNext();) {
 			Particula particula = new Particula();
 			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
 			particula.iniciarParticulaAleatoriamente(problema, solucaoNumerica);
@@ -220,36 +240,12 @@ public class SMOPSO extends MOPSO{
 		}
 		
 		if(rank)
-			averageRankParticula(populacao);
+			rankParticula(populacao);
 	}
 	
 
-	public static void main(String[] args) {
-		int m = 3;
-		Problema prob = new DTLZ2(m);
-		int n = 10;
-		int g = 250;
-		int t = 100;
-		int a = -1;
-		
-		String[] mm = {"-","-","-"};
-		for(int i = 0; i<5; i++){
-			SMOPSO nuvem = new SMOPSO(n, prob, g, a, t, 0.25,  mm, false, t);
-			ArrayList<Solucao> fronteira = nuvem.executar();
-			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
-				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
-				prob.calcularObjetivos(solucao);
-				System.out.println(solucao);
-				
-			}
-			//System.out.println();
-			//Avaliacao aval = new Avaliacao(fronteira, m);
-			//aval.avaliar();	
-		}
-		
-		
-		
-	}
 	
+		
+		
 
 }
