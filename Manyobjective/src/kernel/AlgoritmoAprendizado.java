@@ -11,8 +11,13 @@ import kernel.nuvemparticulas.Particula;
 
 import pareto.FronteiraPareto;
 import problema.Problema;
+import rank.AverageRank;
+import rank.BalancedRank;
+import rank.MaximumRank;
+import rank.Rank;
+import rank.RankDominancia;
+import rank.SumWeightedRatios;
 import solucao.ComparetorObjetivo;
-import solucao.ComparetorRank;
 import solucao.Solucao;
 import solucao.SolucaoBinaria;
 import solucao.SolucaoNumerica;
@@ -38,9 +43,12 @@ public abstract class AlgoritmoAprendizado {
 	private final double MAX_MUT = 0.5;
 	//Flag que indica se algum metodo de rankeamento many-objetivo sera utilizado
 	public boolean rank = false;
+	public String tipoRank;
+	
+	public Rank metodoRank = null;
 	
 	
-	public AlgoritmoAprendizado(int n, Problema p, int g, int avaliacoes, int t){
+	public AlgoritmoAprendizado(int n, Problema p, int g, int avaliacoes, int t, String tRank){
 		this.n = n;
 		problema = p;
 		geracoes = g;
@@ -48,11 +56,15 @@ public abstract class AlgoritmoAprendizado {
 		PROB_MUT_COD = 1.0/(double)n;
 		
 		numeroavalicoes = avaliacoes;
+		tipoRank = tRank;
+		iniciarMetodoRank();
+		
 	}
 	
 	public abstract ArrayList<Solucao> executar();
 	
 	public abstract ArrayList<Solucao> executarAvaliacoes();
+	
 	
 	public double distanciaEuclidiana(double[] vetor1, double[] vetor2){
 		double soma = 0;
@@ -156,7 +168,7 @@ public abstract class AlgoritmoAprendizado {
 		}	
 	}
 	
-	public void averageRankParticula(ArrayList<Particula> particulas){
+	public void rankParticula(ArrayList<Particula> particulas){
 		ArrayList<Solucao> solucoes = new ArrayList<Solucao>();
 		for (Iterator<Particula> iterator = particulas.iterator(); iterator.hasNext();) {
 			Particula particula = (Particula) iterator.next();
@@ -164,122 +176,80 @@ public abstract class AlgoritmoAprendizado {
 		}
 		
 		
-		averageRank(solucoes);
+		rankear(solucoes);
 		solucoes.clear();
 		solucoes = null;
 	}
 	
-	public void averageRank(ArrayList<Solucao> solucoes){
-		int[][][] A = new int[solucoes.size()][solucoes.size()][problema.m];
-		
-		for(int i = 0; i<solucoes.size()-1; i++){
-			Solucao solucaoi = solucoes.get(i);
-			for(int j = i+1; j<solucoes.size(); j++){
-				Solucao solucaoj =  solucoes.get(j);
-				for(int k = 0; k<problema.m; k++){
-					if(solucaoi.objetivos[k]<solucaoj.objetivos[k]){
-						A[i][j][k] = 1;
-						A[j][i][k] = -1;
-					} else {
-						if(solucaoi.objetivos[k]>solucaoj.objetivos[k]){
-							A[i][j][k] = -1;
-							A[j][i][k] = 1;
-						} else {
-							A[i][j][k] = 0;
-							A[j][i][k] = 0;
-						}
+	public void iniciarMetodoRank(){
+		rank = true;
+		if(tipoRank.equals("ar"))
+			metodoRank = new AverageRank(problema.m);
+		else{
+			if(tipoRank.equals("mr"))
+				metodoRank = new MaximumRank(problema.m);
+			else{
+				if(tipoRank.equals("br"))
+					metodoRank = new BalancedRank(problema.m);
+				else{
+					if(tipoRank.equals("sr"))
+						metodoRank = new SumWeightedRatios(problema.m);
+					else{
+						if(tipoRank.equals("dom"))
+							metodoRank = new RankDominancia(problema.m);
+						rank = false;
 					}
+						
 				}
 			}
 		}
-		
-		for(int i = 0; i<solucoes.size(); i++){
-			Solucao solucaoi = solucoes.get(i);
-			solucaoi.rank = 0;
-		}
-		
-		for(int i = 0; i<solucoes.size(); i++){
-			Solucao solucaoi = solucoes.get(i);
-			
-		for(int k = 0; k<problema.m; k++){
-				double rank = 0;
-				for(int j = 0; j<solucoes.size(); j++){
-					if(i!=j){
-						if(A[i][j][k]==1)
-							rank++;
-					}
-				}
-				
-				double rankObj = (solucoes.size()) - rank;
-				solucaoi.rank+= rankObj;
-				
-				
-			}
-		
-	
-		}
-		
 	}
 	
-	public void averageRankModificado(ArrayList<Solucao> solucoes){
-		int[][][] A = new int[solucoes.size()][solucoes.size()][problema.m];
-		
-		for(int i = 0; i<solucoes.size()-1; i++){
-			Solucao solucaoi = solucoes.get(i);
-			for(int j = i+1; j<solucoes.size(); j++){
-				Solucao solucaoj =  solucoes.get(j);
-				for(int k = 0; k<problema.m; k++){
-					if(solucaoi.objetivos[k]<solucaoj.objetivos[k]){
-						A[i][j][k] = 1;
-						A[j][i][k] = -1;
-					} else {
-						if(solucaoi.objetivos[k]>solucaoj.objetivos[k]){
-							A[i][j][k] = -1;
-							A[j][i][k] = 1;
-						} else {
-							A[i][j][k] = 0;
-							A[j][i][k] = 0;
-						}
-					}
-				}
-			}
-		}
-		
-		for(int i = 0; i<solucoes.size(); i++){
-			Solucao solucaoi = solucoes.get(i);
-			solucaoi.rank = 0;
-		}
-		
-		for(int i = 0; i<solucoes.size(); i++){
-			Solucao solucaoi = solucoes.get(i);
-			double maiorRank = Double.NEGATIVE_INFINITY;
-			double menorRank = Double.POSITIVE_INFINITY;
-		for(int k = 0; k<problema.m; k++){
-				double rank = 0;
-				for(int j = 0; j<solucoes.size(); j++){
-					if(i!=j){
-						if(A[i][j][k]==1)
-							rank++;
-					}
-				}
+	public void rankear(ArrayList<Solucao> solucoes){
+		metodoRank.rankear(solucoes);
+		//if(tipoRank.equals("ar") ||tipoRank.equals("ar2"))
+		/*	averageRank(solucoes);
+			int i = 0;
+			System.out.print("AR: \t");
+			for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
+				Solucao solucao = (Solucao) iterator.next();
+				System.out.println(solucao.rank + "\t");
 				
-				double rankObj = (solucoes.size()) - rank;
-				solucaoi.rank+= rankObj;
-				
-				if (rankObj >maiorRank)
-					maiorRank = rankObj;
-				if(rankObj<menorRank)
-					menorRank = rankObj;
 			}
-		
-		double diff = (maiorRank - menorRank)/ solucoes.size();
+			System.out.println();
+			maximumAverageRank(solucoes);
+			i = 0;
+			System.out.print("MR: \t");
+			for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
+				Solucao solucao = (Solucao) iterator.next();
+				System.out.println(solucao.rank + "\t");
+				
+			}
+			System.out.println();
+			weightedAverageRank(solucoes);
+			i = 0;
+			System.out.print("WR: \t");
+			for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
+				Solucao solucao = (Solucao) iterator.next();
+				System.out.println(solucao.rank + "\t");
+				
+			}
+			System.out.println();
+			System.out.print("SR: \t");
+			sumWeightedRatios(solucoes);
+			i = 0;
+			for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
+				Solucao solucao = (Solucao) iterator.next();
+				System.out.println(solucao.rank + "\t");
+				
+			}*/
+		/*if(tipoRank.equals("war") || tipoRank.equals("war2"))
+			weightedAverageRank(solucoes);
+		if(tipoRank.equals("mar") || tipoRank.equals("mar2"))
+			weightedAverageRank(solucoes);*/
+	}
+	
 
-		solucaoi.rank = solucaoi.rank * diff;	
-		}
-		
-	}
-	
-	
 
 	
 	/**

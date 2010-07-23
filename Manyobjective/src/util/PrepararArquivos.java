@@ -127,6 +127,61 @@ public class PrepararArquivos {
 			
 	}
 	
+	public void preparArquivosIndicadoresHiper(String dir, String problema, String objetivo, String[] algoritmos , int exec, String metodo) throws IOException{
+		Double[][] hip = new Double[algoritmos.length][exec];
+		
+		BufferedReader h;
+
+
+		for (int j = 0; j < algoritmos.length; j++) {
+
+			String arqhip = dir + "resultados/" + metodo + "/" + problema + "/" + objetivo + "/" +			
+			algoritmos[j] + "/" + metodo + "" + problema + "_" + objetivo + algoritmos[j] + "_hipervolume.txt";
+
+
+			System.out.println(arqhip);
+
+
+			h = new BufferedReader(new FileReader(arqhip));
+			
+			int tam = 0;
+			while(h.ready()){
+				String linha_h = h.readLine();
+				if(!linha_h.isEmpty()){
+					Double h_val = new Double(linha_h);
+					hip[j][tam++] = h_val;	
+				}
+				
+				
+
+			}
+		}  
+
+
+
+		PrintStream hSaida = new PrintStream(dir + "resultados/" + metodo + problema + "_hiper_" + objetivo + "_indicadores.txt");
+		
+
+
+
+		for(int j = 0; j<exec; j++){
+			for (int i = 0; i < algoritmos.length; i++) {
+				try{
+
+					hSaida.print(hip[i][j].toString().replace(".", ",") + "\t");
+						
+				}catch(NullPointerException ex){ex.printStackTrace();}
+			}
+
+
+			hSaida.println();
+			
+		}
+
+
+	}
+	
+	
 	public void preparArquivosIndicadores(String dir, String problema, String objetivo, String[] algoritmos , int exec, String metodo) throws IOException{
 		Double[][] gd = new Double[algoritmos.length][exec];
 		Double[][] spread = new Double[algoritmos.length][exec];
@@ -578,12 +633,12 @@ public void preparArquivosComandosFriedmanVis(String dir, String dirR, String pr
 	
 	public static void main(String[] args) {
 		PrepararArquivos pre = new PrepararArquivos();
-		String dir = "e:\\Andre\\experimentos\\";
-		String dirR = "e:\\\\Andre\\\\experimentos\\\\";
+		String dir = "e:\\Andre\\experimentos2\\";
+		String dirR = "e:\\\\Andre\\\\experimentos2\\\\";
 		//String dir = "/media/disk/Andre/evoCOP2010/";
-		String objetivo = "20";
+		int objetivo = 3;
 		String problema  = "DTLZ2";
-		String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75", "0.5_ar", "0.5_war", "0.5_ar2", "0.5_war2"};
+		String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
 		//String[] algs = {"0.4"};
 		String[] algsVis = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
 		String metodo = "smopso";
@@ -592,12 +647,15 @@ public void preparArquivosComandosFriedmanVis(String dir, String dirR, String pr
 			
 			//pre.juntarFronteira(dir, problema, objetivo, algs, exec, metodo);
 			//pre.inverterMaxMim(dir, problema, objetivo, algs, exec, metodo);
-			if(metodo.equals("vis")){
-				pre.preparArquivosIndicadoresVis(dir, problema, objetivo, algsVis, exec, metodo);
-				pre.preparArquivosComandosFriedmanVis(dir, dirR, problema, objetivo, algsVis, exec, metodo);
-			}
-			pre.preparArquivosIndicadores(dir, problema, objetivo, algs, exec, metodo);
-			pre.preparArquivosComandosFriedman(dir, dirR, problema, objetivo, algs, exec, metodo);
+			//if(metodo.equals("vis")){
+				//pre.preparArquivosIndicadoresVis(dir, problema, objetivo, algsVis, exec, metodo);
+				//pre.preparArquivosComandosFriedmanVis(dir, dirR, problema, objetivo, algsVis, exec, metodo);
+			//}
+			pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo);
+			pre.preparArquivosComandosFriedman(dir, dirR, problema, ""+objetivo, algs, exec, metodo);
+			
+			if(objetivo<5)
+				pre.preparArquivosIndicadoresHiper(dir, problema, ""+objetivo, algs, exec, metodo);
 			
 		} catch (IOException ex){ex.printStackTrace();}
 		

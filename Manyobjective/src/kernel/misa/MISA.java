@@ -55,8 +55,8 @@ public class MISA extends AlgoritmoAprendizado {
 	 * @param tc Taxa de clonagem
 	 * * @param pg Número de partes da divisão do grid da população secundária
 	 */
-	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg, String[] maxmimm, boolean r){
-		super(n,prob,g,a,t);
+	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg, String[] maxmim, String tRank){
+		super(n,prob,g,a,t, tRank);
 		
 		taxaClonagem = tc;
 		totalClonagem = taxaClonagem * tamanhoPopulacao;
@@ -72,7 +72,6 @@ public class MISA extends AlgoritmoAprendizado {
 		double diff = non_uniform_prob - PROB_MUT_COD;
 		decremento = diff/(double) t;
 		
-		rank = r;
 	}
 	
 	@Override
@@ -185,7 +184,7 @@ public class MISA extends AlgoritmoAprendizado {
 		else{
 			ArrayList<Solucao> solucoesFinais = paretoTemp.fronteira;
 			//Escolhe as melhores soluções atraves do metodo AR 
-			averageRank(solucoesFinais);
+			rankear(solucoesFinais);
 			ComparetorRank comp = new ComparetorRank();
 			Collections.sort(solucoesFinais, comp);
 			
@@ -409,7 +408,7 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		String[] mm = {"-","-","-"};
 		
-		MISA misa = new MISA(n, prob, g, a,t, 0.25, 7, 25,mm, false);
+		MISA misa = new MISA(n, prob, g, a,t, 0.25, 7, 25,mm, "false");
 		
 		misa.executar();
 		

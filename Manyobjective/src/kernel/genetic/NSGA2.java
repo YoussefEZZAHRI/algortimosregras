@@ -9,16 +9,12 @@ import pareto.FronteiraPareto;
 import problema.Problema;
 
 import solucao.ComparetorCrowdedOperator;
-import solucao.ComparetorDominacao;
 import solucao.ComparetorRank;
 import solucao.SolucaoBinaria;
 import solucao.SolucaoNumerica;
 import solucao.Solucao;
 
 import kernel.AlgoritmoAprendizado;
-import kernel.Avaliacao;
-import kernel.misa.AdaptiveGrid;
-import kernel.nuvemparticulas.Particula;
 
 public class NSGA2 extends AlgoritmoAprendizado {
 	
@@ -32,12 +28,12 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	
 	
 	
-	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts, String[] maxmim, boolean r){
-		super(n,prob,g, a,t);
+	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts, String[] maxmim, String tRank){
+		super(n,prob,g, a,t, tRank);
 		
-		pareto = new FronteiraPareto(s, maxmim, r);
+		pareto = new FronteiraPareto(s, maxmim, rank);
+		metodoRank.setPareto(pareto);
 		problema = prob;
-		
 		tipoSolucao = ts;
 
 	}
@@ -49,8 +45,8 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		offspring = new ArrayList<Solucao>();
 		
 		iniciarPopulacao();
-		atribuirRanking(populacao);
-		//fastNonDominatedSort(populacao);
+		rankear(populacao);
+		
 		
 		gerarOffsping(populacao, compRank);
 		ArrayList<Solucao> populacaoCombinada = new ArrayList<Solucao>();
@@ -71,10 +67,10 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		offspring = new ArrayList<Solucao>();
 		
 		iniciarPopulacao();
-		atribuirRanking(populacao);
+		rankear(populacao);
 		
 		problema.avaliacoes = 0;
-		//fastNonDominatedSort(populacao);
+
 		
 		gerarOffsping(populacao, compRank);
 		ArrayList<Solucao> populacaoCombinada = new ArrayList<Solucao>();
@@ -91,8 +87,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	private void lacoEvolutivo(ArrayList<Solucao> populacaoCombinada) {
 		populacaoCombinada.addAll(populacao);
 		populacaoCombinada.addAll(offspring);
-		atribuirRanking(populacaoCombinada);
-		//fastNonDominatedSort(populacaoCombinada);
+		rankear(populacaoCombinada);
 		calcularCrowdingDistance(populacaoCombinada);
 		Collections.sort(populacaoCombinada, compCrwd);
 		populacao.clear();
@@ -134,74 +129,15 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	}
 	
 
-	public void atribuirRanking(ArrayList<Solucao> solucoes){
-		
-		ArrayList<Solucao> atual = new ArrayList<Solucao>();
-		ArrayList<Solucao> proxima = new ArrayList<Solucao>();
-		
-		atual.addAll(solucoes);
-		
-		int rank = 0;
-		
-		while(atual.size()>0){
-			for (Iterator<Solucao> iter = atual.iterator(); iter.hasNext();) {
-				Solucao solucao = iter.next();
-				solucao.numDominacao = pareto.obterNumDomincao(solucao, atual);
-				if(solucao.numDominacao == 0){
-					solucao.rank = rank;
-				} else
-					proxima.add(solucao);
-			}
-			atual.clear();
-			atual.addAll(proxima);
-			proxima.clear();
-			rank++;
-		}
-	}
 	
-	public void fastNonDominatedSort(ArrayList<Solucao> solucoes){
-		ArrayList<Solucao> dominadas = new ArrayList<Solucao>();
-		ArrayList<Solucao> naoDominadas = new ArrayList<Solucao>();
-		int rank = 0;
-		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
-			Solucao p =  iterator.next();
-			p.numDominacao = 0;
-			for (Iterator<Solucao> iterator2 = solucoes.iterator(); iterator2.hasNext();) {
-				Solucao q =  iterator2.next();
-				int comp = pareto.compararMedidas(p.objetivos, q.objetivos);
-				if(comp == 1)
-					dominadas.add(q);
-				else
-					if(comp == -1)
-						p.numDominacao++;
-			}
-			if(p.numDominacao == 0){
-				p.rank = rank;
-				naoDominadas.add(p);
-			}
-		}
-		
-		
-		while(naoDominadas.size()>0){
-			ArrayList<Solucao> H = new ArrayList<Solucao>();
-			for (Iterator<Solucao> iterator = naoDominadas.iterator(); iterator.hasNext();) {
-				rank++;
-				Solucao p =  iterator.next();
-				for (Iterator<Solucao> iterator2 = dominadas.iterator(); iterator2.hasNext();) {
-					Solucao q =  iterator2.next();
-					q.numDominacao--;
-					if(q.numDominacao == 0){
-						H.add(q);
-						q.rank = rank;
-					}
-				}
-			}
-			naoDominadas.clear();
-			naoDominadas.addAll(H);
-		}
-	}
-	
+	/**
+	 * Faz a recombinacao de duas solucoes pais
+	 * @param solucao1 Pai 1
+	 * @param solucao2 Pai 2
+	 * @return Solucao com a combinacao dois pais
+	 */
 	public Solucao recombinacao(Solucao solucao1, Solucao solucao2){
+		//Solucao retorno
 		Solucao novaSolucao = null;
 		if(solucao1.isNumerica())
 			novaSolucao = recombinacaoNumerica((SolucaoNumerica)solucao1, (SolucaoNumerica)solucao2);
@@ -234,6 +170,12 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		return novaSolucao;
 	}
 	
+	/**
+	 * Escolhe uma solucao atraves do metodo Binary Tournament
+	 * @param solucoes Conjunto em que uma solucao sera escolhida
+	 * @param comp Comparetor que define como uma solucao eh melhor que a outra
+	 * @return Solucao escolhida
+	 */
 	public Solucao escolherPaiBinaryTournament(ArrayList<Solucao> solucoes, Comparator<Solucao> comp){
 		int ordem = (int)Math.ceil(Math.log10(solucoes.size()));
 		int indice1 = (int)(Math.random()*(Math.pow(10, ordem))%solucoes.size());
