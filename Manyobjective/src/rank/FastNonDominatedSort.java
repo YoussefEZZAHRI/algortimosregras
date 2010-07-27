@@ -3,7 +3,6 @@ package rank;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import pareto.FronteiraPareto;
 
 import solucao.Solucao;
 

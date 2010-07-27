@@ -16,6 +16,7 @@ import rank.BalancedRank;
 import rank.MaximumRank;
 import rank.Rank;
 import rank.RankDominancia;
+import rank.SumWeightedGlobalRatios;
 import rank.SumWeightedRatios;
 import solucao.ComparetorObjetivo;
 import solucao.Solucao;
@@ -24,13 +25,13 @@ import solucao.SolucaoNumerica;
 
 public abstract class AlgoritmoAprendizado {
 	
-	//Número de variáveis da solução
+	//Nï¿½mero de variï¿½veis da soluï¿½ï¿½o
 	public int n;
 	public Problema problema = null;
 	
-	//Número de execuções do mopso-n
+	//Nï¿½mero de execuï¿½ï¿½es do mopso-n
 	public int geracoes;
-	//Tamanho inicial da população
+	//Tamanho inicial da populaï¿½ï¿½o
 	public int tamanhoPopulacao;
 	
 	public int numeroavalicoes;
@@ -98,9 +99,9 @@ public abstract class AlgoritmoAprendizado {
 	}
 	
 	/**
-	 * Mutação probabilística
-	 * @param prob_mutacao Probabilidade de efetuar a mutação em uma posição
-	 * @param vetor1 Vetor que irá sofre a mutação
+	 * Mutaï¿½ï¿½o probabilï¿½stica
+	 * @param prob_mutacao Probabilidade de efetuar a mutaï¿½ï¿½o em uma posiï¿½ï¿½o
+	 * @param vetor1 Vetor que irï¿½ sofre a mutaï¿½ï¿½o
 	 */
 	public void mutacaoPolinomial(double prob_mutacao, double[] vetor1){
 		for (int i = 0; i < vetor1.length; i++) {
@@ -129,8 +130,8 @@ public abstract class AlgoritmoAprendizado {
 	}
 	
 	/**
-	 * Mutação probabilística
-	 * @param prob_mutacao Probabilidade de efetuar a mutação em uma posição
+	 * Mutaï¿½ï¿½o probabilï¿½stica
+	 * @param prob_mutacao Probabilidade de efetuar a mutaï¿½ï¿½o em uma posiï¿½ï¿½o
 	 * @param 
 	 */
 	public void mutacaoPolinomialNumerica(double prob_mutacao, SolucaoNumerica solucao){
@@ -153,9 +154,9 @@ public abstract class AlgoritmoAprendizado {
 	}
 	
 	/**
-	 * Método que executa a mutação simples, pos = pos + random(0,1)*pos
-	 * @param prob_mutacao Probabilidade de efetuar a mutação em uma posição
-	 * @param vetor1 Vetor que irá sofre a mutação
+	 * Mï¿½todo que executa a mutaï¿½ï¿½o simples, pos = pos + random(0,1)*pos
+	 * @param prob_mutacao Probabilidade de efetuar a mutaï¿½ï¿½o em uma posiï¿½ï¿½o
+	 * @param vetor1 Vetor que irï¿½ sofre a mutaï¿½ï¿½o
 	 */
 	public void mutacao(double prob_mutacao, double[] vetor1){
 		for (int i = 0; i < vetor1.length; i++) {
@@ -195,11 +196,15 @@ public abstract class AlgoritmoAprendizado {
 					if(tipoRank.equals("sr"))
 						metodoRank = new SumWeightedRatios(problema.m);
 					else{
-						if(tipoRank.equals("dom"))
-							metodoRank = new RankDominancia(problema.m);
-						rank = false;
+						if(tipoRank.equals("sgr"))
+							metodoRank = new SumWeightedGlobalRatios(problema.m);
+						else{
+							if(tipoRank.equals("dom"))
+								metodoRank = new RankDominancia(problema.m);
+							rank = false;
+						}
 					}
-						
+
 				}
 			}
 		}
@@ -253,8 +258,8 @@ public abstract class AlgoritmoAprendizado {
 
 	
 	/**
-	 * Método que busca as soluções não dominadas da população atual
-	 * @return Soluções não dominadas da população
+	 * Mï¿½todo que busca as soluï¿½ï¿½es nï¿½o dominadas da populaï¿½ï¿½o atual
+	 * @return Soluï¿½ï¿½es nï¿½o dominadas da populaï¿½ï¿½o
 	 */
 	public void encontrarSolucoesNaoDominadas(ArrayList<Solucao> solucoes, FronteiraPareto pareto){
 		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
