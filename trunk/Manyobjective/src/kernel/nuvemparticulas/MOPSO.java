@@ -12,16 +12,16 @@ import kernel.AlgoritmoAprendizado;
 
 
 /**
- * Classe que implementa o algoritmo da Otimização por nuvem de partículas multi-objetivo.
- * @author André B. de Carvalho
+ * Classe que implementa o algoritmo da Otimizaï¿½ï¿½o por nuvem de partï¿½culas multi-objetivo.
+ * @author Andrï¿½ B. de Carvalho
  *
  */
 public abstract class MOPSO extends AlgoritmoAprendizado{
 
-	//Arraylist que contém as particulas da execução do algoritmo
+	//Arraylist que contï¿½m as particulas da execuï¿½ï¿½o do algoritmo
 	public ArrayList<Particula> populacao = null;
 	
-	//Arraylist que representa o repositório com as soluções não dominadas
+	//Arraylist que representa o repositï¿½rio com as soluï¿½ï¿½es nï¿½o dominadas
 	//public ArrayList<Particula> repositorio = null;
 	
 	private String[] maxmim = null;
@@ -35,12 +35,13 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		populacao = new ArrayList<Particula>();
 		//repositorio = new ArrayList<Particula>();
 		pareto = new FronteiraPareto(s, maxmim,rank);
+		metodoRank.setPareto(pareto);
 		this.maxmim = maxmim;
 		problema = prob;
 	}
 	
 	/**
-	 * Método que limpa as listas do algoritmo e o prepara para uma nova execução.
+	 * Mï¿½todo que limpa as listas do algoritmo e o prepara para uma nova execuï¿½ï¿½o.
 	 *
 	 */
 	public void reiniciarExecucao(){
@@ -50,7 +51,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	}
 	
 	/**
-	 * Método principal que executa as operaçoes do MOPSO
+	 * Mï¿½todo principal que executa as operaï¿½oes do MOPSO
 	 */
 	public abstract ArrayList<Solucao> executar();
 	
@@ -58,13 +59,13 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	
 	
 	/**
-	 * Método que inicia a população de partículas. 
+	 * Mï¿½todo que inicia a populaï¿½ï¿½o de partï¿½culas. 
 	 */
 	public void inicializarPopulacao(){
 		
 		for(int i = 0; i<tamanhoPopulacao; i++){
 			Particula particula = new Particula();
-			//Contador utilizada para a criação da regra não ficar presa no laço
+			//Contador utilizada para a criaï¿½ï¿½o da regra nï¿½o ficar presa no laï¿½o
 			int cont = 0;
 			do{
 				SolucaoNumerica s = new SolucaoNumerica(n, problema.m);
@@ -82,7 +83,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	}
 	
 	/**
-	 * Método que preenche o respositorio com as solução não dominadas
+	 * Mï¿½todo que preenche o respositorio com as soluï¿½ï¿½o nï¿½o dominadas
 	 *
 	 */
 	public void atualizarRepositorio(){

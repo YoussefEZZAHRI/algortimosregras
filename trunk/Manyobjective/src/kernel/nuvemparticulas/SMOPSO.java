@@ -17,8 +17,8 @@ import solucao.SolucaoNumerica;
 
 
 /**
- * Classe que implementa o algoritmo da Otimização por nuvem de partículas multi-objetivo.
- * @author André B. de Carvalho
+ * Classe que implementa o algoritmo da Otimizaï¿½ï¿½o por nuvem de partï¿½culas multi-objetivo.
+ * @author Andrï¿½ B. de Carvalho
  *
  */
 public class SMOPSO extends MOPSO{
@@ -34,7 +34,7 @@ public class SMOPSO extends MOPSO{
 	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank){
 		super(n,prob,g,a,t,s, maxmim, tRank);
 		tamanhoRepositorio = tamRep;	
-			
+	
 		
 		try{
 
@@ -43,20 +43,22 @@ public class SMOPSO extends MOPSO{
 	}
 		
 	/**
-	 * Método principal que executa as operaçoes do MOPSO
+	 * Mï¿½todo principal que executa as operaï¿½oes do MOPSO
 	 */
 	public ArrayList<Solucao> executar(){
 		
 			
-		//Apaga todas as listas antes do inicio da execução
+		//Apaga todas as listas antes do inicio da execuï¿½ï¿½o
 		reiniciarExecucao();
 		
 		iniciarPopulacaoTeste();
+		
 		rankParticula(populacao);
-		//Inicia a populçao
+		
+		//Inicia a populï¿½ao
 		/*inicializarPopulacao();
 		
-		//Obtém as melhores partículas da população
+		//Obtï¿½m as melhores partï¿½culas da populaï¿½ï¿½o
 		
 				
 
@@ -65,11 +67,11 @@ public class SMOPSO extends MOPSO{
 		else
 			iniciarRepositorioRank();	
 
-		//Obtém os melhores globais para todas as partículas da população
+		//Obtï¿½m os melhores globais para todas as partï¿½culas da populaï¿½ï¿½o
 		escolherLideres();
 		
 		escolherParticulasMutacao();
-		//Inícia o laço evolutivo
+		//Inï¿½cia o laï¿½o evolutivo
 		for(int i = 0; i<geracoes; i++){
 			if(i%10 == 0)
 				System.out.print(i + " ");
@@ -92,20 +94,20 @@ public class SMOPSO extends MOPSO{
 
 
 
-		//Apaga todas as listas antes do inicio da execução
+		//Apaga todas as listas antes do inicio da execuï¿½ï¿½o
 		reiniciarExecucao();
-		//Inicia a populçao
+		//Inicia a populï¿½ao
 		inicializarPopulacao();
-		//Obtém as melhores partículas da população
+		//Obtï¿½m as melhores partï¿½culas da populaï¿½ï¿½o
 		//if(!rank)
 			atualizarRepositorio();
 		//else
 			//iniciarRepositorioRank();
-		//Obtém os melhores globais para todas as partículas da população
+		//Obtï¿½m os melhores globais para todas as partï¿½culas da populaï¿½ï¿½o
 		escolherLideres();
 
 		escolherParticulasMutacao();
-		//Inícia o laço evolutivo
+		//Inï¿½cia o laï¿½o evolutivo
 		while(problema.avaliacoes < numeroavalicoes){
 			if(problema.avaliacoes%1000 == 0)
 				System.out.print(problema.avaliacoes + " - " + numeroavalicoes + " ");
@@ -124,12 +126,12 @@ public class SMOPSO extends MOPSO{
 		
 			
 		
-		//Itera sobre todas as partículas da população
+		//Itera sobre todas as partï¿½culas da populaï¿½ï¿½o
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = (Particula) iter.next();
 			//Calcula a nova velocidade
 			particula.calcularNovaVelocidadeConstriction();
-			//Calcula a nova posição
+			//Calcula a nova posiï¿½ï¿½o
 			particula.calcularNovaPosicao();
 			if(particula.mutacao){
 				mutacaoPolinomial(PROB_MUT_COD,particula.posicao);
@@ -137,7 +139,7 @@ public class SMOPSO extends MOPSO{
 			}
 			
 			particula.truncar();
-			//Avalia a partícula
+			//Avalia a partï¿½cula
 			problema.calcularObjetivos(particula.solucao);
 			//Define o melhor local
 			particula.escolherLocalBest(pareto);
@@ -146,7 +148,7 @@ public class SMOPSO extends MOPSO{
 				
 		if(rank)
 			rankParticula(populacao);
-		//Obtém as melhores particulas da população
+		//Obtï¿½m as melhores particulas da populaï¿½ï¿½o
 		atualizarRepositorio();
 		
 					
@@ -170,7 +172,7 @@ public class SMOPSO extends MOPSO{
 	}
 	
 	/**
-	 * Método que escolhe para cada particula da populacao uma particula presente no repositorio
+	 * Mï¿½todo que escolhe para cada particula da populacao uma particula presente no repositorio
 	 *
 	 */
 	public void escolherLideres(){
@@ -181,8 +183,8 @@ public class SMOPSO extends MOPSO{
 	}
 	
 	/**
-	 * Método que define quais particulas da população sofrerão mutacao
-	 * AS particulas que forem domindas por mais particulas serão escolhidas
+	 * Mï¿½todo que define quais particulas da populaï¿½ï¿½o sofrerï¿½o mutacao
+	 * AS particulas que forem domindas por mais particulas serï¿½o escolhidas
 	 */
 	public void escolherParticulasMutacao(){
 		ComparetorDominacaoParticula comp = new ComparetorDominacaoParticula();
@@ -225,7 +227,7 @@ public class SMOPSO extends MOPSO{
 		
 		for(int i = 0; i<3; i++){
 			Particula particula = new Particula();
-			//Contador utilizada para a criação da regra não ficar presa no laço
+			//Contador utilizada para a criaï¿½ï¿½o da regra nï¿½o ficar presa no laï¿½o
 			int cont = 0;
 			do{
 				SolucaoNumerica s = new SolucaoNumerica(n, problema.m);

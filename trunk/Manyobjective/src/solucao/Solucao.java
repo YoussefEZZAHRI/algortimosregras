@@ -3,7 +3,7 @@ package solucao;
 
 
 /**
- * Classe que representa uma solução formada por um vetor de numeros reais
+ * Classe que representa uma soluï¿½ï¿½o formada por um vetor de numeros reais
  * @author andre
  *
  */
@@ -14,13 +14,13 @@ public abstract class Solucao {
 	
 	public double[] objetivos;
 	
-	//Conta por qts soluções a solução é dominada
+	//Conta por qts soluï¿½ï¿½es a soluï¿½ï¿½o ï¿½ dominada
 	public double numDominacao;
 		
 	public double crowdDistance;
 	
 	public double rank = -1;
-	public double rank2 = -1;
+	public double balanceamentoRank = -1;
 	
 	
 	/**

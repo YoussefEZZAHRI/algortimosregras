@@ -9,6 +9,7 @@ public class SumWeightedRatios extends Rank {
 	
 	public SumWeightedRatios(int m){
 		super(m);
+		System.out.println("Rank: SR");
 	}
 
 	@Override

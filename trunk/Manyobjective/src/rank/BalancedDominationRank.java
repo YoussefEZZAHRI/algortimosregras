@@ -4,11 +4,14 @@ import java.util.ArrayList;
 
 import solucao.Solucao;
 
-public class BalancedRank extends Rank {
+public class BalancedDominationRank extends Rank {
 	
-	public BalancedRank(int m){
+	private RankDominancia dom = null;
+	
+	public BalancedDominationRank(int m){
 		super(m);
-		System.out.println("Rank: BR");
+		System.out.println("Rank: BDR");
+		dom = new RankDominancia(m);
 	}
 
 	@Override
@@ -16,9 +19,14 @@ public class BalancedRank extends Rank {
 		int[][][] A = new int[solucoes.size()][solucoes.size()][m];
 
 		calcularWinningScore(solucoes, A);
+		
+		
+		dom.setPareto(pareto);
+		dom.rankear(solucoes);
 
 		for(int i = 0; i<solucoes.size(); i++){
 			Solucao solucaoi = solucoes.get(i);
+			solucaoi.balanceamentoRank = (solucaoi.rank+1)/(dom.rankMaximo+1);
 			solucaoi.rank = 0;
 		}
 
@@ -47,7 +55,7 @@ public class BalancedRank extends Rank {
 			}
 
 			//Calculo da pondera��o
-			double diff = (maiorRank - menorRank)/ solucoes.size();
+			double diff = solucaoi.balanceamentoRank*((maiorRank - menorRank)/**solucoes.size()*/);
 			solucaoi.rank = solucaoi.rank * diff;	
 		}
 
