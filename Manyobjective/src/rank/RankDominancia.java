@@ -8,10 +8,12 @@ import solucao.Solucao;
 
 public class RankDominancia extends Rank {
 	
-	
+	int rankMaximo;
 	
 	public RankDominancia(int m) {
 		super(m);
+		System.out.println("Rank: NSGA");
+		
 	}
 	
 
@@ -19,6 +21,7 @@ public class RankDominancia extends Rank {
 	public void rankear(ArrayList<Solucao> solucoes) {
 		ArrayList<Solucao> atual = new ArrayList<Solucao>();
 		ArrayList<Solucao> proxima = new ArrayList<Solucao>();
+		rankMaximo = 0;
 		
 		atual.addAll(solucoes);
 		
@@ -38,6 +41,7 @@ public class RankDominancia extends Rank {
 			proxima.clear();
 			rank++;
 		}
+		rankMaximo = rank-1;
 
 	}
 

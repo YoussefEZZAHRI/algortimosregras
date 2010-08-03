@@ -12,6 +12,7 @@ import kernel.nuvemparticulas.Particula;
 import pareto.FronteiraPareto;
 import problema.Problema;
 import rank.AverageRank;
+import rank.BalancedDominationRank;
 import rank.BalancedRank;
 import rank.MaximumRank;
 import rank.Rank;
@@ -193,15 +194,19 @@ public abstract class AlgoritmoAprendizado {
 				if(tipoRank.equals("br"))
 					metodoRank = new BalancedRank(problema.m);
 				else{
-					if(tipoRank.equals("sr"))
-						metodoRank = new SumWeightedRatios(problema.m);
+					if(tipoRank.equals("bdr2"))
+						metodoRank = new BalancedDominationRank(problema.m);
 					else{
-						if(tipoRank.equals("sgr"))
-							metodoRank = new SumWeightedGlobalRatios(problema.m);
+						if(tipoRank.equals("sr"))
+							metodoRank = new SumWeightedRatios(problema.m);
 						else{
-							if(tipoRank.equals("dom"))
-								metodoRank = new RankDominancia(problema.m);
-							rank = false;
+							if(tipoRank.equals("sgr"))
+								metodoRank = new SumWeightedGlobalRatios(problema.m);
+							else{
+								if(tipoRank.equals("nsga"))
+									metodoRank = new RankDominancia(problema.m);
+								rank = false;
+							}
 						}
 					}
 

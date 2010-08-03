@@ -3,7 +3,7 @@ package solucao;
 
 
 /**
- * Classe que representa uma solução formada por um vetor de numeros reais
+ * Classe que representa uma soluï¿½ï¿½o formada por um vetor de numeros reais
  * @author andre
  *
  */
@@ -12,16 +12,16 @@ public class SolucaoNumerica extends Solucao {
 	//Array contendo as variaves da solucao
 	private double[] variaveis;
 	
-	//Variaveis utilizadas para o cálculo dos objetivos dos problemas DTLZ
+	//Variaveis utilizadas para o cï¿½lculo dos objetivos dos problemas DTLZ
 	public double[] xm;
 	public int k;
 	
 	
-	//Variável que marca se a solução foi aceita na inserção da população secundária do MISA
+	//Variï¿½vel que marca se a soluï¿½ï¿½o foi aceita na inserï¿½ï¿½o da populaï¿½ï¿½o secundï¿½ria do MISA
 	public boolean aceita;
 	
 	
-	//Limites que definem o espaço de busca dos atributos da partícula
+	//Limites que definem o espaï¿½o de busca dos atributos da partï¿½cula
 	public double[] limitesPosicaoInferior;
 	public double[] limitesPosicaoSuperior;
 	
@@ -47,7 +47,7 @@ public class SolucaoNumerica extends Solucao {
 	}
 	
 	/**
-	 * Método que seta of limites superiores e inferiores para cada posicao do vetor velocidade
+	 * Mï¿½todo que seta of limites superiores e inferiores para cada posicao do vetor velocidade
 	 */
 	public void setLimites(){
 		for (int i = 0; i < limitesPosicaoInferior.length; i++) {
@@ -90,7 +90,7 @@ public class SolucaoNumerica extends Solucao {
 		
 		//if(rank!=-1)
 			buff.append("\nr: " + rank + "\t");
-			buff.append("\nr2: " + rank2 + "\t");
+			
 		
 		//buff.append("\n" + crowdDistance + "\t");
 		
