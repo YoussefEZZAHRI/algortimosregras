@@ -22,6 +22,8 @@ public abstract class Solucao {
 	public double rank = -1;
 	public double balanceamentoRank = -1;
 	
+	public double[] combRank = null;
+	
 	
 	/**
 	 * Construtor da classe

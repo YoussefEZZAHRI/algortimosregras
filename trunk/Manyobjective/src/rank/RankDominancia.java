@@ -18,7 +18,7 @@ public class RankDominancia extends Rank {
 	
 
 	@Override
-	public void rankear(ArrayList<Solucao> solucoes) {
+	public void rankear(ArrayList<Solucao> solucoes, int c) {
 		ArrayList<Solucao> atual = new ArrayList<Solucao>();
 		ArrayList<Solucao> proxima = new ArrayList<Solucao>();
 		rankMaximo = 0;
@@ -33,6 +33,8 @@ public class RankDominancia extends Rank {
 				solucao.numDominacao = pareto.obterNumDomincao(solucao, atual);
 				if(solucao.numDominacao == 0){
 					solucao.rank = rank;
+					if(c!=-1)
+						solucao.combRank[c] = solucao.rank;
 				} else
 					proxima.add(solucao);
 			}

@@ -17,7 +17,8 @@ public abstract class Rank {
 	}
 	
 	
-	public abstract void rankear(ArrayList<Solucao> solucoes);
+	public abstract void rankear(ArrayList<Solucao> solucoes, int i);
+	
 	
 	public void setPareto(FronteiraPareto p){
 		pareto = p;

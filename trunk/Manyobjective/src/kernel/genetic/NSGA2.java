@@ -1,5 +1,7 @@
 package kernel.genetic;
 
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -98,6 +100,17 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		calcularCrowdingDistance(populacao);
 		gerarOffsping(populacao, compCrwd);
 		populacaoCombinada.clear();
+		try{
+		PrintStream psRank = new PrintStream("rank.txt");
+		for (Iterator iterator = populacao.iterator(); iterator
+				.hasNext();) {
+			Solucao solucao = (Solucao) iterator.next();
+			for (int i = 0; i < solucao.objetivos.length; i++) {
+				psRank.print(solucao.objetivos[i] + "\t");
+			}
+			psRank.println(solucao.rank);
+		}
+		}catch(IOException ex){ex.printStackTrace();}
 	}
 	
 	public void gerarOffsping(ArrayList<Solucao> solucoes, Comparator<Solucao> comp){

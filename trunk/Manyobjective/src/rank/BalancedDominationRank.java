@@ -15,14 +15,14 @@ public class BalancedDominationRank extends Rank {
 	}
 
 	@Override
-	public void rankear(ArrayList<Solucao> solucoes) {
+	public void rankear(ArrayList<Solucao> solucoes, int c) {
 		int[][][] A = new int[solucoes.size()][solucoes.size()][m];
 
 		calcularWinningScore(solucoes, A);
 		
 		
 		dom.setPareto(pareto);
-		dom.rankear(solucoes);
+		dom.rankear(solucoes, -1);
 
 		for(int i = 0; i<solucoes.size(); i++){
 			Solucao solucaoi = solucoes.get(i);
@@ -55,8 +55,10 @@ public class BalancedDominationRank extends Rank {
 			}
 
 			//Calculo da pondera��o
-			double diff = solucaoi.balanceamentoRank*((maiorRank - menorRank)/**solucoes.size()*/);
+			double diff = solucaoi.balanceamentoRank*((maiorRank - menorRank)/solucoes.size());
 			solucaoi.rank = solucaoi.rank * diff;	
+			if(c!=-1)
+				solucaoi.combRank[c] = solucaoi.rank;
 		}
 
 	}

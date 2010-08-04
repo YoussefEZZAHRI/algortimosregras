@@ -12,7 +12,7 @@ public class MaximumRank extends Rank {
 	}
 
 	@Override
-	public void rankear(ArrayList<Solucao> solucoes) {
+	public void rankear(ArrayList<Solucao> solucoes, int c) {
 
 		int[][][] A = new int[solucoes.size()][solucoes.size()][m];
 
@@ -36,7 +36,8 @@ public class MaximumRank extends Rank {
 
 				double rankObj = (solucoes.size()) - rank;
 				solucaoi.rank= Math.min(solucaoi.rank, rankObj);
-
+				if(c!=-1)
+					solucaoi.combRank[c] = solucaoi.rank;
 
 			}
 		}
