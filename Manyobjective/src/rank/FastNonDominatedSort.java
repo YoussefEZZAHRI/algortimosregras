@@ -14,7 +14,7 @@ public class FastNonDominatedSort extends Rank {
 	}
 
 	@Override
-	public void rankear(ArrayList<Solucao> solucoes) {
+	public void rankear(ArrayList<Solucao> solucoes, int c) {
 		ArrayList<Solucao> dominadas = new ArrayList<Solucao>();
 		ArrayList<Solucao> naoDominadas = new ArrayList<Solucao>();
 		int rank = 0;

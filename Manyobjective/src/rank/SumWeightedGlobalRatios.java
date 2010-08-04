@@ -22,7 +22,7 @@ public class SumWeightedGlobalRatios extends Rank {
 	}
 
 	@Override
-	public void rankear(ArrayList<Solucao> solucoes) {
+	public void rankear(ArrayList<Solucao> solucoes, int c) {
 
 		for(int k = 0; k<m; k++){
 			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
@@ -39,6 +39,8 @@ public class SumWeightedGlobalRatios extends Rank {
 				double nratio = (solucao.objetivos[k]- globalMin[k])/(globalMax[k] - globalMin[k]);
 				solucao.rank+=nratio;
 			}
+			if(c!=-1)
+				solucao.combRank[c] = solucao.rank;
 		}
 
 	}

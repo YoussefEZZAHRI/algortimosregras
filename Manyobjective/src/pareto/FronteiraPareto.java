@@ -41,7 +41,7 @@ public class FronteiraPareto {
 	}
 	
 	/**
-	 * Método que define para cada objetivo se ele é de maximização ou minimização
+	 * Mï¿½todo que define para cada objetivo se ele ï¿½ de maximizaï¿½ï¿½o ou minimizaï¿½ï¿½o
 	 * @param maxmim
 	 */
 	public void preencherObjetivosMaxMin(String[] maxmim){
@@ -81,13 +81,13 @@ public class FronteiraPareto {
 	}
 	
 	/**
-	 * Método que adiciona um nova solução na fronteira de pareto
+	 * Mï¿½todo que adiciona um nova soluï¿½ï¿½o na fronteira de pareto
 	 * @param regra Regra a ser adicionada
 	 * @return Valor booleano que especifica se o elemento foi inserido ou nao na fronteira 
 	 */
 	@SuppressWarnings("unchecked")
 	public double add(Solucao solucao){
-		//Só adiciona na fronteira caso a regra seja da classe passada como parametro
+		//Sï¿½ adiciona na fronteira caso a regra seja da classe passada como parametro
 		solucao.numDominacao = 0;
 		if(fronteira.size()==0){
 			fronteira.add(solucao);
@@ -154,7 +154,7 @@ public class FronteiraPareto {
 	
 	@SuppressWarnings("unchecked")
 	public double add(Particula particula){
-		//Só adiciona na fronteira caso a regra seja da classe passada como parametro
+		//Sï¿½ adiciona na fronteira caso a regra seja da classe passada como parametro
 		particula.solucao.numDominacao = 0;
 		if(fronteiraNuvem.size()==0){
 			fronteiraNuvem.add(particula);
@@ -257,9 +257,9 @@ public class FronteiraPareto {
 		return fronteira.toString();
 	}
 	/**
-	 * Método que verifica se uma solução domina a outra
-	 * @param sol1 Solução que será comparada com as regras pertencentes a fronteira de pareto
-	 * @param sol2 Solução pertencente a fronteira de pareto
+	 * Mï¿½todo que verifica se uma soluï¿½ï¿½o domina a outra
+	 * @param sol1 Soluï¿½ï¿½o que serï¿½ comparada com as regras pertencentes a fronteira de pareto
+	 * @param sol2 Soluï¿½ï¿½o pertencente a fronteira de pareto
 	 * @return -1 Se sol1 for dominada, 0 se a sol1 nao domina nem eh dominada, 1 sol1 domina sol2 
 	 */
 	public int compararMedidas(double[] sol1, double[] sol2){
@@ -303,11 +303,11 @@ public class FronteiraPareto {
 	}*/
 	
 	/**
-	 * Modificação da modificação da dominância de Pareto proposta por Sato
-	 * Derivação do Sen do Wi através do Cos
-	 * @param fix Valor original da função de objetivo de índice i
+	 * Modificaï¿½ï¿½o da modificaï¿½ï¿½o da dominï¿½ncia de Pareto proposta por Sato
+	 * Derivaï¿½ï¿½o do Sen do Wi atravï¿½s do Cos
+	 * @param fix Valor original da funï¿½ï¿½o de objetivo de ï¿½ndice i
 	 * @param r Norma do vetor de objetivos
-	 * @param si Parâmetro da modificação da dominacia (Varia entre 0 e 1)
+	 * @param si Parï¿½metro da modificaï¿½ï¿½o da dominacia (Varia entre 0 e 1)
 	 * @return
 	 */
 	public double modificacaoDominanciaPareto(double fix, double r, double si){
@@ -337,9 +337,9 @@ public class FronteiraPareto {
 	}
 	
 	/**
-	 * Método que retorna de quantas soluções a solução passada como parâmetro é dominada
-	 * @param solucao Solução a ser contada o numero de dominação		
-	 * @return Quantas soluções a solução passada como parametro é dominada
+	 * Mï¿½todo que retorna de quantas soluï¿½ï¿½es a soluï¿½ï¿½o passada como parï¿½metro ï¿½ dominada
+	 * @param solucao Soluï¿½ï¿½o a ser contada o numero de dominaï¿½ï¿½o		
+	 * @return Quantas soluï¿½ï¿½es a soluï¿½ï¿½o passada como parametro ï¿½ dominada
 	 */
 	public double obterNumDomincao(Solucao solucao, ArrayList<Solucao> solucoes){
 		
@@ -366,6 +366,26 @@ public class FronteiraPareto {
 
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
+			if(comp == -1)
+				numDominacao++;
+		}
+		
+		return numDominacao;
+	}
+	
+	public double obterNumDomincaoRank(Solucao solucao, ArrayList<Solucao> solucoes){
+		
+		int numDominacao = 0;
+		
+		int comp;
+	
+		
+		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
+			Solucao temp = iter.next();
+			
+			
+			
+			comp = compararMedidas(solucao.combRank, temp.combRank);
 			if(comp == -1)
 				numDominacao++;
 		}

@@ -12,21 +12,20 @@ public class BalancedRank extends Rank {
 	}
 
 	@Override
-	public void rankear(ArrayList<Solucao> solucoes) {
+	public void rankear(ArrayList<Solucao> solucoes, int c) {
 		int[][][] A = new int[solucoes.size()][solucoes.size()][m];
+		
+		double maiorRank = Double.NEGATIVE_INFINITY;
+		double menorRank = Double.POSITIVE_INFINITY;
 
 		calcularWinningScore(solucoes, A);
 
-		for(int i = 0; i<solucoes.size(); i++){
-			Solucao solucaoi = solucoes.get(i);
-			solucaoi.rank = 0;
-		}
+		
 
 		//Calcula do average rank ponderado
 		for(int i = 0; i<solucoes.size(); i++){
 			Solucao solucaoi = solucoes.get(i);
-			double maiorRank = Double.NEGATIVE_INFINITY;
-			double menorRank = Double.POSITIVE_INFINITY;
+			solucaoi.rank = 0;
 			for(int k = 0; k<m; k++){
 				double rank = 0;
 				for(int j = 0; j<solucoes.size(); j++){
@@ -49,6 +48,16 @@ public class BalancedRank extends Rank {
 			//Calculo da pondera��o
 			double diff = (maiorRank - menorRank)/ solucoes.size();
 			solucaoi.rank = solucaoi.rank * diff;	
+			maiorRank = Math.max(maiorRank, solucaoi.rank);
+			menorRank = Math.min(menorRank, solucaoi.rank);
+			
+				
+		}
+		if(c!=-1)
+		for(int i = 0; i<solucoes.size(); i++){
+			Solucao solucaoi = solucoes.get(i);
+			solucaoi.rank = solucaoi.rank/maiorRank;
+			solucaoi.combRank[c] = solucaoi.rank;
 		}
 
 	}

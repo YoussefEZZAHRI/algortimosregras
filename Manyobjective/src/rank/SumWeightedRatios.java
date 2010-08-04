@@ -13,7 +13,7 @@ public class SumWeightedRatios extends Rank {
 	}
 
 	@Override
-	public void rankear(ArrayList<Solucao> solucoes) {
+	public void rankear(ArrayList<Solucao> solucoes, int c) {
 		double mimObj[] = new double[m];
 		double maxObj[] = new double[m];
 		for (int i = 0; i < maxObj.length; i++) {
@@ -35,6 +35,8 @@ public class SumWeightedRatios extends Rank {
 				double nratio = (solucao.objetivos[k]- mimObj[k])/(maxObj[k] - mimObj[k]);
 				solucao.rank+=nratio;
 			}
+			if(c!=-1)
+				solucao.combRank[c] = solucao.rank;
 		}
 
 	}

@@ -14,6 +14,7 @@ import problema.Problema;
 import rank.AverageRank;
 import rank.BalancedDominationRank;
 import rank.BalancedRank;
+import rank.CombinacaoRank;
 import rank.MaximumRank;
 import rank.Rank;
 import rank.RankDominancia;
@@ -48,6 +49,7 @@ public abstract class AlgoritmoAprendizado {
 	public String tipoRank;
 	
 	public Rank metodoRank = null;
+	
 	
 	
 	public AlgoritmoAprendizado(int n, Problema p, int g, int avaliacoes, int t, String tRank){
@@ -185,38 +187,55 @@ public abstract class AlgoritmoAprendizado {
 	
 	public void iniciarMetodoRank(){
 		rank = true;
-		if(tipoRank.equals("ar"))
-			metodoRank = new AverageRank(problema.m);
-		else{
-			if(tipoRank.equals("mr"))
-				metodoRank = new MaximumRank(problema.m);
+		
+		String[] rs = tipoRank.split("_");
+		
+		ArrayList<Rank> ranks = new ArrayList<Rank>();
+		StringBuffer nomeTemp = new StringBuffer();
+		
+		for (int i = 0; i < rs.length; i++) {
+			String rankTemp = rs[i];
+			nomeTemp.append(rankTemp);
+			if(rankTemp.equals("ar"))
+				metodoRank = new AverageRank(problema.m);
 			else{
-				if(tipoRank.equals("br"))
-					metodoRank = new BalancedRank(problema.m);
+				if(rankTemp.equals("mr"))
+					metodoRank = new MaximumRank(problema.m);
 				else{
-					if(tipoRank.equals("bdr2"))
-						metodoRank = new BalancedDominationRank(problema.m);
+					if(rankTemp.equals("br"))
+						metodoRank = new BalancedRank(problema.m);
 					else{
-						if(tipoRank.equals("sr"))
-							metodoRank = new SumWeightedRatios(problema.m);
+						if(rankTemp.equals("bdr"))
+							metodoRank = new BalancedDominationRank(problema.m);
 						else{
-							if(tipoRank.equals("sgr"))
-								metodoRank = new SumWeightedGlobalRatios(problema.m);
+							if(rankTemp.equals("sr"))
+								metodoRank = new SumWeightedRatios(problema.m);
 							else{
-								if(tipoRank.equals("nsga"))
-									metodoRank = new RankDominancia(problema.m);
-								rank = false;
+								if(rankTemp.equals("sgr"))
+									metodoRank = new SumWeightedGlobalRatios(problema.m);
+								else{
+									if(rankTemp.equals("nsga"))
+										metodoRank = new RankDominancia(problema.m);
+									rank = false;
+								}
 							}
 						}
-					}
 
+					}
 				}
 			}
+			
+			ranks.add(metodoRank);
+		}
+		
+		if(rs.length>1){
+			metodoRank = new CombinacaoRank(problema.m, ranks);
+			tipoRank = "comb_"+ nomeTemp;
 		}
 	}
 	
 	public void rankear(ArrayList<Solucao> solucoes){
-		metodoRank.rankear(solucoes);
+		metodoRank.rankear(solucoes, -1);
 		//if(tipoRank.equals("ar") ||tipoRank.equals("ar2"))
 		/*	averageRank(solucoes);
 			int i = 0;
