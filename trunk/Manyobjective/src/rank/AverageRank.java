@@ -37,20 +37,22 @@ public class AverageRank extends Rank {
 
 				double rankObj = (solucoes.size()) - rank;
 				solucaoi.rank+= rankObj;
-				maiorRank = Math.max(maiorRank, solucaoi.rank);
-				menorRank = Math.min(menorRank, solucaoi.rank);
+				
 
 			}
+			
+			maiorRank = Math.max(maiorRank, solucaoi.rank);
+			menorRank = Math.min(menorRank, solucaoi.rank);
 			
 		}
 		
 		
 		if(c!=-1)
-		for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
-			Solucao solucao = (Solucao) iterator.next();
-			solucao.rank = solucao.rank/maiorRank;
-			solucao.combRank[c] = solucao.rank;
-		}
+			for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
+				Solucao solucao = (Solucao) iterator.next();
+				solucao.rank = solucao.rank/maiorRank;
+				solucao.combRank[c] = solucao.rank;
+			}
 			
 
 	}

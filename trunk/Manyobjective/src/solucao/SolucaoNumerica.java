@@ -89,7 +89,12 @@ public class SolucaoNumerica extends Solucao {
 		}
 		
 		//if(rank!=-1)
-			buff.append("\nr: " + rank + "\t");
+			buff.append("\nr: " + rank + "\n");
+			
+			if(combRank!=null)
+				for (int i = 0; i < combRank.length; i++) {
+					buff.append(combRank[i] + "\t");
+				}
 			
 		
 		//buff.append("\n" + crowdDistance + "\t");

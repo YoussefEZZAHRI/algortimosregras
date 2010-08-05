@@ -35,8 +35,6 @@ public class SumWeightedRatios extends Rank {
 				double nratio = (solucao.objetivos[k]- mimObj[k])/(maxObj[k] - mimObj[k]);
 				solucao.rank+=nratio;
 			}
-			if(c!=-1)
-				solucao.combRank[c] = solucao.rank;
 		}
 
 	}

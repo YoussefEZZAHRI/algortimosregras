@@ -24,6 +24,8 @@ public abstract class Solucao {
 	
 	public double[] combRank = null;
 	
+	public double diff;
+	
 	
 	/**
 	 * Construtor da classe

@@ -39,8 +39,6 @@ public class SumWeightedGlobalRatios extends Rank {
 				double nratio = (solucao.objetivos[k]- globalMin[k])/(globalMax[k] - globalMin[k]);
 				solucao.rank+=nratio;
 			}
-			if(c!=-1)
-				solucao.combRank[c] = solucao.rank;
 		}
 
 	}

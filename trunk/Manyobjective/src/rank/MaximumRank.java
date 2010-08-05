@@ -1,6 +1,7 @@
 package rank;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import solucao.Solucao;
 
@@ -15,6 +16,9 @@ public class MaximumRank extends Rank {
 	public void rankear(ArrayList<Solucao> solucoes, int c) {
 
 		int[][][] A = new int[solucoes.size()][solucoes.size()][m];
+		
+		double maiorRank = Double.NEGATIVE_INFINITY;
+		double menorRank = Double.POSITIVE_INFINITY;
 
 		calcularWinningScore(solucoes, A);
 
@@ -36,11 +40,20 @@ public class MaximumRank extends Rank {
 
 				double rankObj = (solucoes.size()) - rank;
 				solucaoi.rank= Math.min(solucaoi.rank, rankObj);
-				if(c!=-1)
-					solucaoi.combRank[c] = solucaoi.rank;
+				
 
 			}
+			
+			maiorRank = Math.max(maiorRank, solucaoi.rank);
+			menorRank = Math.min(menorRank, solucaoi.rank);
 		}
+		
+		if(c!=-1)
+			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
+				Solucao solucao = (Solucao) iterator.next();
+				solucao.rank = solucao.rank/maiorRank;
+				solucao.combRank[c] = solucao.rank;
+			}
 
 	}
 
