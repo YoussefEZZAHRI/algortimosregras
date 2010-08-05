@@ -14,6 +14,7 @@ import problema.Problema;
 import rank.AverageRank;
 import rank.BalancedDominationRank;
 import rank.BalancedRank;
+import rank.BalancedRankObj;
 import rank.CombinacaoRank;
 import rank.MaximumRank;
 import rank.Rank;
@@ -208,15 +209,19 @@ public abstract class AlgoritmoAprendizado {
 						if(rankTemp.equals("bdr"))
 							metodoRank = new BalancedDominationRank(problema.m);
 						else{
-							if(rankTemp.equals("sr"))
-								metodoRank = new SumWeightedRatios(problema.m);
+							if(rankTemp.equals("bro"))
+								metodoRank = new BalancedRankObj(problema.m);
 							else{
-								if(rankTemp.equals("sgr"))
-									metodoRank = new SumWeightedGlobalRatios(problema.m);
+								if(rankTemp.equals("sr"))
+									metodoRank = new SumWeightedRatios(problema.m);
 								else{
-									if(rankTemp.equals("nsga"))
-										metodoRank = new RankDominancia(problema.m);
-									rank = false;
+									if(rankTemp.equals("sgr"))
+										metodoRank = new SumWeightedGlobalRatios(problema.m);
+									else{
+										if(rankTemp.equals("nsga"))
+											metodoRank = new RankDominancia(problema.m);
+										rank = false;
+									}
 								}
 							}
 						}
