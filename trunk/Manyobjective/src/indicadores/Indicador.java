@@ -11,18 +11,18 @@ import java.util.Iterator;
 
 /**
  * Classe que representa um indicador para mensurar a qualidade de uma fronteira de Pareto
- * Contém método para leitura das soluções e gravação dos resultados
+ * Contï¿½m mï¿½todo para leitura das soluï¿½ï¿½es e gravaï¿½ï¿½o dos resultados
  * @author Andre
  *
  */
 public abstract class Indicador {
-	//Número de objetivos
+	//Nï¿½mero de objetivos
 	public int m;
 	//Fronteira
 	public ArrayList<PontoFronteira> fronteira = null;
 	//Identiciador do indicador
 	public String indicador;
-	//Array que define so o objetivo é de maximização ou minimização
+	//Array que define so o objetivo ï¿½ de maximizaï¿½ï¿½o ou minimizaï¿½ï¿½o
 	public double[] objetivosMaxMin = null;
 	
 	//Arquivos de saida do indicador
@@ -37,9 +37,9 @@ public abstract class Indicador {
 	
 	/**
 	 * Construtor da classes 
-	 * @param m Número de objetivos
-	 * @param caminho Caminho do arquivo de saída
-	 * @param id Identificador do arquivo de saída
+	 * @param m Nï¿½mero de objetivos
+	 * @param caminho Caminho do arquivo de saï¿½da
+	 * @param id Identificador do arquivo de saï¿½da
 	 */
 	
 	public Indicador(int m, String caminho, String id){
@@ -50,7 +50,7 @@ public abstract class Indicador {
 	
 
 	/**
-	 * Método que define para cada objetivo se ele é de maximização ou minimização
+	 * Mï¿½todo que define para cada objetivo se ele ï¿½ de maximizaï¿½ï¿½o ou minimizaï¿½ï¿½o
 	 * @param maxmim
 	 */
 	public void preencherObjetivosMaxMin(String[] maxmim){
@@ -65,13 +65,13 @@ public abstract class Indicador {
 		
 	
 	/**
-	 * Método que calcula o valor do indicador para a fronteira carregada
+	 * Mï¿½todo que calcula o valor do indicador para a fronteira carregada
 	 * @return
 	 */
 	public abstract double calcular();
 	
 	/**
-	 * Método que calcula o valor do indicador através dos dados da fronteira passados como parametro
+	 * Mï¿½todo que calcula o valor do indicador atravï¿½s dos dados da fronteira passados como parametro
 	 * @param nomeArquivo Caminho do arquivo de entrada
 	 * @throws IOException
 	 */
@@ -138,7 +138,7 @@ public abstract class Indicador {
 	
 	
 	/**
-	 * Método que calcula o indicador através de um arraylist de fronteiras
+	 * Mï¿½todo que calcula o indicador atravï¿½s de um arraylist de fronteiras
 	 * @param fronteiras
 	 * @throws IOException
 	 */
@@ -157,7 +157,7 @@ public abstract class Indicador {
 
 	
 	/**
-	 * Método que inicia os arquivos de saida
+	 * Mï¿½todo que inicia os arquivos de saida
 	 * @throws IOException
 	 */
 	public void iniciarArquivosSaida() throws IOException{	
@@ -170,12 +170,12 @@ public abstract class Indicador {
 	}
 	
 	/**
-	 * Método que imprime o valor do indicador num arquivo de saída e no console
+	 * Mï¿½todo que imprime o valor do indicador num arquivo de saï¿½da e no console
 	 * @param valor
 	 */
 	public void imprimirValor(double valor){
 		if(psIndGeral == null || psIndComando == null || comando == null){
-			System.err.println("Erro ao imprimir valor do indicador em arquivo. Arquivos de saída não foram iniciados");
+			System.err.println("Erro ao imprimir valor do indicador em arquivo. Arquivos de saï¿½da nï¿½o foram iniciados");
 			System.exit(0);
 		}
 		System.out.println(indicador + " = " + valor);
@@ -184,7 +184,7 @@ public abstract class Indicador {
 	}
 	
 	/**
-	 * Método que gera o comando do R e fecha os arquivos de saída
+	 * Mï¿½todo que gera o comando do R e fecha os arquivos de saï¿½da
 	 */
 	public void fecharArquivosSaida(){
 		comando.deleteCharAt(comando.length()-1);
@@ -199,9 +199,9 @@ public abstract class Indicador {
 	}
 	
 	/**
-	 * Método que verifica se uma solução domina a outra
-	 * @param sol1 Solução que será comparada com as regras pertencentes a fronteira de pareto
-	 * @param sol2 Solução pertencente a fronteira de pareto
+	 * Mï¿½todo que verifica se uma soluï¿½ï¿½o domina a outra
+	 * @param sol1 Soluï¿½ï¿½o que serï¿½ comparada com as regras pertencentes a fronteira de pareto
+	 * @param sol2 Soluï¿½ï¿½o pertencente a fronteira de pareto
 	 * @return -1 Se sol1 for dominada, 0 se a sol1 nao domina nem eh dominada, 1 sol1 domina sol2 
 	 */
 	public int compararMedidas(double[] sol1, double[] sol2){
@@ -280,6 +280,16 @@ public abstract class Indicador {
 		
 		return true;
 		
+	}
+	
+	protected double menorDistanciaEuclidiana(PontoFronteira ponto, ArrayList<PontoFronteira> fronteira) {
+		double menor_distancia = Double.MAX_VALUE;
+		//Obtem a menor distï¿½ncia entre um ponto do conjunto de aproximaï¿½ï¿½o e um ponto da fronteira de pareto real
+		for(int j = 0; j<fronteira.size();j++){
+			PontoFronteira ponto2 = fronteira.get(j);
+			menor_distancia = Math.min(distanciaEuclidiana(ponto.objetivos, ponto2.objetivos), menor_distancia);
+		}
+		return menor_distancia;
 	}
 	
 }
