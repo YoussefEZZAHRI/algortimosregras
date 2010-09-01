@@ -147,42 +147,44 @@ public abstract class Problema {
 	}
 	
 	/**
-	 * Método que obtem o joelho da uma fronteira de Pareto real
-	 * Inicia também um array de double lambda contendo o intervalo de valores para cada objetivo das solucoes na fronteira de pareto
-	 * O método busca o ponto médio para cada dimensao do espaco de objetivos. O joelho é o ponto mais próximo deste ponto médio. 
+	 * Mï¿½todo que obtem o joelho da uma fronteira de Pareto real
+	 * Inicia tambï¿½m um array de double lambda contendo o intervalo de valores para cada objetivo das solucoes na fronteira de pareto
+	 * O mï¿½todo busca o ponto mï¿½dio para cada dimensao do espaco de objetivos. O joelho ï¿½ o ponto mais prï¿½ximo deste ponto mï¿½dio. 
 	 * @param n
 	 * @return
 	 */
-	public double[] getJoelho(int n){
+	public double[] getJoelho(int n, ArrayList<SolucaoNumerica> fronteiraReal){
 		
-		//O calculo do joelho e lambda só é executaod uma vez
+		//O calculo do joelho e lambda sï¿½ ï¿½ executaod uma vez
 		if(joelho ==null){
 			
 			
 			joelho = new double[m];
 			lambda = new double[m];
 			
-			//Número de solucoes na fronteira
-			int numSol = 100000;
-			//Obtém a fronteira de pareto real para o problema
-			ArrayList<SolucaoNumerica> fronteiraReal = obterFronteira(n, numSol);
+			if(fronteiraReal ==null){
+				//Nï¿½mero de solucoes na fronteira
+				int numSol = 100000;
+				//Obtï¿½m a fronteira de pareto real para o problema
+				fronteiraReal = obterFronteira(n, numSol);
+			}
 
 			double maxValorObjetivo ,minValorObjetivo; 
 			
-			//Ponto médio da fronteira real
+			//Ponto mï¿½dio da fronteira real
 			double[] pontoCentral = new double[m];
 			
 			
-			//Per corre todos as dimensoes buscando o ponto médio
+			//Per corre todos as dimensoes buscando o ponto mï¿½dio
 			for (int i = 0; i < m; i++) {
 				ComparetorObjetivo comp = new ComparetorObjetivo(i);
 				Collections.sort(fronteiraReal, comp);
-				//Busca os valores máximo e mínimo para o objetivo i na fronteira real
+				//Busca os valores mï¿½ximo e mï¿½nimo para o objetivo i na fronteira real
 				minValorObjetivo = ((SolucaoNumerica)fronteiraReal.get(0)).objetivos[i];
 				maxValorObjetivo = ((SolucaoNumerica)fronteiraReal.get(fronteiraReal.size()-1)).objetivos[i];
 				//Calcula o intervalo para o objetivo
 				lambda[i] = (maxValorObjetivo - minValorObjetivo);
-				//Calcula o ponto médio para o objetivo
+				//Calcula o ponto mï¿½dio para o objetivo
 				pontoCentral[i] = (maxValorObjetivo - minValorObjetivo)/2.0;
 			}
 
@@ -190,7 +192,7 @@ public abstract class Problema {
 			int indiceMenorDistancia = -1;
 
 			int i = 0;
-			//Busca o ponto da fronteira real mais próximo do ponto médio
+			//Busca o ponto da fronteira real mais prï¿½ximo do ponto mï¿½dio
 			for (Iterator<SolucaoNumerica> iterator = fronteiraReal.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
 
@@ -217,17 +219,17 @@ public abstract class Problema {
 		return joelho;
 		}
 	
-	public double[] getLambda(int n){
+	public double[] getLambda(int n, ArrayList<SolucaoNumerica> fronteiraReal){
 		if(lambda == null)
-			getJoelho(n);
+			getJoelho(n, fronteiraReal);
 		return lambda;
 	}
 	
 	public ArrayList<SolucaoNumerica> obterSolucoesExtremas(int n, int s) {
 		ArrayList<SolucaoNumerica> retorno = new ArrayList<SolucaoNumerica>();
-		//Número de solucoes na fronteira
+		//Nï¿½mero de solucoes na fronteira
 		int numSol = 100000;
-		//Obtém a fronteira de pareto real para o problema
+		//Obtï¿½m a fronteira de pareto real para o problema
 		ArrayList<SolucaoNumerica> fronteiraReal = obterFronteira(n, numSol);
 		for(int i = 0; i<m; i++){
 			ComparetorObjetivo comp = new ComparetorObjetivo(i);
@@ -237,7 +239,7 @@ public abstract class Problema {
 			}
 		}
 		
-		getJoelho(n);
+		getJoelho(n, fronteiraReal);
 		 	
 		
 		for(int i = 0; i<numSol; i++){

@@ -5,7 +5,9 @@ import indicadores.GD;
 import indicadores.Hipervolume;
 import indicadores.IGD;
 import indicadores.Indicador;
+import indicadores.NumeroPontos;
 import indicadores.PontoFronteira;
+import indicadores.PontosNaFronteira;
 import indicadores.Spread;
 import indicadores.Tchebycheff;
 
@@ -117,7 +119,7 @@ public class Principal {
 	private void executarDominance() throws IOException{
 		
 		if(alg1 == null || alg2 == null){
-			System.err.println("Algoritmos para a comparação da dominancia não foram definido (Tags alg1 ou alg2)");
+			System.err.println("Algoritmos para a comparaï¿½ï¿½o da dominancia nï¿½o foram definido (Tags alg1 ou alg2)");
 			System.exit(0);
 		}
 			
@@ -141,7 +143,7 @@ public class Principal {
 	private void executarIndicador() throws IOException{
 		
 		if(alg1 == null){
-			System.err.println("Algoritmo para a execucao do indicador não foi definido (Tags alg1)");
+			System.err.println("Algoritmo para a execucao do indicador nï¿½o foi definido (Tags alg1)");
 			System.exit(0);
 		}
 		
@@ -189,8 +191,8 @@ public class Principal {
 						ind = new Spread(m, caminhoDir, idExec);
 					else{
 						if(indicador.equals("tchebycheff")){
-							double[] j =  problema.getJoelho(n);
-							double[] l = problema.getLambda(n);
+							double[] j =  problema.getJoelho(n, null);
+							double[] l = problema.getLambda(n, null);
 							ind = new Tchebycheff(m, caminhoDir, idExec, j , l);
 						} 				
 					}
@@ -322,8 +324,10 @@ public class Principal {
 		Spread spread = new Spread(m, caminhoDir, idInd);
 		spread.preencherObjetivosMaxMin(maxmimObjetivos);
 		spread.calcularIndicadorArray(fronteiras);
+		
+		int front = 10000;
 	
-		ArrayList<SolucaoNumerica> fronteira =  problema.obterFronteira(n, populacao);
+		ArrayList<SolucaoNumerica> fronteira =  problema.obterFronteira(n, front);
 		ArrayList<PontoFronteira> pftrue= new ArrayList<PontoFronteira>();
 		
 		if(fronteira!=null){
@@ -342,11 +346,19 @@ public class Principal {
 			igd.calcularIndicadorArray(fronteiras);
 
 
-			double[] j =  problema.getJoelho(n);
-			double[] l = problema.getLambda(n);
+			double[] j =  problema.getJoelho(n, null);
+			double[] l = problema.getLambda(n, null);
 			Tchebycheff tcheb = new Tchebycheff(m, caminhoDir, idInd, j , l);
 			tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
 			tcheb.calcularTchebycheff(fronteiras);
+			
+			PontosNaFronteira pnf = new PontosNaFronteira(m, caminhoDir, idInd, pftrue);
+			pnf.preencherObjetivosMaxMin(maxmimObjetivos);
+			pnf.calcularIndicadorArray(fronteiras);
+			
+			NumeroPontos np = new NumeroPontos(m, caminhoDir, idInd);
+			np.preencherObjetivosMaxMin(maxmimObjetivos);
+			np.calcularIndicadorArray(fronteiras);
 		}
 	}
 	
@@ -398,7 +410,7 @@ public class Principal {
 				String linha[] = linhaString.split("=");
 
 				if(linha.length!=2){
-					System.err.println("Erro no arquivo de configuração. Linha: " + linhaString);
+					System.err.println("Erro no arquivo de configuraï¿½ï¿½o. Linha: " + linhaString);
 					System.exit(0);
 				}
 				String tag = linha[0].trim().toLowerCase();

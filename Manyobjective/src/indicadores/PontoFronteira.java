@@ -17,4 +17,21 @@ public class PontoFronteira{
 		}
 	}
 	
+	public boolean equals(PontoFronteira pf){
+		for (int i = 0; i < objetivos.length; i++) {
+			if(objetivos[i] != pf.objetivos[i])
+				return false;
+		}
+		return true;
+	}
+	
+	public String toString(){
+		StringBuffer buff = new StringBuffer();
+		for (int i = 0; i < objetivos.length; i++) {
+			buff.append(objetivos[i] + "\t");			
+		}
+		buff.append("\n");
+		return buff.toString();
+	}
+	
 }	
