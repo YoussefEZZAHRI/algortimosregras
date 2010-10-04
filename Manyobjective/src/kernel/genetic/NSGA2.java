@@ -28,12 +28,15 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	
 	public String tipoSolucao = null;
 	
+	private String[] maxmim = null;
+	
 	
 	
 	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts, String[] maxmim, String tRank){
 		super(n,prob,g, a,t, tRank);
 		
-		pareto = new FronteiraPareto(s, maxmim, rank);
+		this.maxmim = maxmim;
+		pareto = new FronteiraPareto(s, maxmim,rank);
 		metodoRank.setPareto(pareto);
 		problema = prob;
 		tipoSolucao = ts;
@@ -43,6 +46,8 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	@Override
 	public ArrayList<Solucao> executar() {
 		
+		
+		pareto = new FronteiraPareto(pareto.S, maxmim, rank);
 		populacao = new ArrayList<Solucao>();
 		offspring = new ArrayList<Solucao>();
 		
@@ -59,7 +64,14 @@ public class NSGA2 extends AlgoritmoAprendizado {
 			lacoEvolutivo(populacaoCombinada);
 		}
 		
-		return populacao;
+		for (Iterator<Solucao> iterator = populacao.iterator(); iterator
+				.hasNext();) {
+			Solucao solucao = (Solucao) iterator.next();
+			pareto.add(solucao);
+			
+		}
+		
+		return pareto.getFronteira();
 	}
 	
 	
@@ -83,7 +95,14 @@ public class NSGA2 extends AlgoritmoAprendizado {
 			lacoEvolutivo(populacaoCombinada);
 		}
 		
-		return populacao;
+		for (Iterator<Solucao> iterator = populacao.iterator(); iterator
+		.hasNext();) {
+			Solucao solucao = (Solucao) iterator.next();
+			pareto.add(solucao);
+
+		}
+
+		return pareto.getFronteira();
 	}
 
 	private void lacoEvolutivo(ArrayList<Solucao> populacaoCombinada) {
@@ -102,7 +121,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		populacaoCombinada.clear();
 		try{
 		PrintStream psRank = new PrintStream("rank.txt");
-		for (Iterator iterator = populacao.iterator(); iterator
+		for (Iterator<Solucao> iterator = populacao.iterator(); iterator
 				.hasNext();) {
 			Solucao solucao = (Solucao) iterator.next();
 			for (int i = 0; i < solucao.objetivos.length; i++) {

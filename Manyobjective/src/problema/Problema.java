@@ -2,6 +2,7 @@ package problema;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -22,14 +23,80 @@ public abstract class Problema {
 	
 	private static double[] lambda = null;
 	
+	public double inc;
+	public int varVez;
+	
 	public Problema(int m){
+			
 		this.m = m;
 		avaliacoes = 0;
+		
+	}
+	
+	public Problema(int m, double inc){
+		
+		this.m = m;
+		avaliacoes = 0;
+		
+		this.inc = inc;
+		
 	}
 	
 	public abstract double[] calcularObjetivos(Solucao solucao);
 	
 	public abstract ArrayList<SolucaoNumerica> obterFronteira(int n, int numSol);
+	
+	/**
+	 * Método que gera a próxima solução através do incremento passado no construtor
+	 * @param solucaoBase Solução base para a geração da nova solução
+	 * @param varVez2 Varia
+	 * @param inicio
+	 * @param fim
+	 */
+	public boolean getProximaSolucao(SolucaoNumerica solucaoBase, int inicio, int fim){
+		
+		/*int decimalPlace = 7;
+		
+		BigDecimal incBig = new BigDecimal(this.inc);
+		BigDecimal valVarVezBig = new BigDecimal(solucaoBase.getVariavel(varVez));
+		
+		valVarVezBig = valVarVezBig.add(incBig);
+		valVarVezBig = valVarVezBig.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);*/
+		
+		
+		Double valVarVez = new Double(solucaoBase.getVariavel(varVez));
+
+		valVarVez=valVarVez+inc;
+		
+		//Double valVarVez = new Double(valVarVezBig.toString());
+
+		if(valVarVez >1){
+			while(valVarVez>=1){
+				valVarVez = 0.0;
+				solucaoBase.setVariavel(varVez, valVarVez);
+				varVez--;
+				if(varVez < inicio)
+					return false;
+				valVarVez = solucaoBase.getVariavel(varVez);
+			}
+		}
+
+		
+		if(varVez!=fim){
+			/*valVarVezBig = new BigDecimal(valVarVez);
+			valVarVezBig = valVarVezBig.add(incBig);
+			valVarVezBig = valVarVezBig.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);
+			valVarVez = new Double(valVarVezBig.toString());*/
+			valVarVez=valVarVez+inc;
+		}
+			valVarVez = Math.min(1.0, valVarVez);
+		solucaoBase.setVariavel(varVez, valVarVez);
+		varVez = fim;
+		
+
+		return true;
+
+	}
 	
 	/**
 	 * Equacao 8 do artigo "Scalable Multi-Objective Optimization Test Problems"
@@ -87,6 +154,17 @@ public abstract class Problema {
 		}
 		
 		return soma;
+	}
+	
+public double g7(double[] xm){
+		
+		double soma = 0;
+		for (int i = 0; i < xm.length; i++) {
+			soma+= xm[i];
+		}
+		double fator = 9.0/xm.length;
+		
+		return 1 + fator*soma;
 	}
 	
 	public void imprimirVetoresScilab(ArrayList<SolucaoNumerica> melhores){
@@ -183,7 +261,7 @@ public abstract class Problema {
 				minValorObjetivo = ((SolucaoNumerica)fronteiraReal.get(0)).objetivos[i];
 				maxValorObjetivo = ((SolucaoNumerica)fronteiraReal.get(fronteiraReal.size()-1)).objetivos[i];
 				//Calcula o intervalo para o objetivo
-				lambda[i] = (maxValorObjetivo - minValorObjetivo);
+				lambda[i] = 1.0/(maxValorObjetivo - minValorObjetivo);
 				//Calcula o ponto m�dio para o objetivo
 				pontoCentral[i] = (maxValorObjetivo - minValorObjetivo)/2.0;
 			}

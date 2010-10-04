@@ -10,36 +10,41 @@ public class GerarArquivosConfiguracao {
 	public static void gerarArquivos(int m) throws IOException{
 		
 		
-		String problema  = "dtlz2";
+		String problema  = "dtlz3";
 		String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
 		//String[] algs = {"0.50"};
 		String metodo = "smopso";
 		String exec = "50";
-		String g = "100";
+		String g = "200";
 		String a = "-1";
-		String p = "250";
-		String r = "250";
+		String p = "500";
+		String r = "500";
 		String rank = "false";
 		String taxaclonagem = "7";
 		String partesgrid = "25";
-		String maxobjhiper = "4";
+		String maxobjhiper = "1";
 		String dominance = "false";
 		String alg1 = "0.7";
 		String alg2 = "normal";
 		String indicador = "false";
+		String  direxec = "/home/andre/doutorado/experimentos/neuro/";
+		String  num_sol_fronteira = "250";
+		String programaes = "schedule2";
+		String numerocasosteste = "2710";
+		String funcoesobjetivo = "pdu;tempo";
 		
 		int n = k+m-1;
 		
 		StringBuffer limitesObjetivos = new StringBuffer();
 		StringBuffer objetivos = new StringBuffer();
 		for(int i = 0; i<m; i++){
-			limitesObjetivos.append("3 ");
+			limitesObjetivos.append("4 ");
 			objetivos.append("- ");
 		}
 		
 		for (int i = 0; i < algs.length; i++) {
 			String s = algs[i];
-			String arquivo = "principal" + s +  "_" + m +".txt";
+			String arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s + ".txt";
 			if(!rank.equals("false"))
 				arquivo = "principal" + s + "_" + rank + "_" + m +".txt";
 			PrintStream ps = new PrintStream(arquivo);
@@ -47,23 +52,28 @@ public class GerarArquivosConfiguracao {
 			ps.println("problema = " + problema);
 			ps.println("m = " + m);
 			ps.println("n = " + n);
+			ps.println("limites_objetivos = " + limitesObjetivos);
+			ps.println("objetivos = " + objetivos);
 			ps.println("geracoes = " + g);
 			ps.println("numeroavaliacoes = " + a);
 			ps.println("populacao = " + p);
-			ps.println("repositorio = " + p);
-			
+			ps.println("repositorio = " + p);		
 			ps.println("numexec = " + exec);
 			ps.println("S = " + s);
 			ps.println("rank = " + rank);
 			ps.println("taxaclonagem = " + taxaclonagem);
-			ps.println("partesgrid = " + partesgrid);
-			ps.println("limites_objetivos = " + limitesObjetivos);
-			ps.println("maxobjhiper = " + maxobjhiper);
-			ps.println("objetivos = " + objetivos);
+			ps.println("partesgrid = " + partesgrid);			
+			ps.println("maxobjhiper = " + maxobjhiper);			
 			ps.println("dominance = " + dominance);
 			ps.println("alg1 = " + alg1);
 			ps.println("alg2 = " + alg2);
 			ps.println("indicador = " + indicador);
+			ps.println("direxec =  " + direxec);
+			ps.println("num_sol_fronteira = " + num_sol_fronteira);
+			ps.println("programaes = " + programaes);
+			ps.println("numerocasosteste = " + numerocasosteste);
+			ps.println("funcoesobjetivo = " + funcoesobjetivo);
+			
 			
 		}
 

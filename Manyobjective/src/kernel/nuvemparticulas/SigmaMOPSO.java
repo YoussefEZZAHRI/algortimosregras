@@ -12,8 +12,8 @@ import solucao.SolucaoNumerica;
 
 
 /**
- * Classe que implementa o algoritmo da Otimização por nuvem de partículas multi-objetivo.
- * @author André B. de Carvalho
+ * Classe que implementa o algoritmo da Otimizaï¿½ï¿½o por nuvem de partï¿½culas multi-objetivo.
+ * @author Andrï¿½ B. de Carvalho
  *
  */
 public class SigmaMOPSO extends MOPSO{
@@ -27,18 +27,18 @@ public class SigmaMOPSO extends MOPSO{
 	
 
 	/**
-	 * Método principal que executa as operaçoes do MOPSO
+	 * Mï¿½todo principal que executa as operaï¿½oes do MOPSO
 	 */
 	public ArrayList<Solucao> executar(){
-		//Apaga todas as listas antes do inicio da execução
+		//Apaga todas as listas antes do inicio da execuï¿½ï¿½o
 		reiniciarExecucao();
-		//Inicia a populçao
+		//Inicia a populï¿½ao
 		inicializarPopulacao();
-		//Obtém as melhores partículas da população
+		//Obtï¿½m as melhores partï¿½culas da populaï¿½ï¿½o
 		atualizarRepositorio();		
-		//Obtém os melhores globais para todas as partículas da população
+		//Obtï¿½m os melhores globais para todas as partï¿½culas da populaï¿½ï¿½o
 		escolherLideres();
-		//Inícia o laço evolutivo
+		//Inï¿½cia o laï¿½o evolutivo
 		for(int i = 0; i<geracoes; i++){
 			if(i%10 == 0)
 				System.out.print(i + " - " + geracoes + " ");
@@ -51,20 +51,22 @@ public class SigmaMOPSO extends MOPSO{
 	}
 	
 	/**
-	 * Método principal que executa as operaçoes do MOPSO
+	 * Mï¿½todo principal que executa as operaï¿½oes do MOPSO
 	 */
 	public ArrayList<Solucao> executarAvaliacoes(){
-		//Apaga todas as listas antes do inicio da execução
+		//Apaga todas as listas antes do inicio da execuï¿½ï¿½o
 		reiniciarExecucao();
-		//Inicia a populçao
+		//Inicia a populï¿½ao
 		inicializarPopulacao();
-		//Obtém as melhores partículas da população
+		//Obtï¿½m as melhores partï¿½culas da populaï¿½ï¿½o
 		atualizarRepositorio();		
-		//Obtém os melhores globais para todas as partículas da população
+		//Obtï¿½m os melhores globais para todas as partï¿½culas da populaï¿½ï¿½o
 		escolherLideres();
 		while(problema.avaliacoes < numeroavalicoes){
-			if(problema.avaliacoes%1000 == 0)
-				System.out.print(problema.avaliacoes + " - " + numeroavalicoes + " ");
+			if(problema.avaliacoes%10000 == 0)
+				System.out.print(problema.avaliacoes + " ");
+			if(problema.avaliacoes%100000 == 0)
+				System.out.println();
 			lacoEvolutivo();
 		}
 		
@@ -75,29 +77,29 @@ public class SigmaMOPSO extends MOPSO{
 
 
 	private void lacoEvolutivo() {
-		//Itera sobre todas as partículas da população
+		//Itera sobre todas as partï¿½culas da populaï¿½ï¿½o
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = (Particula) iter.next();
 			//Calcula a nova velocidade
 			particula.calcularNovaVelocidade();
-			//Calcula a nova posição
+			//Calcula a nova posiï¿½ï¿½o
 			particula.calcularNovaPosicao();
-			//Turbulência na posição da partícula
+			//Turbulï¿½ncia na posiï¿½ï¿½o da partï¿½cula
 			mutacao(0.05, particula.posicao);
 			particula.truncar();
-			//Avalia a partícula
+			//Avalia a partï¿½cula
 			problema.calcularObjetivos(particula.solucao);
 			//Define o melhor local
 			particula.escolherLocalBest(pareto);
 		}
-		//Obtém as melhores particulas da população
+		//Obtï¿½m as melhores particulas da populaï¿½ï¿½o
 		atualizarRepositorio();
 		//Escolhe os novos melhores globais
 		escolherLideres();
 	}
 	
 	/**
-	 * Método que escolhe para cada particula da populacao uma particula presente no repositorio
+	 * Mï¿½todo que escolhe para cada particula da populacao uma particula presente no repositorio
 	 *
 	 */
 	public void escolherLideres(){
