@@ -28,7 +28,7 @@ public class SMOPSO extends MOPSO{
 	
 	public int tamanhoRepositorio;
 	
-	PrintStream psSol;
+	//PrintStream psSol;
 	
 		
 	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank){
@@ -36,10 +36,9 @@ public class SMOPSO extends MOPSO{
 		tamanhoRepositorio = tamRep;	
 	
 		
-		try{
-
+		/*try{
 			psSol = new PrintStream("solucoes_" + pareto.S);
-		}catch(IOException ex){ex.printStackTrace();}
+		}catch(IOException ex){ex.printStackTrace();}*/
 	}
 		
 	/**
@@ -51,21 +50,19 @@ public class SMOPSO extends MOPSO{
 		//Apaga todas as listas antes do inicio da execu��o
 		reiniciarExecucao();
 		
-		iniciarPopulacaoTeste();
+		//iniciarPopulacaoTeste();
 		
-		rankParticula(populacao);
+		//rankParticula(populacao);
 		
 		//Inicia a popul�ao
-		/*inicializarPopulacao();
+		inicializarPopulacao();
 		
 		//Obt�m as melhores part�culas da popula��o
-		
-				
-
-		if(!rank)
+					
+		//if(!rank)
 			atualizarRepositorio();
-		else
-			iniciarRepositorioRank();	
+		//else
+			//iniciarRepositorioRank();	
 
 		//Obt�m os melhores globais para todas as part�culas da popula��o
 		escolherLideres();
@@ -75,11 +72,11 @@ public class SMOPSO extends MOPSO{
 		for(int i = 0; i<geracoes; i++){
 			if(i%10 == 0)
 				System.out.print(i + " ");
-			if(i == 50)
+			if(i % 100 ==0)
 				System.out.println();
 			lacoEvolutivo(i);
 		}
-		*/
+		
 		
 		pareto.retornarFronteiraNuvem();
 		
@@ -146,15 +143,15 @@ public class SMOPSO extends MOPSO{
 		}
 		
 				
-		if(rank)
-			rankParticula(populacao);
+		//if(rank)
+			//rankParticula(populacao);
 		//Obt�m as melhores particulas da popula��o
 		atualizarRepositorio();
 		
 					
 		calcularCrowdingDistance(pareto.fronteira);
 		
-		psSol.println(i + "\t" + pareto.fronteira.size());
+		//psSol.println(i + "\t" + pareto.fronteira.size());
 		
 		pareto.podarLideresCrowdOperatorParticula(tamanhoRepositorio);
 		

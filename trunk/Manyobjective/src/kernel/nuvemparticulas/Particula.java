@@ -9,39 +9,39 @@ import solucao.SolucaoNumerica;
 
 
 /**
- * Classe que representa uma partícula do MOPSO-N
- * @author André B. de Carvalho
+ * Classe que representa uma partï¿½cula do MOPSO-N
+ * @author Andrï¿½ B. de Carvalho
  *
  */
 public class Particula {
 	
-	//Solução a qual a partícula representa
+	//Soluï¿½ï¿½o a qual a partï¿½cula representa
 	public SolucaoNumerica solucao = null;
-	//Velocidade atual da partícula
+	//Velocidade atual da partï¿½cula
 	public double[] velocidade = null;
-	//Posição atual da partícula
+	//Posiï¿½ï¿½o atual da partï¿½cula
 	public double[] posicao = null;
 	
-	//Melhor local da partícula
+	//Melhor local da partï¿½cula
 	public double[] localBest = null;
 	//Valores dos objestivos para o melhor local
 	public double[] localBestObjetivos = null;
-	//Melhor global da partícula
+	//Melhor global da partï¿½cula
 	public double[] globalBest = null;
-	//Valor da distância sigma da partícula
+	//Valor da distï¿½ncia sigma da partï¿½cula
 	public double[] sigmaVector = null;
 	
-	//Coeficientes da equação do cálculo da velocidade
+	//Coeficientes da equaï¿½ï¿½o do cï¿½lculo da velocidade
 	public double phi1;
 	public double phi2;
 	
 	public double c1;
 	public double c2;
 	
-	//Valores que definem um limite máximo para a velocidade da partícula
+	//Valores que definem um limite mï¿½ximo para a velocidade da partï¿½cula
 	public double[] limitesMaxVelSup;
 	public double[] limitesMaxVelInf;
-	//Limites que definem o espaço de busca dos atributos da partícula
+	//Limites que definem o espaï¿½o de busca dos atributos da partï¿½cula
 	public double[] limitesPosicaoInferior;
 	public double[] limitesPosicaoSuperior;
 	
@@ -51,7 +51,7 @@ public class Particula {
 	
 	
 	public double omega;
-	//Limites da atualização dos coeficientes
+	//Limites da atualizaï¿½ï¿½o dos coeficientes
 	private final double MAX_PHI = 1;
 	private final double MAX_OMEGA = 0.8;
 	private final double REDUCAO_VELOCIDAE = 0.001;
@@ -65,7 +65,7 @@ public class Particula {
 	
 	
 	/**
-	 * Método que inicializa a particula de forma aleatoria
+	 * Mï¿½todo que inicializa a particula de forma aleatoria
 	 * 
 	 */
 	public void iniciarParticulaAleatoriamente(Problema prob, SolucaoNumerica s){
@@ -97,7 +97,7 @@ public class Particula {
 	}
 	
 	/**
-	 * Método que inicia a velocidade da partícula  de forma aleatória
+	 * Mï¿½todo que inicia a velocidade da partï¿½cula  de forma aleatï¿½ria
 	 *
 	 */
 	public void inicializarVelocidadeAleatoria(){
@@ -109,7 +109,7 @@ public class Particula {
 	}
 	
 	/**
-	 * Método que seta of limites superiores e inferiores para cada posicao do vetor velocidade
+	 * Mï¿½todo que seta of limites superiores e inferiores para cada posicao do vetor velocidade
 	 */
 	public void setLimites(){
 		for (int i = 0; i < limitesMaxVelSup.length; i++) {
@@ -128,22 +128,22 @@ public class Particula {
 	
 	
 	/**
-	 * Funcao que retorna o valor da phi1. Phi1 pode variar de acordo com o número da iteração
-	 * @param iteracao Número da iteração da execução do algoritmo 
+	 * Funcao que retorna o valor da phi1. Phi1 pode variar de acordo com o nï¿½mero da iteraï¿½ï¿½o
+	 * @param iteracao Nï¿½mero da iteraï¿½ï¿½o da execuï¿½ï¿½o do algoritmo 
 	 * @return Valor de phi1
 	 */
 	public double getPhi1(int iteracao){
-		//Valor de phi1 aleatorio. Pode-se utilizar uma função que varia o valor de phi de acordo com aiteração
+		//Valor de phi1 aleatorio. Pode-se utilizar uma funï¿½ï¿½o que varia o valor de phi de acordo com aiteraï¿½ï¿½o
 		return phi1 = (Math.random()*10) % MAX_PHI;
 	}
 		
 	/**
-	 * Funcao que retorna o valor da phi1. Phi2 pode variar de acordo com o número da iteração
-	 * @param iteracao Número da iteração da execução do algoritmo 
+	 * Funcao que retorna o valor da phi1. Phi2 pode variar de acordo com o nï¿½mero da iteraï¿½ï¿½o
+	 * @param iteracao Nï¿½mero da iteraï¿½ï¿½o da execuï¿½ï¿½o do algoritmo 
 	 * @return Valor de phi2
 	 */
 	public double getPhi2(int iteracao){
-		//Valor de phi2 aleatorio. Pode-se utilizar uma função que varia o valor de phi de acordo com aiteração
+		//Valor de phi2 aleatorio. Pode-se utilizar uma funï¿½ï¿½o que varia o valor de phi de acordo com aiteraï¿½ï¿½o
 		return phi2 = (Math.random()*10) % MAX_PHI;
 	}
 	
@@ -186,7 +186,7 @@ public class Particula {
 	
 	
 	/**
-	 * Método que cálcula o vetor sigma de acordo com a fórmula proposta por Mostaghim
+	 * Mï¿½todo que cï¿½lcula o vetor sigma de acordo com a fï¿½rmula proposta por Mostaghim
 	 * @return Vetor sigma
 	 */
 	public double[] calcularSigmaVector(){
@@ -207,10 +207,10 @@ public class Particula {
 	}
 	
 	/**
-	 * Método que cálculo o valor sigma para dois objetivos
+	 * Mï¿½todo que cï¿½lculo o valor sigma para dois objetivos
 	 * @param f1 Objetivo 1
 	 * @param f2 Objetivo 2
-	 * @return Valor da função sigma
+	 * @return Valor da funï¿½ï¿½o sigma
 	 */
 	public double calcularSigma(double f1, double f2){
 		double valor = (f1*f1) - (f2*f2);
@@ -223,10 +223,10 @@ public class Particula {
 	}
 	
 	/**
-	 * Cálcula a combinação de m, n a n.
+	 * Cï¿½lcula a combinaï¿½ï¿½o de m, n a n.
 	 * @param m 
 	 * @param n
-	 * @return Combinação (m n) 
+	 * @return Combinaï¿½ï¿½o (m n) 
 	 */
 	public double combinacao(int m, int n){
 		if(n==m)
@@ -240,7 +240,7 @@ public class Particula {
 	}
 	
 	/**
-	 * Cálcula o fatorial de n
+	 * Cï¿½lcula o fatorial de n
 	 * @param n
 	 * @return n!
 	 */
@@ -253,9 +253,9 @@ public class Particula {
 	}
 	
 	/**
-	 * Método que escolhe qual particula do repositorio sera escolhida como global best
-	 * Escolhe a partícula probabilisticamente atraves de uma roleta com os valores da
-	 * distância Euclidiana dos sigmaVector
+	 * Mï¿½todo que escolhe qual particula do repositorio sera escolhida como global best
+	 * Escolhe a partï¿½cula probabilisticamente atraves de uma roleta com os valores da
+	 * distï¿½ncia Euclidiana dos sigmaVector
 	 * @param repositorio
 	 * @return
 	 */
@@ -279,9 +279,9 @@ public class Particula {
 	}
 	
 	/**
-	 * Método que escolhe qual particula do repositorio sera escolhida como global best
-	 * Escolhe a partícula probabilisticamente atraves de uma roleta com os valores da
-	 * distância Euclidiana dos sigmaVector
+	 * Mï¿½todo que escolhe qual particula do repositorio sera escolhida como global best
+	 * Escolhe a partï¿½cula probabilisticamente atraves de uma roleta com os valores da
+	 * distï¿½ncia Euclidiana dos sigmaVector
 	 * @param repositorio
 	 * @return
 	 */
@@ -300,8 +300,8 @@ public class Particula {
 	}
 	
 	/**
-	 * Cálculo da distânca Euclidiana entre dois vetores de mesmo tamanho
-	 * @return Valor da distância Euclidiana entre os vetores
+	 * Cï¿½lculo da distï¿½nca Euclidiana entre dois vetores de mesmo tamanho
+	 * @return Valor da distï¿½ncia Euclidiana entre os vetores
 	 */
 	public double distanciaEuclidiana(double[] vetor1, double[] vetor2){
 		double soma = 0;
@@ -313,8 +313,8 @@ public class Particula {
 	}
 	
 	/**
-	 * Método que cálcula a nova velocidade da particula
-	 * @param iter Número da iteração da execução do algoritmo
+	 * Mï¿½todo que cï¿½lcula a nova velocidade da particula
+	 * @param iter Nï¿½mero da iteraï¿½ï¿½o da execuï¿½ï¿½o do algoritmo
 	 */
 	public void calcularNovaVelocidade(){
 		//omega*velocidade
@@ -332,7 +332,7 @@ public class Particula {
 	}
 	
 	/**
-	 * Método de cálculo da velocidade com limitação do valor da velocidade
+	 * Mï¿½todo de cï¿½lculo da velocidade com limitaï¿½ï¿½o do valor da velocidade
 	 * Utilizado no algoritmo SMOPSO
 	 */
 	public void calcularNovaVelocidadeConstriction(){
@@ -369,7 +369,7 @@ public class Particula {
 	}
 	
 	/**
-	 * Método que calcula a nova posição da partícula. Soma a posição à velocidade e limita o valor da velocidade
+	 * Mï¿½todo que calcula a nova posiï¿½ï¿½o da partï¿½cula. Soma a posiï¿½ï¿½o ï¿½ velocidade e limita o valor da velocidade
 	 *
 	 */
 	public void calcularNovaPosicao(){
@@ -382,7 +382,7 @@ public class Particula {
 
 	
 	/**
-	 * Método que trunca os valores da posição da partícula caso eles extrapolem os limites
+	 * Mï¿½todo que trunca os valores da posiï¿½ï¿½o da partï¿½cula caso eles extrapolem os limites
 	 */
 	public void truncar() {
 	
@@ -406,10 +406,10 @@ public class Particula {
 	}
 
 	/**
-	 * Método que soma ou subtrai dois vetores
+	 * Mï¿½todo que soma ou subtrai dois vetores
 	 * @param vetor1 Primeiro vetor da soma
 	 * @param vetor2 Segundo vetor da soma
-	 * @param fator Fator que irá defini se será uma soma ou subtração dos vetores
+	 * @param fator Fator que irï¿½ defini se serï¿½ uma soma ou subtraï¿½ï¿½o dos vetores
 	 * @return Vetor resultante
 	 */
 	public double[] soma(double[] vetor1, double[] vetor2, double fator){
@@ -424,9 +424,9 @@ public class Particula {
 	}
 	
 	/**
-	 * Método que executa a multiplicação de um vetor por um escalar
-	 * @param k Escalar da multiplicação
-	 * @param vetor1 Vetor da multiplicação
+	 * Mï¿½todo que executa a multiplicaï¿½ï¿½o de um vetor por um escalar
+	 * @param k Escalar da multiplicaï¿½ï¿½o
+	 * @param vetor1 Vetor da multiplicaï¿½ï¿½o
 	 * @return Vetor resultante
 	 */
 	public double[] multiplicacao(double k, double[] vetor){
@@ -445,8 +445,8 @@ public class Particula {
 	
 	
 	/**
-	 * Método que verifica se os novos valores dos objetivos da partícula dominam o melhor local.
-	 * Caso sim os novos objetivos são setados.
+	 * Mï¿½todo que verifica se os novos valores dos objetivos da partï¿½cula dominam o melhor local.
+	 * Caso sim os novos objetivos sï¿½o setados.
 	 *
 	 */
 	public void escolherLocalBest(FronteiraPareto pareto){
@@ -460,7 +460,7 @@ public class Particula {
 	}
 	
 	/**
-	 * Método que verifica se duas partículas são iguais.
+	 * Mï¿½todo que verifica se duas partï¿½culas sï¿½o iguais.
 	 * Utiliza o equal da Solucao.
 	 */
 	public boolean equals(Object o){

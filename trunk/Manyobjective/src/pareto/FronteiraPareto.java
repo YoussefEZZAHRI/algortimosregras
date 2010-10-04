@@ -1,5 +1,6 @@
 package pareto;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -98,26 +99,35 @@ public class FronteiraPareto {
 		
 		ArrayList<SolucaoNumerica> cloneFronteira = (ArrayList<SolucaoNumerica>)fronteira.clone();
 		
-		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
-
-		double r = r(solucao.objetivos);
-		for (int i = 0; i < solucao.objetivos.length; i++) {
-			novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
-		}
 		
+		
+		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
+		
+		double r = 0;
+		if(S!=0.5){
+			r = r(solucao.objetivos);
+			for (int i = 0; i < solucao.objetivos.length; i++) {
+				novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
+			}
+		} else
+			novosObjetivosSolucao = solucao.objetivos;
 		
 		for (Iterator<SolucaoNumerica> iter = cloneFronteira.iterator(); iter.hasNext();) {
 			SolucaoNumerica temp = (SolucaoNumerica) iter.next();
 			
 			double[] novosObjetivosTemp = new double[temp.objetivos.length];
-		
-			r = r(temp.objetivos);
-			for (int i = 0; i < temp.objetivos.length; i++) {
-				novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.objetivos[i], r, S);
-			}
-		
+			
+			if(S!=0.5){
+				r = r(temp.objetivos);
+				for (int i = 0; i < temp.objetivos.length; i++) {
+					novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.objetivos[i], r, S);
+				}
+			} else
+				novosObjetivosTemp = temp.objetivos;
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
+			
+			
 			
 			if(comp == -1)
 				solucao.numDominacao++;
@@ -269,11 +279,28 @@ public class FronteiraPareto {
 		//Se cont for maior do que 0 e menor que o tamanho ela nao domina e nem eh dominada
 		int cont = 0; 
 		int cont2 = sol1.length;
+		int decimalPlace = 10;
 		for (int i = 0; i < sol1.length; i++) {
-			if(sol1[i]*objetivosMaxMin[i]>sol2[i]*objetivosMaxMin[i]){
+			
+			/*BigDecimal sol1Big = new BigDecimal(sol1[i]);
+			BigDecimal sol2Big = new BigDecimal(sol2[i]);
+			
+			
+			sol1Big = sol1Big.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);
+			sol2Big = sol2Big.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);
+			
+			
+						
+			double sol1_i = new Double(sol1Big.toString());
+			double sol2_i = new Double(sol2Big.toString());*/
+			
+			double sol1_i = sol1[i];
+			double sol2_i = sol2[i];
+			
+			if(sol1_i*objetivosMaxMin[i]>sol2_i*objetivosMaxMin[i]){
 				++cont;
 			} else {
-				if(sol1[i]==sol2[i]){
+				if(sol1_i==sol2_i){
 					--cont2;
 				}
 			}

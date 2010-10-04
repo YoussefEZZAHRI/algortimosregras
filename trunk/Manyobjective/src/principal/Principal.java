@@ -34,6 +34,7 @@ import problema.DTLZ3;
 import problema.DTLZ4;
 import problema.DTLZ5;
 import problema.DTLZ6;
+import problema.DTLZ7;
 import problema.Problema;
 import problema.TestCaseSelection;
 import solucao.Solucao;
@@ -398,6 +399,8 @@ public class Principal {
 			problema = new DTLZ5(m);
 		if(prob.equals("DTLZ6"))
 			problema = new DTLZ6(m);
+		if(prob.equals("DTLZ7"))
+			problema = new DTLZ7(m);
 		}
 	}
 	
@@ -454,7 +457,7 @@ public class Principal {
 				if(tag.equals("maxobjhiper"))
 					maxobjhiper = new Integer(valor).intValue();
 
-				if(tag.equals("avaliacoes"))
+				if(tag.equals("numeroavaliacoes"))
 					numeroavaliacoes = new Integer(valor).intValue();
 
 
@@ -496,8 +499,10 @@ public class Principal {
 				}
 
 				if(tag.equals("rank")){
-					if(valor.equals("false"))
+					if(valor.equals("false")){
 						rank = false;
+						tipoRank = "";
+					}
 					else{
 						rank = true;
 						tipoRank = valor;

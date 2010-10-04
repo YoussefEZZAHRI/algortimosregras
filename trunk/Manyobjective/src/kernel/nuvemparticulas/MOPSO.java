@@ -35,7 +35,8 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		populacao = new ArrayList<Particula>();
 		//repositorio = new ArrayList<Particula>();
 		pareto = new FronteiraPareto(s, maxmim,rank);
-		metodoRank.setPareto(pareto);
+		if(rank)
+			metodoRank.setPareto(pareto);
 		this.maxmim = maxmim;
 		problema = prob;
 	}

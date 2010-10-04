@@ -1,6 +1,9 @@
 package problema;
 
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 import com.sun.org.apache.bcel.internal.generic.DLOAD;
@@ -61,6 +64,44 @@ public class DTLZ3 extends Problema {
 		return solucao.objetivos;
 	}
 	
+	public double[] calcularObjetivosJmetal(Solucao sol) {
+		SolucaoNumerica solucao = (SolucaoNumerica) sol;
+		
+		for(int i = 0; i<m; i++)
+			solucao.objetivos[i] = 0;
+		int numberOfVariables_ = solucao.getVariaveis().length;
+		int numberOfObjectives_ = m;
+		double [] x = new double[numberOfVariables_];
+		double [] f = new double[numberOfObjectives_];
+		int k = numberOfVariables_ - numberOfObjectives_ + 1;
+
+		for (int i = 0; i < numberOfVariables_; i++)
+			x[i] = solucao.getVariavel(i);
+
+		double g = 0.0;
+		for (int i = numberOfVariables_ - k; i < numberOfVariables_; i++)
+			g += (x[i] - 0.5)*(x[i] - 0.5) - Math.cos(20.0 * Math.PI * (x[i] - 0.5));
+
+		g = 100.0 * (k + g);
+		for (int i = 0; i < numberOfObjectives_; i++)
+			f[i] = 1.0 + g;
+
+		for (int i = 0; i < numberOfObjectives_; i++){
+			for (int j = 0; j < numberOfObjectives_ - (i + 1); j++)            
+				f[i] *= java.lang.Math.cos(x[j]*0.5*java.lang.Math.PI);                
+			if (i != 0){
+				int aux = numberOfObjectives_ - (i + 1);
+				f[i] *= java.lang.Math.sin(x[aux]*0.5*java.lang.Math.PI);
+			} // if
+		} //for
+
+		for (int i = 0; i < numberOfObjectives_; i++)
+			solucao.objetivos[i] = f[i];
+		
+		return solucao.objetivos;
+		
+	}
+	
 	public  ArrayList<SolucaoNumerica> obterFronteira(int n, int numSol){
 		ArrayList<SolucaoNumerica> melhores = new ArrayList<SolucaoNumerica>();
 		
@@ -82,12 +123,15 @@ public class DTLZ3 extends Problema {
 			double somaParcial = 0;
 			calcularObjetivos(melhor);
 
-			for (int i = 0; i < melhor.m; i++) {
+			/*for (int i = 0; i < melhor.m; i++) {
 				somaParcial += melhor.objetivos[i]*melhor.objetivos[i];
 			}
 			if(somaParcial==1){
 				melhores.add(melhor);
-			}
+			}*/
+			
+			if(g1(melhor.xm)==0)
+				melhores.add(melhor);
 		}
 		
 		return melhores;
@@ -100,8 +144,59 @@ public class DTLZ3 extends Problema {
 		int m = 3;
 
 		DTLZ3 dtlz3 = new DTLZ3(m);
-		ArrayList<SolucaoNumerica> melhores =  dtlz3.obterFronteira(11, 250);
-		dtlz3.imprimirVetoresScilab(melhores);
+		ArrayList<SolucaoNumerica> f =  dtlz3.obterFronteira(12, 100);
+		
+		StringBuffer x = new StringBuffer();
+		StringBuffer y = new StringBuffer();
+		StringBuffer z = new StringBuffer();
+		
+		x.append("x<-c(");
+		y.append("y<-c(");
+		z.append("z<-c(");
+		
+		
+		try{
+			PrintStream ps = new PrintStream("fronteira_dtlz3_" + m);
+			for (Iterator iterator = f.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
+						.next();
+				
+				dtlz3.calcularObjetivos(solucaoNumerica);
+				
+				dtlz3.calcularObjetivosJmetal(solucaoNumerica);
+				
+				
+				for(int i = 0; i<m; i++){
+					ps.print(solucaoNumerica.objetivos[i] + "\t");
+					if(i==0)
+						x.append(solucaoNumerica.objetivos[i] + ",");
+					if(i==1)
+						y.append(solucaoNumerica.objetivos[i] + ",");
+					if(i==2)
+						z.append(solucaoNumerica.objetivos[i] + ",");
+				}
+				ps.println();
+				
+			}
+			
+			x.deleteCharAt(x.length()-1);
+			x.append(")");
+			
+			y.deleteCharAt(y.length()-1);
+			y.append(")");
+			
+			z.deleteCharAt(z.length()-1);
+			z.append(")");
+		} catch (IOException ex){ex.printStackTrace();}
+		//dtlz3.imprimirVetoresScilab(melhores);
+		
+		System.out.println(x);
+		System.out.println();
+		
+		System.out.println(y);
+		System.out.println();
+		System.out.println(z);
+		System.out.println();
 		
 		
 		
