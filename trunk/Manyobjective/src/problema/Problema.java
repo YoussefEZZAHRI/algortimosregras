@@ -19,17 +19,31 @@ public abstract class Problema {
 	
 	public String problema;
 	
-	private static double[] joelho = null;
+	private  double[] joelho = null;
 	
-	private static double[] lambda = null;
+	public  double[] lambda = null;
 	
 	public double inc;
 	public int varVez;
+	
+	public double s;
+	
+	public String[] maxmim;
+	
+	public boolean r;
+
 	
 	public Problema(int m){
 			
 		this.m = m;
 		avaliacoes = 0;
+		
+		this.s  = 0.5;
+		this.maxmim = new String[m];
+		for (int k = 0; k < maxmim.length; k++) {
+			maxmim[k] = "-";
+		}
+		this.r = false;
 		
 	}
 	
@@ -261,9 +275,9 @@ public double g7(double[] xm){
 				minValorObjetivo = ((SolucaoNumerica)fronteiraReal.get(0)).objetivos[i];
 				maxValorObjetivo = ((SolucaoNumerica)fronteiraReal.get(fronteiraReal.size()-1)).objetivos[i];
 				//Calcula o intervalo para o objetivo
-				lambda[i] = 1.0/(maxValorObjetivo - minValorObjetivo);
+				lambda[i] = (maxValorObjetivo - minValorObjetivo);
 				//Calcula o ponto m�dio para o objetivo
-				pontoCentral[i] = (maxValorObjetivo - minValorObjetivo)/2.0;
+				pontoCentral[i] = ((maxValorObjetivo - minValorObjetivo)/2.0) + minValorObjetivo;
 			}
 
 			double menorDistancia = Double.MAX_VALUE;
@@ -301,6 +315,88 @@ public double g7(double[] xm){
 		if(lambda == null)
 			getJoelho(n, fronteiraReal);
 		return lambda;
+	}
+	
+	public double[] getJoelho2(int n, ArrayList<SolucaoNumerica> fronteiraReal){
+		
+		joelho = new double[m];
+		lambda = new double[m];
+		
+		if(fronteiraReal ==null){
+			//N�mero de solucoes na fronteira
+			int numSol = 100000;
+			//Obt�m a fronteira de pareto real para o problema
+			fronteiraReal = obterFronteira(n, numSol);
+		}
+		double maxValorObjetivo ,minValorObjetivo; 
+		//Per corre todos as dimensoes buscando o lambda
+		for (int i = 0; i < m; i++) {
+			ComparetorObjetivo comp = new ComparetorObjetivo(i);
+			Collections.sort(fronteiraReal, comp);
+			//Busca os valores m�ximo e m�nimo para o objetivo i na fronteira real
+			minValorObjetivo = ((SolucaoNumerica)fronteiraReal.get(0)).objetivos[i];
+			maxValorObjetivo = ((SolucaoNumerica)fronteiraReal.get(fronteiraReal.size()-1)).objetivos[i];
+			//Calcula o intervalo para o objetivo
+			lambda[i] = (maxValorObjetivo - minValorObjetivo);
+			//Calcula o ponto m�dio para o objetivo
+			
+		}
+		
+		double menorDiferenca = Double.POSITIVE_INFINITY;
+		int indiceMenorDistancia = -1;
+		int k = 0;
+		for (Iterator<SolucaoNumerica> iterator = fronteiraReal.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
+			double diff = 0;
+			for (int i = 0; i < solucaoNumerica.objetivos.length-1; i++) {
+				for (int j = i+1; j < solucaoNumerica.objetivos.length; j++) {
+					diff += Math.abs(solucaoNumerica.objetivos[i]-solucaoNumerica.objetivos[j]);
+				}
+			}
+			
+			if(diff<menorDiferenca){
+				menorDiferenca = diff;
+				indiceMenorDistancia = k;
+			}
+			k++;
+			
+		}
+		
+		SolucaoNumerica j = (SolucaoNumerica) (fronteiraReal.get(indiceMenorDistancia));
+
+		joelho = new double[m];
+
+		for (int l = 0; l < m; l++) {
+			joelho[l] = j.objetivos[l];
+		}
+		
+		return joelho;
+	}
+	
+	public double[] obterLimites(ArrayList<SolucaoNumerica> fronteiraReal){
+		double limites[] = new double[m];
+		for (int i = 0; i < limites.length; i++) {
+			limites[i] = Double.NEGATIVE_INFINITY;
+		}
+		for (Iterator iterator = fronteiraReal.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
+			for (int i = 0; i < m; i++) {
+				if(solucaoNumerica.objetivos[i]>limites[i])
+					limites[i] = solucaoNumerica.objetivos[i];
+			}
+		}
+		
+		return limites;
+	}
+	
+	public void normalizarFronteira(double[] limites, ArrayList<SolucaoNumerica> fronteira){
+		for (Iterator iterator = fronteira.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
+			for(int i = 0; i<m; i++){
+				solucaoNumerica.objetivos[i] = solucaoNumerica.objetivos[i]/limites[i];
+			}
+		}
+		
 	}
 	
 	public ArrayList<SolucaoNumerica> obterSolucoesExtremas(int n, int s) {
