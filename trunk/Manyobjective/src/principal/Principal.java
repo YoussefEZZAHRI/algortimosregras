@@ -155,6 +155,28 @@ public class Principal {
 			configuracoes[0] = alg1;
 		}
 		
+		ArrayList<SolucaoNumerica> fronteira = null;
+		ArrayList<PontoFronteira> pftrue= null;
+		double[] j = null;
+		double[] l = null;
+		if(indicador.equals("gd") || indicador.equals("igd") || indicador.equals("tcheb") || indicador.equals("pnf")){
+			System.out.println("Obtendo Fronteira: " + problema.problema + " " + m);
+			if(num_sol_fronteira == 0)
+				num_sol_fronteira = populacao;
+			fronteira =  problema.obterFronteira(n, num_sol_fronteira);
+			pftrue= new ArrayList<PontoFronteira>();
+
+			for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+				PontoFronteira temp = new PontoFronteira(solucao.objetivos);
+				pftrue.add(temp);
+			}
+			
+			j =  problema.getJoelho(n, fronteira);
+			l = problema.getLambda(n, fronteira);
+
+		}
+		
 		for (int i = 0; i < configuracoes.length; i++) {
 			alg1 = configuracoes[i];
 			String diretorio = dirExec;
@@ -167,39 +189,30 @@ public class Principal {
 
 			String idExec = alg + prob + "_" + m + alg1;
 			Indicador ind = null;
-			if(indicador.equals("gd") || indicador.equals("igd")){
-				if(num_sol_fronteira == 0)
-					num_sol_fronteira = populacao;
-				ArrayList<SolucaoNumerica> fronteira =  problema.obterFronteira(n, num_sol_fronteira);
-				ArrayList<PontoFronteira> pftrue= new ArrayList<PontoFronteira>();
-
-				for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
-					SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
-					PontoFronteira temp = new PontoFronteira(solucao.objetivos);
-					pftrue.add(temp);
-				}
-
-				if(indicador.equals("gd"))
+			if(indicador.equals("gd")){
 					ind = new GD(m, caminhoDir, idExec, pftrue);
-				else
-					ind = new IGD(m, caminhoDir, idExec, pftrue);
 			}
-			else{
-				if(indicador.equals("hipervolume"))
-					ind = new Hipervolume(m, caminhoDir, idExec, limitesHiper);
-				else{
-					if(indicador.equals("spread"))
-						ind = new Spread(m, caminhoDir, idExec);
-					else{
-						if(indicador.equals("tchebycheff")){
-							double[] j =  problema.getJoelho(n, null);
-							double[] l = problema.getLambda(n, null);
-							ind = new Tchebycheff(m, caminhoDir, idExec, j , l);
-						} 				
-					}
-				}
+			if(indicador.equals("igd")){
+						ind = new IGD(m, caminhoDir, idExec, pftrue);
 			}
 
+			if(indicador.equals("tcheb"))
+				ind = new Tchebycheff(m, caminhoDir, idExec, j , l);
+				
+		
+			if(indicador.equals("hipervolume")){
+					ind = new Hipervolume(m, caminhoDir, idExec, limitesHiper);
+			}
+			if(indicador.equals("spread"))
+					ind = new Spread(m, caminhoDir, idExec);
+			
+			
+			if(indicador.equals("pnf"))
+				ind = new PontosNaFronteira(m, caminhoDir, idExec, pftrue);
+				
+			if(indicador.equals("np"))
+				ind = new NumeroPontos(m, caminhoDir, idExec);
+			
 			if(ind!=null){
 				ind.preencherObjetivosMaxMin(maxmimObjetivos);
 				String arquivo1 = caminhoDir + "/" + idExec  + "_fronteira.txt";
@@ -217,6 +230,7 @@ public class Principal {
 		
 		String caminhoDir = null;
 		String arquivoExec = null;
+						
 		if(!rank){
 			caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "/" ;
 			arquivoExec = caminhoDir + id+ S +"_texec.txt";
@@ -347,15 +361,15 @@ public class Principal {
 			igd.calcularIndicadorArray(fronteiras);
 
 
-			double[] j =  problema.getJoelho(n, null);
-			double[] l = problema.getLambda(n, null);
+			double[] j =  problema.getJoelho(n, fronteira);
+			double[] l = problema.getLambda(n, fronteira);
 			Tchebycheff tcheb = new Tchebycheff(m, caminhoDir, idInd, j , l);
 			tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
 			tcheb.calcularTchebycheff(fronteiras);
 			
-			PontosNaFronteira pnf = new PontosNaFronteira(m, caminhoDir, idInd, pftrue);
+			/*PontosNaFronteira pnf = new PontosNaFronteira(m, caminhoDir, idInd, pftrue);
 			pnf.preencherObjetivosMaxMin(maxmimObjetivos);
-			pnf.calcularIndicadorArray(fronteiras);
+			pnf.calcularIndicadorArray(fronteiras);*/
 			
 			NumeroPontos np = new NumeroPontos(m, caminhoDir, idInd);
 			np.preencherObjetivosMaxMin(maxmimObjetivos);
@@ -473,7 +487,7 @@ public class Principal {
 				}
 
 				if(tag.equals("indicador"))
-					if(valor.equals("hipervolume") || valor.equals("gd") || valor.equals("spread") || valor.equals("igd") || valor.equals("tchebycheff")){
+					if(!valor.equals("false")){
 						indicador = valor;
 					}
 
