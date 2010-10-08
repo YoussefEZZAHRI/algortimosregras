@@ -204,6 +204,75 @@ public class DTLZ7 extends Problema {
 		
 		return saida;	
 	}
+	
+	/*public double[] getJoelho(int n, ArrayList<SolucaoNumerica> fronteiraReal){
+		
+		if(fronteiraReal ==null){
+			//N�mero de solucoes na fronteira
+			int numSol = 10000;
+			//Obt�m a fronteira de pareto real para o problema
+			fronteiraReal = obterFronteira(n, numSol);
+		}
+		
+		ArrayList<SolucaoNumerica> fronteiraClone = new ArrayList<SolucaoNumerica>();
+		
+		for (Iterator<SolucaoNumerica> iterator = fronteiraReal.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
+			fronteiraClone.add((SolucaoNumerica)solucaoNumerica.clone());			
+		}
+		
+		double limites[] = obterLimites(fronteiraClone);
+		normalizarFronteira(limites, fronteiraClone);
+		
+		double maxValorObjetivo ,minValorObjetivo; 
+		
+		//Ponto m�dio da fronteira real
+		double[] pontoCentral = new double[m];
+		lambda = new double[m];
+		
+		
+		//Per corre todos as dimensoes buscando o ponto m�dio
+		for (int i = 0; i < m; i++) {
+			ComparetorObjetivo comp = new ComparetorObjetivo(i);
+			Collections.sort(fronteiraClone, comp);
+			//Busca os valores m�ximo e m�nimo para o objetivo i na fronteira real
+			minValorObjetivo = ((SolucaoNumerica)fronteiraClone.get(0)).objetivos[i];
+			maxValorObjetivo = ((SolucaoNumerica)fronteiraClone.get(fronteiraClone.size()-1)).objetivos[i];
+			//Calcula o intervalo para o objetivo
+			lambda[i] = (maxValorObjetivo - minValorObjetivo);
+			//Calcula o ponto m�dio para o objetivo
+			pontoCentral[i] = ((maxValorObjetivo - minValorObjetivo)/2.0) + minValorObjetivo;
+		}
+
+		double menorDistancia = Double.MAX_VALUE;
+		
+		int indiceMenorDistancia = -1;
+
+		int i = 0;
+		//Busca o ponto da fronteira real mais pr�ximo do ponto m�dio
+		for (Iterator<SolucaoNumerica> iterator = fronteiraClone.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
+
+			double dist = distanciaEuclidiana(pontoCentral, solucaoNumerica.objetivos);
+			if(dist < menorDistancia){
+				menorDistancia = dist;
+				indiceMenorDistancia = i;
+			}
+			i++;
+		}
+
+
+
+		SolucaoNumerica j = (SolucaoNumerica) (fronteiraClone.get(indiceMenorDistancia));
+
+		joelho = new double[m];
+
+		for (int k = 0; k < m; k++) {
+			joelho[k] = j.objetivos[k]*limites[k];
+		}
+		
+		return joelho;
+	}*/
 		
 	
 	public static void main(String[] args) {
@@ -221,7 +290,9 @@ public class DTLZ7 extends Problema {
 		//dtlz7.obterFronteira2(n, numSol);
 		
 		
+		
 		ArrayList<SolucaoNumerica> f = dtlz7.obterFronteiraIncremental(n, numSol);
+		double j[] = dtlz7.getJoelho(n, f);
 		ComparetorObjetivo comp = new ComparetorObjetivo(0);
 		Collections.sort(f,comp);
 		

@@ -2,6 +2,7 @@ package problema;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 import pareto.FronteiraPareto;
@@ -75,6 +76,8 @@ public class DTLZ4 extends Problema {
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r);
+		
 		while(melhores.size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
 
@@ -89,11 +92,23 @@ public class DTLZ4 extends Problema {
 
 			
 			calcularObjetivos(melhor);
+			
+			if(!pareto.fronteira.contains(melhor))
+				pareto.add(melhor);
+			
+			
+			
 			melhores.add(melhor);
 			
 		}
-		
-		return melhores;	
+								
+		ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();
+		for (Iterator<Solucao> iterator = pareto.fronteira.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
+			saida.add(solucaoNumerica);
+		}
+					
+		return saida;		
 	}
 	
 

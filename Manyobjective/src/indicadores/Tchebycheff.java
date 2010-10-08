@@ -11,7 +11,7 @@ import java.util.Set;
 
 
 /**
- * Classe que represta o método General Distance proposto por Veldhuizen
+ * Classe que represta o mï¿½todo General Distance proposto por Veldhuizen
  * @author Andre
  *
  */
@@ -86,7 +86,7 @@ public class Tchebycheff extends Indicador {
 		double distancia = 0;
 		
 		for (int i = 0; i < z.length; i++) {
-			distancia = Math.max(distancia, lambda[i] * Math.abs(zEstrela[i] - z[i]));
+			distancia = Math.max(distancia, (1.0/lambda[i]) * Math.abs(zEstrela[i] - z[i]));
 		}
 		
 		return distancia;

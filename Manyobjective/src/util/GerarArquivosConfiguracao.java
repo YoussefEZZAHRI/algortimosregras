@@ -7,28 +7,28 @@ public class GerarArquivosConfiguracao {
 	
 	public static int k = 10;
 	
-	public static void gerarArquivos(int m) throws IOException{
+	public static void gerarArquivos(int m, String ind) throws IOException{
 		
 		
-		String problema  = "dtlz3";
+		String problema  = "dtlz4";
 		String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
 		//String[] algs = {"0.50"};
-		String metodo = "smopso";
+		String metodo = "sigma";
 		String exec = "50";
-		String g = "200";
+		String g = "100";
 		String a = "-1";
-		String p = "500";
-		String r = "500";
+		String p = "250";
+		String r = "250";
 		String rank = "false";
 		String taxaclonagem = "7";
 		String partesgrid = "25";
 		String maxobjhiper = "1";
 		String dominance = "false";
-		String alg1 = "0.7";
+		String alg1 = "all";
 		String alg2 = "normal";
-		String indicador = "false";
+		String indicador = ind;
 		String  direxec = "/home/andre/doutorado/experimentos/neuro/";
-		String  num_sol_fronteira = "250";
+		String  num_sol_fronteira = "10000";
 		String programaes = "schedule2";
 		String numerocasosteste = "2710";
 		String funcoesobjetivo = "pdu;tempo";
@@ -42,9 +42,18 @@ public class GerarArquivosConfiguracao {
 			objetivos.append("- ");
 		}
 		
+		if(!ind.equals("")){
+			algs = new String[1];
+			algs[0] = "0.25";
+		}
+		
 		for (int i = 0; i < algs.length; i++) {
 			String s = algs[i];
-			String arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s + ".txt";
+			String arquivo = "";
+			if(ind.equals(""))
+				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s + ind+ ".txt";
+			else
+				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m +"_" + ind+ ".txt";
 			if(!rank.equals("false"))
 				arquivo = "principal" + s + "_" + rank + "_" + m +".txt";
 			PrintStream ps = new PrintStream(arquivo);
@@ -81,9 +90,13 @@ public class GerarArquivosConfiguracao {
 	}
 	
 	public static void main(String[] args) {
-		int m = 20;
+		int[] ms = {2, 3, 5, 10,15,20};
+		String ind = "";
 		try{
-			gerarArquivos(m);
+			for (int i = 0; i < ms.length; i++) {
+				gerarArquivos(ms[i],ind);
+			}
+			
 		} catch (Exception e) {
 		}
 	}

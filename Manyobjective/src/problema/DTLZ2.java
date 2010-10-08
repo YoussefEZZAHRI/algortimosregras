@@ -3,12 +3,11 @@ package problema;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.Iterator;
 import java.util.Random;
 
 import pareto.FronteiraPareto;
-import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -81,6 +80,8 @@ public class DTLZ2 extends Problema {
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r);
+		
 		while(melhores.size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
 
@@ -100,11 +101,19 @@ public class DTLZ2 extends Problema {
 				somaParcial += melhor.objetivos[i]*melhor.objetivos[i];
 			}
 			if(somaParcial==1){
+				if(!pareto.fronteira.contains(melhor))
+					pareto.add(melhor);
 				melhores.add(melhor);
 			}
 		}
 		
-		return melhores;
+		ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();
+		for (Iterator<Solucao> iterator = pareto.fronteira.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
+			saida.add(solucaoNumerica);
+		}
+		
+		return saida;
 	}
 	
 	public boolean validarSolucaoFronteira(SolucaoNumerica s){
@@ -123,22 +132,24 @@ public class DTLZ2 extends Problema {
 	
 
 	
+
+	
 	public static void main(String[] args) {
 		
-		int m = 2;
-		int numSol = 100;
+		int m = 3;
+		int numSol = 1000;
 		int k = 10;
-		int s = 3;
-		int n = m + k - 1;
 		
-		DTLZ2 dtlz2 = new DTLZ2(m);
-		
+		 DTLZ2 dtlz2 = new DTLZ2(m);
+		 int n = m + k - 1;
+		 ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
+			
 		//dtlz2.obterSolucoesExtremas(n, s);
-		
-		ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
+				 
+				
 		try{
 			PrintStream ps = new PrintStream("fronteira_dtlz2" + m);
-			for (Iterator iterator = f.iterator(); iterator.hasNext();) {
+			for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
 						.next();
 				for(int i = 0; i<m; i++){
