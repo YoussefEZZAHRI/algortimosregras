@@ -159,7 +159,7 @@ public class PrepararArquivos {
 
 
 
-		PrintStream psSaida = new PrintStream(dir + "resultados/" + metodo + problema + "_"+ ind + "_" + objetivo + "_indicadores.txt");
+		PrintStream psSaida = new PrintStream(dir + "medidas/" + metodo + problema + "_"+ ind + "_" + objetivo + "_indicadores.txt");
 		
 
 
@@ -248,12 +248,12 @@ public class PrepararArquivos {
 			
 	}
 	
-public void preparArquivosComandosFriedman(String dir, String problema, String objetivo, String[] algoritmos , int exec, String metodo, String ind) throws IOException{
+public void preparArquivosComandosFriedman(String dir, String dir2, String problema, String objetivo, String[] algoritmos , int exec, String metodo, String ind) throws IOException{
 		
 
 		BufferedReader buff;
 		
-		PrintStream psSaida = new PrintStream(dir + "resultados/" + metodo + problema + "_" + ind +"_" + objetivo + "_comando_friedman.txt");
+		PrintStream psSaida = new PrintStream(dir + "medidas/" + metodo + problema + "_" + ind +"_" + objetivo + "_comando_friedman.txt");
 		
 		
 		StringBuffer comandos = new StringBuffer();
@@ -314,9 +314,9 @@ public void preparArquivosComandosFriedman(String dir, String problema, String o
 		
 		comandos.append(	"result<-friedman.test(AR1)\n\n" +
 							 "m<-data.frame(result$statistic,result$p.value)\n" +
-							 "write.csv2(m,file=\"" +  dir + "resultados/result_"+ metodo + problema + objetivo+ "_" + ind+ ".csv\")\n\n" +
+							 "write.csv2(m,file=\"" +  dir2 + "medidas/result_"+ metodo + problema + objetivo+ "_" + ind+ ".csv\")\n\n" +
 							 "pos_teste<-friedmanmc(AR1)\n" +
-							 "write.csv2(pos_teste,file=\"" + dir + "resultados/friedman_"+ metodo + problema+ objetivo+ "_" + ind +".csv\")");
+							 "write.csv2(pos_teste,file=\"" + dir2 + "medidas/friedman_"+ metodo + problema+ objetivo+ "_" + ind +".csv\")");
 		
 		
 		
@@ -332,14 +332,15 @@ public void preparArquivosComandosFriedman(String dir, String problema, String o
 	
 	public static void main(String[] args) {
 		PrepararArquivos pre = new PrepararArquivos();
-		String dir = "/home/andre/doutorado/experimentos/rank/";		
-		//String dir = "/media/disk/Andre/evoCOP2010/";
-		int objetivo = 30;
+		String dir = "/home/andre/gemini/doutorado/experimentos/neuro/";		
+		String dir2 = "/home/andre/doutorado/neuro/";
+		int objetivo = 20;
 		String problema  = "DTLZ2";
-		String[] algs = {"0.5_ar", "0.5_bro", "0.5_mr", "0.5_nsga", "0.5_mr_bro", "0.5_ar_bro", "0.3_nsga", "0.35_nsga", "0.4_nsga" };
+		String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
+		//String[] algs = {"0.5_ar", "0.5_bro", "0.5_mr", "0.5_nsga", "0.5_mr_bro", "0.5_ar_bro", "0.3_nsga", "0.35_nsga", "0.4_nsga" };
 		//String[] algs = {"0.4"};
-		String metodo = "nsga2";
-		int exec = 20;
+		String metodo = "sigma";
+		int exec = 50;
 		try{
 			
 			//pre.juntarFronteira(dir, problema, objetivo, algs, exec, metodo);
@@ -347,14 +348,14 @@ public void preparArquivosComandosFriedman(String dir, String problema, String o
 			pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "gd");
 			pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "igd");
 			pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "spread");
-			pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "pnf");
+			//pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "pnf");
 			pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "np");
 			
-			pre.preparArquivosComandosFriedman(dir,  problema, ""+objetivo, algs, exec, metodo, "gd");
-			pre.preparArquivosComandosFriedman(dir,  problema, ""+objetivo, algs, exec, metodo, "igd");
-			pre.preparArquivosComandosFriedman(dir,  problema, ""+objetivo, algs, exec, metodo, "spread");
-			pre.preparArquivosComandosFriedman(dir,  problema, ""+objetivo, algs, exec, metodo, "pnf");
-			pre.preparArquivosComandosFriedman(dir,  problema, ""+objetivo, algs, exec, metodo, "np");
+			pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "gd");
+			pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "igd");
+			pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "spread");
+			//pre.preparArquivosComandosFriedman(dir,  problema, ""+objetivo, algs, exec, metodo, "pnf");
+			//pre.preparArquivosComandosFriedman(dir,  problema, ""+objetivo, algs, exec, metodo, "np");
 			
 			
 			
