@@ -51,7 +51,6 @@ public class SMOPSO extends MOPSO{
 		reiniciarExecucao();
 		
 		//iniciarPopulacaoTeste();
-		
 		//rankParticula(populacao);
 		
 		//Inicia a popul�ao
@@ -59,10 +58,10 @@ public class SMOPSO extends MOPSO{
 		
 		//Obt�m as melhores part�culas da popula��o
 					
-		//if(!rank)
+		if(!rank)
 			atualizarRepositorio();
-		//else
-			//iniciarRepositorioRank();	
+		else
+			iniciarRepositorioRank();	
 
 		//Obt�m os melhores globais para todas as part�culas da popula��o
 		escolherLideres();
@@ -76,6 +75,23 @@ public class SMOPSO extends MOPSO{
 				System.out.println();
 			lacoEvolutivo(i);
 		}
+		
+		/*if(rank){
+
+			ArrayList<Particula> cloneFronteira = (ArrayList<Particula>)pareto.fronteiraNuvem.clone();
+
+			pareto.apagarFronteiraNuvem();
+
+			for (Iterator<Particula> iter = cloneFronteira.iterator(); iter.hasNext();) {
+				Particula particula =  iter.next();
+				particula.problema = this.problema;
+				if(!pareto.fronteiraNuvem.contains(particula)){
+					particula.solucao.numDominacao = pareto.add((Particula)particula.clone());
+
+				}
+			}	
+
+		}*/
 		
 		
 		pareto.retornarFronteiraNuvem();
@@ -143,24 +159,37 @@ public class SMOPSO extends MOPSO{
 		}
 		
 				
-		//if(rank)
-			//rankParticula(populacao);
+		if(rank)
+			rankParticula(populacao);
 		//Obt�m as melhores particulas da popula��o
 		atualizarRepositorio();
 		
-					
 		calcularCrowdingDistance(pareto.fronteira);
 		
-		//psSol.println(i + "\t" + pareto.fronteira.size());
-		
 		pareto.podarLideresCrowdOperatorParticula(tamanhoRepositorio);
-		
+				
 		//Recalcula a Crowding distance dos lideres
 		calcularCrowdingDistance(pareto.fronteira);
 		
-		//pareto.imprimir(populacao);
-		
-		//pareto.imprimir();
+		if(rank){
+
+			ArrayList<Particula> cloneFronteira = (ArrayList<Particula>)pareto.fronteiraNuvem.clone();
+
+			pareto.apagarFronteiraNuvem();
+
+			for (Iterator<Particula> iter = cloneFronteira.iterator(); iter.hasNext();) {
+				Particula particula =  iter.next();
+				particula.problema = this.problema;
+				if(!pareto.fronteiraNuvem.contains(particula)){
+					particula.solucao.numDominacao = pareto.add((Particula)particula.clone());
+
+				}
+			}	
+			
+			pareto.retornarFronteiraNuvem();
+
+		}
+	
 		
 		//Escolhe os novos melhores globais
 		escolherLideres();
@@ -199,7 +228,7 @@ public class SMOPSO extends MOPSO{
 	public void iniciarRepositorioRank(){
 		ComparetorRankParticula comp = new ComparetorRankParticula();
 		Collections.sort(populacao, comp);
-		for(int i = 0; i<tamanhoRepositorio; i++){
+		for(int i = 0; i<(tamanhoRepositorio); i++){
 			Particula particula = populacao.get(i);
 			pareto.fronteiraNuvem.add((Particula)particula.clone());
 		}
