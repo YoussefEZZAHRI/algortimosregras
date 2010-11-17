@@ -94,10 +94,10 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula =  iter.next();
 			if(!pareto.fronteiraNuvem.contains(particula)){
-				//if(!rank)
+				if(!rank)
 					particula.solucao.numDominacao = pareto.add((Particula)particula.clone());
-				//else
-					//pareto.addRank((Particula)particula.clone());
+				else
+					pareto.addRank((Particula)particula.clone());
 				
 			}
 		}	
