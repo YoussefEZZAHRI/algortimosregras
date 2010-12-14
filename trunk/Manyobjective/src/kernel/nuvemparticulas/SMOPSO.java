@@ -171,7 +171,7 @@ public class SMOPSO extends MOPSO{
 		//Recalcula a Crowding distance dos lideres
 		calcularCrowdingDistance(pareto.fronteira);
 		
-		if(rank){
+		/*if(rank){
 
 			ArrayList<Particula> cloneFronteira = (ArrayList<Particula>)pareto.fronteiraNuvem.clone();
 
@@ -188,7 +188,7 @@ public class SMOPSO extends MOPSO{
 			
 			pareto.retornarFronteiraNuvem();
 
-		}
+		}*/
 	
 		
 		//Escolhe os novos melhores globais

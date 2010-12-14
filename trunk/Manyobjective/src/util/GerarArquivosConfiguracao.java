@@ -10,16 +10,16 @@ public class GerarArquivosConfiguracao {
 	public static void gerarArquivos(int m, String ind) throws IOException{
 		
 		
-		String problema  = "dtlz6";
+		String problema  = "dtlz4";
 		//String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
 		String[] algs = {"0.50"};
 		String metodo = "smopso";
-		String exec = "50";
-		String g = "100";
+		String exec = "30";
+		String g = "250";
 		String a = "-1";
 		String p = "250";
 		String r = "50";
-		String rank = "ar";
+		String rank = "br_gb";
 		String taxaclonagem = "7";
 		String partesgrid = "25";
 		String maxobjhiper = "1";
@@ -27,7 +27,7 @@ public class GerarArquivosConfiguracao {
 		String alg1 = "all";
 		String alg2 = "normal";
 		String indicador = ind;
-		String  direxec = "/home/andre/doutorado/experimentos/neuro/";
+		String  direxec = "/home/andre/doutorado/experimentos/rank/";
 		String  num_sol_fronteira = "10000";
 		String programaes = "schedule2";
 		String numerocasosteste = "2710";

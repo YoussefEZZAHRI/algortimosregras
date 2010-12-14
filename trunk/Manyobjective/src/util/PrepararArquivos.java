@@ -184,8 +184,64 @@ public class PrepararArquivos {
 
 	}
 	
+	public void preparArquivoTempo(String dir, String problema, String objetivo, String[] algoritmos , int exec, String metodo, PrintStream psSaida) throws IOException{
+		Double[][] valores = new Double[algoritmos.length][exec];
+		
+
+		BufferedReader buff;
+
+
+		for (int j = 0; j < algoritmos.length; j++) {
+
+			String arq = dir + "resultados/" + metodo + "/" + problema + "/" + objetivo + "/" +			
+			algoritmos[j] + "/" + metodo + "" + problema + "_" + objetivo + algoritmos[j] + "_texec.txt";
+
+		
+
+			System.out.println(arq);
+
+
+			buff = new BufferedReader(new FileReader(arq));
+			int tam = 0;
+			while(buff.ready() && tam<exec){
+				String linha = buff.readLine();
+				if(!linha.isEmpty()){
+					String[] tempos = linha.split("\t");
+					Double tInicio = new Double(tempos[1])/1000; 
+					Double tFim = new Double(tempos[2])/1000;
+					Double val = new Double(tFim - tInicio);
+					//try{
+					valores[j][tam++] = val;
+					//} catch(ArrayIndexOutOfBoundsException x){x.printStackTrace();}
+				}
+			}
+		}  
+		
+		
+
+
+		if(psSaida == null)
+			psSaida = new PrintStream(dir + "medidas/" + metodo + problema + "_tempo_" + objetivo + "_indicadores.txt");
+		
+
+
+
+		for(int j = 0; j<exec; j++){
+			for (int i = 0; i < algoritmos.length; i++) {
+				try{
+					psSaida.print(valores[i][j] + "\t");		
+				}catch(NullPointerException ex){ex.printStackTrace();}
+			}
+
+
+			psSaida.println();
+		}
+
+
+	}
+	
 	public void preparArquivosIndicadoresTodos(String dir, String dir2, String problema, String[] algoritmos , int exec, String metodo, String ind, int[] objs, String[] algs) throws IOException{
-		PrintStream psSaida = new PrintStream(dir + "medidas/" + metodo + problema + "_"+ ind + "_indicadores_all.txt");
+		PrintStream psSaida = new PrintStream(dir2 + "medidas/" + metodo + problema + "_"+ ind + "_indicadores_all.txt");
 		
 		for (int i = 0; i < objs.length; i++) {
 			System.out.println(objs[i]);
@@ -196,10 +252,15 @@ public class PrepararArquivos {
 			if(ind.equals("tcheb"))
 				preparArquivosTcheb(dir,  problema, objetivo, algs, exec, metodo);
 			else{
+				if(ind.equals("tempo")){
+					preparArquivoTempo(dir, problema, objetivo, algoritmos, exec, metodo, psSaida);
+					psSaida.println("\n\n\n\n\n\n");
+				} else{
 				preparArquivosIndicadores(dir, problema, objetivo, algoritmos, exec, metodo, ind, psSaida);
 				psSaida.println("\n\n\n\n\n\n");
 
-				preparArquivosComandosFriedman(dir, dir2,  problema, objetivo, algs, exec, metodo, ind);
+				//preparArquivosComandosFriedman(dir, dir2,  problema, objetivo, algs, exec, metodo, ind);
+				}
 			}
 			
 		}
@@ -475,26 +536,35 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 	
 	public static void main(String[] args) {
 		PrepararArquivos pre = new PrepararArquivos();
-		String dir = "/home/andrebia/gemini/doutorado/experimentos/neuro/";		
-		String dir2 = "/home/andrebia/doutorado/neuro/";
-		int objetivo = 2;
-		String problema  = "DTLZ6";
-		String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
+		String dir = "/home/andre/gemini/doutorado/experimentos/rank/";		
+		//String dir = "/media/Dados/Andre/Manyobjective/";
+		String dir2 = "/home/andre/gemini/doutorado/experimentos/rank/";
+		//int objetivo = 2;
+		String problema  = "DTLZ4";
+		//String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
 		//String[] algs = {"0.5_ar", "0.5_bro", "0.5_mr", "0.5_nsga", "0.5_mr_bro", "0.5_ar_bro", "0.3_nsga", "0.35_nsga", "0.4_nsga" };
-		//String[] algs = {"0.4"};
-		String metodo = "sigma";
+		String[] algs = {"0.5_br", "0.5_ar", "0.5_mr", "0.5_gb", "0.5_ar_br", "0.5_ar_gb", "0.5_br_gb", "0.5"};
+		String metodo = "smopso";
 		
-		int objs[] = {15, 20};
-		int exec = 10;
+		int objs[] = {2,3,5,10,15,20};
+		int exec = 50;
 		try{
+			
+			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "gd", objs, algs);
+			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "igd", objs, algs);
+			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "spread", objs, algs);
+			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "np", objs, algs);
+			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "tempo", objs, algs);
+
 			
 			//pre.juntarFronteira(dir, problema, objetivo, algs, exec, metodo);
 			//pre.inverterMaxMim(dir, problema, objetivo, algs, exec, metodo);
-			/*pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "gd", null);
-			pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "igd", null);
-			pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "spread", null);*/
+			//pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "gd", null);
+			//pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "igd", null);
+			//pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "spread", null);
 			//pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "pnf", null);
 			//pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "np", null);
+			//pre.preparArquivoTempo(dir, problema, ""+objetivo, algs, exec, metodo,  null);
 			
 			/*pre.preparArquivosComandosFriedman(dir, dir2,   problema, ""+objetivo, algs, exec, metodo, "gd");
 			pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "igd");
@@ -509,10 +579,7 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			}*/
 			
 			
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "gd", objs, algs);
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "igd", objs, algs);
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "spread", objs, algs);
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "np", objs, algs);
+						
 			
 			
 			
