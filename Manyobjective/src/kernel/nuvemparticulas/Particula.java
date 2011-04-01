@@ -278,6 +278,84 @@ public class Particula {
 		return globalBest;
 	}
 	
+	public double[] escolherGlobalBestIdeal(ArrayList<Particula> repositorio){
+		double[] ideal = new double[problema.m];
+		for (int i = 0; i < ideal.length; i++) {
+			ideal[i] = Double.POSITIVE_INFINITY;	
+		}
+		
+		for (Iterator<Particula> iter = repositorio.iterator(); iter.hasNext();) {
+			Particula rep = iter.next();
+			for(int j = 0; j<problema.m;j++){
+				if(rep.solucao.objetivos[j]<ideal[j])
+					ideal[j] = rep.solucao.objetivos[j];
+			}
+		}
+		
+		
+		double melhorValor = Double.MAX_VALUE;
+		Particula gbest = null; 
+		for (Iterator<Particula> iter = repositorio.iterator(); iter.hasNext();) {
+			Particula rep = iter.next();
+			double temp = distanciaEuclidiana(ideal, rep.solucao.objetivos);
+			if(temp<melhorValor){
+				melhorValor = temp;
+				gbest = rep;
+			}
+		}
+
+		globalBest = gbest.posicao;
+		
+		return globalBest;
+	}
+	
+	
+	public double[] escolherGlobalBestIdeal2(ArrayList<Particula> repositorio){
+		double[] ideal = new double[problema.m];
+		Particula[] melhores = new Particula[problema.m+1];
+		
+		for (int i = 0; i < ideal.length; i++) {
+			ideal[i] = Double.POSITIVE_INFINITY;
+		}
+		
+		for (Iterator<Particula> iter = repositorio.iterator(); iter.hasNext();) {
+			Particula rep = iter.next();
+			for(int j = 0; j<problema.m;j++){
+				if(rep.solucao.objetivos[j]<ideal[j]){
+					ideal[j] = rep.solucao.objetivos[j];
+					melhores[j] = rep;
+				}
+			}
+		}
+		
+		
+		double melhorValor = Double.MAX_VALUE;
+		Particula gbest = null; 
+		for (Iterator<Particula> iter = repositorio.iterator(); iter.hasNext();) {
+			Particula rep = iter.next();
+			double temp = distanciaEuclidiana(ideal, rep.solucao.objetivos);
+			if(temp<melhorValor){
+				melhorValor = temp;
+				gbest = rep;
+			}
+		}
+		
+		melhores[melhores.length-1] = gbest;
+
+				
+		int ordem = (int)Math.ceil(Math.log10(melhores.length));
+		int indice1 = (int)(Math.random()*(Math.pow(10, ordem))%melhores.length);
+		int indice2 = (int)(Math.random()*(Math.pow(10, ordem))%melhores.length);
+		Particula particula1 = melhores[indice1];
+		Particula particula2 = melhores[indice2];
+		if(particula1.solucao.crowdDistance>particula2.solucao.crowdDistance)
+			globalBest = particula1.posicao;
+		else
+			globalBest = particula2.posicao;
+		
+		return globalBest;
+	}
+	
 	/**
 	 * M�todo que escolhe qual particula do repositorio sera escolhida como global best
 	 * Escolhe a part�cula probabilisticamente atraves de uma roleta com os valores da

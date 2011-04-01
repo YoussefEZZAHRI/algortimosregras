@@ -62,6 +62,8 @@ public class SMOPSO extends MOPSO{
 			atualizarRepositorio();
 		else
 			iniciarRepositorioRank();	
+		
+		calcularCrowdingDistance(pareto.fronteira);
 
 		//Obt�m os melhores globais para todas as part�culas da popula��o
 		escolherLideres();
@@ -202,9 +204,19 @@ public class SMOPSO extends MOPSO{
 	 *
 	 */
 	public void escolherLideres(){
+		for (Iterator<Particula> iter = pareto.fronteiraNuvem.iterator(); iter.hasNext();) {
+			Particula partRepositorio =  iter.next();
+			partRepositorio.calcularSigmaVector();
+		}
+		
+		
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = iter.next();
 			particula.escolherGlobalBestBinario(pareto.fronteiraNuvem);
+			//particula.escolherGlobalBestIdeal(pareto.fronteiraNuvem);
+			//particula.escolherGlobalBestIdeal2(pareto.fronteiraNuvem);
+			//particula.calcularSigmaVector();
+			//particula.escolherGlobalBestSigma(pareto.fronteiraNuvem);
 		}
 	}
 	
