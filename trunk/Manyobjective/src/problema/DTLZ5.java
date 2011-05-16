@@ -21,6 +21,7 @@ public class DTLZ5 extends Problema {
 	 */
 	public DTLZ5(int m){
 		super(m);
+		problema = "dtlz5";
 	}
 	
 	/**
