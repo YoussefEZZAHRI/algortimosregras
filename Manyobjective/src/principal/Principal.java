@@ -69,7 +69,7 @@ public class Principal {
 	public String alg2;
 	public String dirExec = "";
 	public boolean dominance = false;
-	public int num_sol_fronteira = 0;;
+	public int num_sol_fronteira = 0;
 	
 	public String indicador = "";
 	
@@ -341,7 +341,7 @@ public class Principal {
 		spread.calcularIndicadorArray(fronteiras);
 		
 		int front = 10000;
-	
+		
 		ArrayList<SolucaoNumerica> fronteira =  problema.obterFronteira(n, front);
 		ArrayList<PontoFronteira> pftrue= new ArrayList<PontoFronteira>();
 		

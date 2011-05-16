@@ -24,6 +24,14 @@ public abstract class Rank {
 		pareto = p;
 	}
 	
+	public double distanciaEuclidiana(double[] vetor1, double[] vetor2){
+		double soma = 0;
+		for (int i = 0; i < vetor1.length; i++) {
+			soma += Math.pow(vetor1[i]-vetor2[i],2);
+		}
+		return Math.sqrt(soma);
+	}
+	
 	public void calcularWinningScore(ArrayList<Solucao> solucoes, int[][][] A) {
 		for(int i = 0; i<solucoes.size()-1; i++){
 			Solucao solucaoi = solucoes.get(i);

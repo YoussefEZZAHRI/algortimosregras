@@ -104,27 +104,55 @@ public class PrepararArquivos {
 		}
 	}
 	
-	public void gerarComando(String dir, String problema, String objetivo, String[] algoritmos , int exec, String metodo, Double[][] dados, String medida ) throws IOException{
+	public void gerarComando(String dir, String problema, String objetivo, String[] algoritmos , int exec, String metodo,String ind ) throws IOException{
 		
+		Double[][] valores = new Double[algoritmos.length][exec];
+		
+
+		BufferedReader buff;
+
+
+		for (int j = 0; j < algoritmos.length; j++) {
+
+			String arq = dir + "resultados/" + metodo + "/" + problema + "/" + objetivo + "/" +			
+			algoritmos[j] + "/" + metodo + "" + problema + "_" + objetivo + algoritmos[j] + "_" + ind + ".txt";
+
+		
+
+			System.out.println(arq);
+
+
+			buff = new BufferedReader(new FileReader(arq));
+			int tam = 0;
+			while(buff.ready() && tam<exec){
+				String linha = buff.readLine();
+				if(!linha.isEmpty()){
+					Double val = new Double(linha);
+					//try{
+					valores[j][tam++] = val;
+					//} catch(ArrayIndexOutOfBoundsException x){x.printStackTrace();}
+				}
+			}
+		}  
 		
 		
 		
 		for (int i = 0; i < algoritmos.length; i++) {
-			StringBuffer comandosHyp = new StringBuffer();
-			String id = metodo + "" + problema + "_" + objetivo + algoritmos[i] + "_" + medida;
+			StringBuffer comando = new StringBuffer();
+			String id = metodo + "" + problema + "_" + objetivo + algoritmos[i] + "_" + ind;
 			String arqfronteira = dir + "resultados/" + metodo + "/" + problema + "/" + objetivo + "/" + 
 			algoritmos[i] + "/" +  id + "_comando.txt";
-			comandosHyp.append(id + "<-c(");
+			comando.append(id + "<-c(");
 			for (int j = 0; j < exec; j++) {
-				comandosHyp.append(dados[i][j] + ",");
+				comando.append(valores[i][j] + ",");
 			}
 			
-			comandosHyp.deleteCharAt(comandosHyp.length()-1);
-			comandosHyp.append(")\n");
+			comando.deleteCharAt(comando.length()-1);
+			comando.append(")\n");
 			
 			PrintStream ps = new PrintStream(arqfronteira);
 			
-			ps.println(comandosHyp);
+			ps.println(comando);
 		}
 			
 	}
@@ -168,6 +196,26 @@ public class PrepararArquivos {
 			psSaida = new PrintStream(dir + "medidas/" + metodo + problema + "_"+ ind + "_" + objetivo + "_indicadores.txt");
 		
 
+<<<<<<< .mine
+
+
+		for(int j = 0; j<exec; j++){
+			for (int i = 0; i < algoritmos.length; i++) {
+				try{
+					psSaida.print(valores[i][j].toString().replace(".", ",") + "\t");		
+				}catch(NullPointerException ex){ex.printStackTrace();}
+			}
+
+
+			psSaida.println();
+		}
+
+
+	}
+	
+	public void preparArquivoTempo(String dir, String problema, String objetivo, String[] algoritmos , int exec, String metodo, PrintStream psSaida) throws IOException{
+		Double[][] valores = new Double[algoritmos.length][exec];
+=======
 
 
 		for(int j = 0; j<exec; j++){
@@ -186,6 +234,7 @@ public class PrepararArquivos {
 	
 	public void preparArquivoTempo(String dir, String problema, String objetivo, String[] algoritmos , int exec, String metodo, PrintStream psSaida) throws IOException{
 		Double[][] valores = new Double[algoritmos.length][exec];
+>>>>>>> .r90
 		
 
 		BufferedReader buff;
@@ -229,7 +278,7 @@ public class PrepararArquivos {
 		for(int j = 0; j<exec; j++){
 			for (int i = 0; i < algoritmos.length; i++) {
 				try{
-					psSaida.print(valores[i][j] + "\t");		
+					psSaida.print(valores[i][j].toString().replace(".", ",") + "\t");		
 				}catch(NullPointerException ex){ex.printStackTrace();}
 			}
 
@@ -240,6 +289,34 @@ public class PrepararArquivos {
 
 	}
 	
+<<<<<<< .mine
+	public void preparArquivosIndicadoresTodos(String dir, String dir2, String problema, String[] algoritmos , int exec, String metodo, String ind, int[] objs, String[] algs) throws IOException{
+		PrintStream psSaida = new PrintStream(dir2 + "medidas/" + metodo + problema + "_"+ ind + "_indicadores_all.txt");
+		
+		for (int i = 0; i < objs.length; i++) {
+			System.out.println(objs[i]);
+			
+			
+			String objetivo = objs[i] + "";
+			
+			if(ind.equals("tcheb"))
+				preparArquivosTcheb(dir, dir2,  problema, objetivo, algs, exec, metodo);
+			else{
+				if(ind.equals("tempo")){
+					preparArquivoTempo(dir, problema, objetivo, algoritmos, exec, metodo, psSaida);
+					psSaida.println("\n\n\n\n\n\n");
+				} else{
+				preparArquivosIndicadores(dir, problema, objetivo, algoritmos, exec, metodo, ind, psSaida);
+				psSaida.println("\n\n\n\n\n\n");
+
+				preparArquivosComandosFriedman(dir, dir2,  problema, objetivo, algs, exec, metodo, ind);
+				}
+			}
+			
+		}
+		
+	}
+=======
 	public void preparArquivosIndicadoresTodos(String dir, String dir2, String problema, String[] algoritmos , int exec, String metodo, String ind, int[] objs, String[] algs) throws IOException{
 		PrintStream psSaida = new PrintStream(dir2 + "medidas/" + metodo + problema + "_"+ ind + "_indicadores_all.txt");
 		
@@ -266,8 +343,127 @@ public class PrepararArquivos {
 		}
 		
 	}
+>>>>>>> .r90
 	
 	
+<<<<<<< .mine
+	public void preparArquivosTcheb(String dir, String dir2, String problema, String objetivo, String[] algoritmos , int exec, String metodo) throws IOException{
+
+		BufferedReader buff;
+		
+		PrintStream psSaida = new PrintStream(dir2 + "medidas/" + metodo + problema + "_tchebycheff_" + objetivo + "_indicadores.txt");
+		
+		ArrayList<ArrayList<String>> todosArquivos = new ArrayList<ArrayList<String>>();
+		
+		double maiorTamanho = Double.NEGATIVE_INFINITY;
+		
+		double soma[] = new double[algoritmos.length];
+		
+		for (int i = 0; i < soma.length; i++) {
+			soma[i] = 0;
+		}
+
+		for (int j = 0; j < algoritmos.length; j++) {
+
+			String arq = dir + "resultados/" + metodo + "/" + problema + "/" + objetivo + "/" +			
+			algoritmos[j] + "/" + metodo + "" + problema + "_" + objetivo + algoritmos[j] + "_tchebycheff.txt";
+
+		
+
+			System.out.println(arq);
+			
+			ArrayList<String> arquivo = new ArrayList<String>();
+			
+			arquivo.add("S = " + algoritmos[j] + "\t");
+			
+			buff = new BufferedReader(new FileReader(arq));
+			
+			
+			
+			int tam = 1;
+			while(buff.ready()  && tam<exec){
+				String linha = buff.readLine();
+				
+				linha = linha.substring(0, linha.length());
+				if(!linha.isEmpty()){
+					arquivo.add(linha);
+					tam++;
+					String[] valores = linha.split("\t");
+					try{
+						soma[j] += new Double(valores[1]).doubleValue();
+					}
+					catch(ArrayIndexOutOfBoundsException x){x.printStackTrace();}
+					
+				}
+			}
+			
+			todosArquivos.add(arquivo);
+			maiorTamanho = Math.max(maiorTamanho, tam);
+			
+			
+		}  
+		
+		//ArrayList<ArrayList<String>> todosArquivosNorm = normalizarTcheb(todosArquivos, soma);
+		
+		todosArquivos = normalizarTcheb(todosArquivos, soma);
+
+		for(int l =0; l<maiorTamanho; l++){
+			for (Iterator<ArrayList<String>> iterator = todosArquivos.iterator(); iterator.hasNext();) {
+				ArrayList<String> arrayList = (ArrayList<String>) iterator.next();
+				if(l<arrayList.size()){
+					psSaida.print( arrayList.get(l) + "\t");
+				} else{
+					psSaida.print("\t\t");
+				}
+				psSaida.print("\t");
+			}
+			
+			psSaida.println();
+		}
+		
+		
+
+
+
+		
+
+	}
+
+	private ArrayList<ArrayList<String>> normalizarTcheb(ArrayList<ArrayList<String>> todosArquivos,
+			double[] soma) {
+		
+		
+		
+		ArrayList<ArrayList<String>> saida = new ArrayList<ArrayList<String>>();
+		int k = 0;
+		for (Iterator<ArrayList<String>> iterator = todosArquivos.iterator(); iterator.hasNext();) {
+			ArrayList<String> arrayList = (ArrayList<String>) iterator.next();
+			
+			ArrayList<String> novoAlg = new ArrayList<String>();
+			
+			for (Iterator<String> iterator2 = arrayList.iterator(); iterator2.hasNext();) {
+				String linha = (String) iterator2.next();
+				String valores[] = linha.split("\t");
+				if(valores.length !=1){		
+					double valor = new Double(valores[1]).doubleValue();
+					double novoValor = valor/soma[k];
+					String novaLinha = valores[0] + "\t" + new Double( novoValor).toString().replace('.', ',');
+					novoAlg.add(novaLinha);
+				} else
+					novoAlg.add(linha);
+				
+			}
+			
+			saida.add(novoAlg);
+			
+			k++;
+		}
+		
+		return saida;
+	}
+	
+	
+=======
 	public void preparArquivosTcheb(String dir, String problema, String objetivo, String[] algoritmos , int exec, String metodo) throws IOException{
 
 		BufferedReader buff;
@@ -384,6 +580,7 @@ public class PrepararArquivos {
 	}
 	
 	
+>>>>>>> .r90
 	public void preparArquivosComandosWilcox(String dir, String problema, String objetivo, String[] algoritmos , int exec, String metodo) throws IOException{
 		
 
@@ -457,7 +654,11 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 
 		BufferedReader buff;
 		
+<<<<<<< .mine
+		PrintStream psSaida = new PrintStream(dir2 + "medidas/" + metodo + problema + "_" + ind +"_" + objetivo + "_comando_friedman.txt");
+=======
 		PrintStream psSaida = new PrintStream(dir + "medidas/" + metodo + problema + "_" + ind +"_" + objetivo + "_comando_friedman.txt");
+>>>>>>> .r90
 		
 		
 		StringBuffer comandos = new StringBuffer();
@@ -536,6 +737,19 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 	
 	public static void main(String[] args) {
 		PrepararArquivos pre = new PrepararArquivos();
+<<<<<<< .mine
+		String dir = "/home/andrebia/gemini/doutorado/experimentos/rank/";		
+		String dir2 = "/home/andrebia/doutorado/rank/";
+		int objetivo = 2;
+		String problema  = "DTLZ4";
+		//String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75", "0.5_ar"};
+		String[] algs = {"0.5", "0.5_br", "0.5_ar", "0.5_mr", "0.5_ar_br", "0.5_br_mr"};
+		//String[] algs = {"0.5"};
+		String metodo = "smopso";
+		
+		int objs[] = {2,3,5,10,15,20};
+		int exec = 30;
+=======
 		String dir = "/home/andre/gemini/doutorado/experimentos/rank/";		
 		//String dir = "/media/Dados/Andre/Manyobjective/";
 		String dir2 = "/home/andre/gemini/doutorado/experimentos/rank/";
@@ -548,8 +762,21 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 		
 		int objs[] = {2,3,5,10,15,20};
 		int exec = 50;
+>>>>>>> .r90
 		try{
 			
+<<<<<<< .mine
+			/*pre.preparArquivosIndicadoresTodos(dir, dir, problema, algs, exec, metodo, "gd", objs, algs);
+			pre.preparArquivosIndicadoresTodos(dir, dir, problema, algs, exec, metodo, "igd", objs, algs);
+			pre.preparArquivosIndicadoresTodos(dir, dir, problema, algs, exec, metodo, "spread", objs, algs);
+			pre.preparArquivosIndicadoresTodos(dir, dir, problema, algs, exec, metodo, "np", objs, algs);
+			pre.preparArquivosIndicadoresTodos(dir, dir, problema, algs, exec, metodo, "tempo", objs, algs);
+*/
+			
+			//pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "gd", null);
+			
+			
+=======
 			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "gd", objs, algs);
 			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "igd", objs, algs);
 			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "spread", objs, algs);
@@ -557,6 +784,7 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "tempo", objs, algs);
 
 			
+>>>>>>> .r90
 			//pre.juntarFronteira(dir, problema, objetivo, algs, exec, metodo);
 			//pre.inverterMaxMim(dir, problema, objetivo, algs, exec, metodo);
 			//pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "gd", null);
@@ -566,17 +794,36 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			//pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "np", null);
 			//pre.preparArquivoTempo(dir, problema, ""+objetivo, algs, exec, metodo,  null);
 			
+<<<<<<< .mine
+=======
 			/*pre.preparArquivosComandosFriedman(dir, dir2,   problema, ""+objetivo, algs, exec, metodo, "gd");
 			pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "igd");
 			pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "spread");*/
 			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "pnf");
 			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "np");
+>>>>>>> .r90
 			
+			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "pnf");
+			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "np");
 			
 			/*for (int i = 0; i < objs.length; i++) {
 				System.out.println(objs[i]);
 				pre.preparArquivosTcheb(dir,  problema, ""+objs[i], algs, exec, metodo);
 			}*/
+			
+<<<<<<< .mine
+			for (int i = 0; i < objs.length; i++) {
+			//	System.out.println(objs[i]);
+				pre.preparArquivosTcheb(dir, dir2,  problema, ""+objs[i], algs, exec, metodo);
+				
+				//pre.gerarComando(dir, problema, ""+objs[i], algs, exec, metodo, "gd");
+				//pre.gerarComando(dir, problema, ""+objs[i], algs, exec, metodo, "igd");
+				//pre.gerarComando(dir, problema, ""+objs[i], algs, exec, metodo, "spread");
+				
+				//pre.preparArquivosComandosFriedman(dir, dir2,   problema, ""+objs[i], algs, exec, metodo, "gd");
+				//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objs[i], algs, exec, metodo, "igd");
+				//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objs[i], algs, exec, metodo, "spread");
+			}
 			
 			
 						
@@ -585,6 +832,15 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			
 			
 			
+=======
+			
+						
+			
+			
+			
+			
+			
+>>>>>>> .r90
 		} catch (IOException ex){ex.printStackTrace();}
 		
 		
