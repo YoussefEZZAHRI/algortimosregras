@@ -16,6 +16,7 @@ import rank.BalancedDominationRank;
 import rank.BalancedRank;
 import rank.BalancedRankObj;
 import rank.CombinacaoRank;
+import rank.GB;
 import rank.MaximumRank;
 import rank.Rank;
 import rank.RankDominancia;
@@ -220,7 +221,12 @@ public abstract class AlgoritmoAprendizado {
 									else{
 										if(rankTemp.equals("nsga"))
 											metodoRank = new RankDominancia(problema.m);
-										rank = false;
+										else{
+											if(rankTemp.equals("gb"))
+												metodoRank = new GB(problema.m, "-");
+											else
+												rank = false;
+										}
 									}
 								}
 							}
