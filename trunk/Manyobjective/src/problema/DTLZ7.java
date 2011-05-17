@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
@@ -344,7 +345,6 @@ public class DTLZ7 extends Problema {
 			}
 		} catch (IOException ex){ex.printStackTrace();}
 		
-		System.out.println(Calendar.getInstance().getTime());
 		
 	}
 

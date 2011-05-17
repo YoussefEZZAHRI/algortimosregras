@@ -246,6 +246,12 @@ public abstract class AlgoritmoAprendizado {
 	}
 	
 	public void rankear(ArrayList<Solucao> solucoes){
+		if(metodoRank == null){
+			AverageRank ar = new AverageRank(problema.m);
+			BalancedRank br = new BalancedRank(problema.m);
+			MaximumRank mr = new MaximumRank(problema.m);
+			metodoRank = br;
+		}
 		metodoRank.rankear(solucoes, -1);
 		//if(tipoRank.equals("ar") ||tipoRank.equals("ar2"))
 		/*	averageRank(solucoes);

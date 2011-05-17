@@ -341,7 +341,7 @@ public double g7(double[] xm){
 	public ArrayList<SolucaoNumerica> obterSolucoesExtremas(int n, int s) {
 		ArrayList<SolucaoNumerica> retorno = new ArrayList<SolucaoNumerica>();
 		//N�mero de solucoes na fronteira
-		int numSol = 100000;
+		int numSol = 1000;
 		//Obt�m a fronteira de pareto real para o problema
 		ArrayList<SolucaoNumerica> fronteiraReal = obterFronteira(n, numSol);
 		for(int i = 0; i<m; i++){

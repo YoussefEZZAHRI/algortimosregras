@@ -55,6 +55,7 @@ public class SMOPSO extends MOPSO{
 		
 		//Inicia a popul�ao
 		inicializarPopulacao();
+		//iniciarPopulacaoTeste();
 		
 		//Obt�m as melhores part�culas da popula��o
 					
@@ -62,6 +63,7 @@ public class SMOPSO extends MOPSO{
 			atualizarRepositorio();
 		else
 			iniciarRepositorioRank();	
+		
 		
 		calcularCrowdingDistance(pareto.fronteira);
 
@@ -158,15 +160,18 @@ public class SMOPSO extends MOPSO{
 			problema.calcularObjetivos(particula.solucao);
 			//Define o melhor local
 			particula.escolherLocalBest(pareto);
-		}
+		}		
 		
-				
 		if(rank)
 			rankParticula(populacao);
 		//Obt�m as melhores particulas da popula��o
 		atualizarRepositorio();
 		
+		//System.out.println(pareto.fronteira.size());
+		
 		calcularCrowdingDistance(pareto.fronteira);
+		
+		//System.out.println(pareto.getFronteira().size());
 		
 		pareto.podarLideresCrowdOperatorParticula(tamanhoRepositorio);
 				
@@ -206,12 +211,14 @@ public class SMOPSO extends MOPSO{
 	public void escolherLideres(){
 		for (Iterator<Particula> iter = pareto.fronteiraNuvem.iterator(); iter.hasNext();) {
 			Particula partRepositorio =  iter.next();
+			partRepositorio.solucao.setVetorObjetivosMedio();
 			partRepositorio.calcularSigmaVector();
 		}
 		
 		
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = iter.next();
+			//particula.escolherGlobalOposto(pareto.fronteiraNuvem);
 			particula.escolherGlobalBestBinario(pareto.fronteiraNuvem);
 			//particula.escolherGlobalBestIdeal(pareto.fronteiraNuvem);
 			//particula.escolherGlobalBestIdeal2(pareto.fronteiraNuvem);
