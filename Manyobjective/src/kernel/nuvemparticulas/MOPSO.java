@@ -104,4 +104,9 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		pareto.retornarFronteiraNuvem();
 	}
 	
+	public void liderOposto(){
+		
+		
+	}
+	
 }

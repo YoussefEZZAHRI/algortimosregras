@@ -31,6 +31,8 @@ public class Particula {
 	//Valor da distï¿½ncia sigma da partï¿½cula
 	public double[] sigmaVector = null;
 	
+	public Particula globalBestParticula = null;
+	
 	//Coeficientes da equaï¿½ï¿½o do cï¿½lculo da velocidade
 	public double phi1;
 	public double phi2;
@@ -274,9 +276,43 @@ public class Particula {
 		}
 
 		globalBest = gbest.posicao;
+		globalBestParticula = gbest;
+		return globalBest;
+	}
+	
+	//Método que o líder escolhido leva a partícula para o centro da fronteira de Pareto
+	public double[] escolherGlobalOposto(ArrayList<Particula> repositorio){
+		
+		//Calcula um vetor de objetivos médio - Valor do objetivo menos a média dos objetivos
+		solucao.setVetorObjetivosMedio();
+		double[] vetorZero = new double[solucao.objetivos.length];
+		double melhorValor = Double.MAX_VALUE;
+			
+		Particula gbest = null; 
+		//Calcula o valor da distancia euclidia dos sigmaVector de cada particula do repositorio
+		//e escolhe a menor
+		for (Iterator<Particula> iter = repositorio.iterator(); iter.hasNext();) {
+			Particula rep = iter.next();
+			double[] vetorSoma = new double[solucao.objetivosMedio.length];
+			//Calcula a soma dos vetores médios da soluçãi entre todos os vetores do repositório
+			for (int i = 0; i < vetorSoma.length; i++) {
+				vetorSoma[i] = solucao.objetivosMedio[i] + rep.solucao.objetivosMedio[i];
+			}
+			//Escolheo vetor que leva a partícula mais próxima ao centro - Diferença entre os valores objetivos igual à zero
+			double temp = distanciaEuclidiana(vetorSoma, vetorZero);
+			if(temp<melhorValor){
+				melhorValor = temp;
+				gbest = rep;
+			}
+			
+		}
+		
+		globalBestParticula = gbest;
+		globalBest = gbest.posicao;
 		
 		return globalBest;
 	}
+	
 	
 	public double[] escolherGlobalBestIdeal(ArrayList<Particula> repositorio){
 		double[] ideal = new double[problema.m];
@@ -305,7 +341,7 @@ public class Particula {
 		}
 
 		globalBest = gbest.posicao;
-		
+		globalBestParticula = gbest;
 		return globalBest;
 	}
 	
@@ -348,10 +384,15 @@ public class Particula {
 		int indice2 = (int)(Math.random()*(Math.pow(10, ordem))%melhores.length);
 		Particula particula1 = melhores[indice1];
 		Particula particula2 = melhores[indice2];
-		if(particula1.solucao.crowdDistance>particula2.solucao.crowdDistance)
+		if(particula1.solucao.crowdDistance>particula2.solucao.crowdDistance){
 			globalBest = particula1.posicao;
-		else
+			globalBestParticula = particula1;
+		}
+		else{
 			globalBest = particula2.posicao;
+			globalBestParticula = particula2;
+		}
+		
 		
 		return globalBest;
 	}
@@ -369,10 +410,14 @@ public class Particula {
 		int indice2 = (int)(Math.random()*(Math.pow(10, ordem))%repositorio.size());
 		Particula particula1 = repositorio.get(indice1);
 		Particula particula2 = repositorio.get(indice2);
-		if(particula1.solucao.crowdDistance>particula2.solucao.crowdDistance)
+		if(particula1.solucao.crowdDistance>particula2.solucao.crowdDistance){
 			globalBest = particula1.posicao;
-		else
+			globalBestParticula = particula1;
+		}
+		else{
 			globalBest = particula2.posicao;
+			globalBestParticula = particula2;
+		}
 		
 		return globalBest;
 	}
@@ -590,6 +635,16 @@ public class Particula {
 		str.deleteCharAt(str.length()-1);
 		str.deleteCharAt(str.length()-1);
 		str.append(">\n");
+		
+		str.append("Objetivos Best: <");
+		for(int i = 0; i< globalBestParticula.solucao.objetivos.length; i++){
+			str.append(globalBestParticula.solucao.objetivos[i] + ", ");
+		}
+		
+		str.deleteCharAt(str.length()-1);
+		str.deleteCharAt(str.length()-1);
+		str.append(">\n");
+		
 		str.append("Rank: " + solucao.rank);
 		
 		return str.toString();

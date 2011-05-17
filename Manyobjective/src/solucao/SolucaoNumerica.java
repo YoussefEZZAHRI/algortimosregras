@@ -25,6 +25,8 @@ public class SolucaoNumerica extends Solucao {
 	public double[] limitesPosicaoInferior;
 	public double[] limitesPosicaoSuperior;
 	
+	public double[] objetivosMedio;
+	
 	
 	/**
 	 * Construtor da classe
@@ -189,6 +191,19 @@ public class SolucaoNumerica extends Solucao {
 	
 	public  boolean  isBinaria(){
 		return false;
+	}
+	
+	public void setVetorObjetivosMedio(){
+		double valorMedio = 0;
+		for(int i = 0 ;i<objetivos.length; i++){
+			valorMedio+=objetivos[i];
+		}
+		valorMedio = valorMedio/objetivos.length;
+		
+		objetivosMedio = new double[objetivos.length];
+		for(int i= 0 ; i <objetivosMedio.length; i++){
+			objetivosMedio[i] = objetivos[i] - valorMedio;
+		}			
 	}
 
 }
