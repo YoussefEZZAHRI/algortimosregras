@@ -70,6 +70,7 @@ public class SMOPSO extends MOPSO{
 		//Obt�m os melhores globais para todas as part�culas da popula��o
 		escolherLideres();
 		
+		
 		escolherParticulasMutacao();
 		//In�cia o la�o evolutivo
 		for(int i = 0; i<geracoes; i++){
@@ -167,6 +168,12 @@ public class SMOPSO extends MOPSO{
 		//Obt�m as melhores particulas da popula��o
 		atualizarRepositorio();
 		
+		try{
+			imprimirFronteira(pareto.getFronteira());
+		} catch (IOException ex) {ex.printStackTrace();}
+		System.out.print(pareto.getFronteira().size());
+		removerGranular(pareto.getFronteira());
+		System.out.println(" -  " + pareto.getFronteira().size());
 		//System.out.println(pareto.fronteira.size());
 		
 		calcularCrowdingDistance(pareto.fronteira);

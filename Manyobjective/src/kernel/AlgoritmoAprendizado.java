@@ -2,6 +2,8 @@ package kernel;
 
 
 
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import java.util.Collections;
@@ -16,7 +18,6 @@ import rank.BalancedDominationRank;
 import rank.BalancedRank;
 import rank.BalancedRankObj;
 import rank.CombinacaoRank;
-import rank.GB;
 import rank.MaximumRank;
 import rank.Rank;
 import rank.RankDominancia;
@@ -43,6 +44,8 @@ public abstract class AlgoritmoAprendizado {
 	public FronteiraPareto pareto = null;
 	
 	public final double PROB_MUT_COD;
+	
+	
 	
 	
 	private final double MAX_MUT = 0.5;
@@ -101,6 +104,103 @@ public abstract class AlgoritmoAprendizado {
 			}
 		}
 		
+	}
+	
+	public void removerGranular(ArrayList<Solucao> solucoes){
+		calcularCrowdingDistance(solucoes);
+		for(int i = 0; i<solucoes.size(); i++){
+			Solucao solucao_i = solucoes.get(i);
+			contarSolucoesLimites(solucoes);	
+		}
+		
+		ArrayList<Solucao> cloneSolucoes = (ArrayList<Solucao>)solucoes.clone();
+		
+		
+		for(int k = 0; k<cloneSolucoes.size(); k++){
+			Solucao solucao = cloneSolucoes.get(k);
+			
+			if(solucao.ocupacao!= 0){
+				double[] limites = new double[problema.m*2];
+
+				for(int i = 0;i<problema.m;i++){
+					//Posicao final (2 * numero do objetivo) = valor do objetivo menos o  limite. (Limite inferior)  
+					limites[2*i] = Math.max(solucao.objetivos[i] - solucao.limite_ocupacao, 0);
+					//Posicao incial (2 * numero do objetivo + 1) = valor do objetivo mais limite. (Limite superior)
+					limites[2*i + 1] = solucao.objetivos[i] + solucao.limite_ocupacao;
+				}
+				
+				boolean removida = false;
+
+				for(int i = 0; i<cloneSolucoes.size() && !removida; i++){
+					Solucao solucao_i = cloneSolucoes.get(i);
+					boolean dentro = true;
+					//Se não é a solução corrente
+					if(i != k){
+						for(int j = 0;j<problema.m && dentro;j++){
+							double obj = solucao_i.objetivos[j];
+							//Objetivo abaixo do limite inferior
+							if(obj < limites[2*j])
+								dentro = false;
+							//Objetivo acima do limite superior
+							if(obj > limites[2*j + 1])
+								dentro = false;
+						}
+						if(dentro){
+							//Remocao da solucao no mesmo quadrado, mas menos em uma regiao menos povoada
+							if(solucao.crowdDistance < solucao_i.crowdDistance)
+								solucoes.remove(solucao_i);
+							else{
+								solucoes.remove(solucao);
+								removida = true;
+							}
+							try{
+								imprimirFronteira(solucoes);
+							}catch(IOException ex){ex.printStackTrace();}
+						}
+					}			
+				}
+			}
+		}
+	}
+	
+	
+	public void contarSolucoesLimites(ArrayList<Solucao> solucoes){
+
+		for(int k = 0; k<solucoes.size(); k++){
+			Solucao solucao = solucoes.get(k);
+
+
+			double[] limites = new double[problema.m*2];
+
+			solucao.ocupacao = 0;
+
+			for(int i = 0;i<problema.m;i++){
+				//Posicao final (2 * numero do objetivo) = valor do objetivo menos o  limite. (Limite inferior)  
+				limites[2*i] = Math.max(solucao.objetivos[i] - solucao.limite_ocupacao, 0);
+				//Posicao incial (2 * numero do objetivo + 1) = valor do objetivo mais limite. (Limite superior)
+				limites[2*i + 1] = solucao.objetivos[i] + solucao.limite_ocupacao;
+			}
+
+			for(int i = 0; i<solucoes.size(); i++){
+				Solucao solucao_i = solucoes.get(i);
+				boolean dentro = true;
+				//Se não é a solução corrente
+				if(i != k){
+					for(int j = 0;j<problema.m && dentro;j++){
+						double obj = solucao_i.objetivos[j];
+						//Objetivo abaixo do limite inferior
+						if(obj < limites[2*j])
+							dentro = false;
+						//Objetivo acima do limite superior
+						if(obj > limites[2*j + 1])
+							dentro = false;
+					}
+					if(dentro)
+						solucao.ocupacao++;
+				}			
+			}
+		}
+
 	}
 	
 	/**
@@ -223,7 +323,7 @@ public abstract class AlgoritmoAprendizado {
 											metodoRank = new RankDominancia(problema.m);
 										else{
 											if(rankTemp.equals("gb"))
-												metodoRank = new GB(problema.m, "-");
+												;//metodoRank = new GB(problema.m, "-");
 											else
 												rank = false;
 										}
@@ -307,6 +407,18 @@ public abstract class AlgoritmoAprendizado {
 			Solucao solucao =  iter.next();
 			pareto.add(solucao);
 		}
+	}
+	
+	public void imprimirFronteira(ArrayList<Solucao> solucoes) throws IOException{
+		PrintStream ps = new PrintStream("fronteira.txt");
+		for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
+			Solucao solucao = (Solucao) iterator.next();
+			for(int i = 0; i<problema.m;i++){
+				ps.print(solucao.objetivos[i] + "\t");
+			}
+			ps.println();
+		}
+		
 	}
 	
 
