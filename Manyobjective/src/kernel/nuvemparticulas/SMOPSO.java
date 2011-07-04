@@ -171,6 +171,8 @@ public class SMOPSO extends MOPSO{
 		
 		calcularCrowdingDistance(pareto.fronteira);
 		
+		
+		
 		//System.out.println(pareto.getFronteira().size());
 		
 		pareto.podarLideresCrowdOperatorParticula(tamanhoRepositorio);

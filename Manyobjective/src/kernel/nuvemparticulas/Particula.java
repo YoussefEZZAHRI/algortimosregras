@@ -280,10 +280,10 @@ public class Particula {
 		return globalBest;
 	}
 	
-	//Método que o líder escolhido leva a partícula para o centro da fronteira de Pareto
+	//Mï¿½todo que o lï¿½der escolhido leva a partï¿½cula para o centro da fronteira de Pareto
 	public double[] escolherGlobalOposto(ArrayList<Particula> repositorio){
 		
-		//Calcula um vetor de objetivos médio - Valor do objetivo menos a média dos objetivos
+		//Calcula um vetor de objetivos mï¿½dio - Valor do objetivo menos a mï¿½dia dos objetivos
 		solucao.setVetorObjetivosMedio();
 		double[] vetorZero = new double[solucao.objetivos.length];
 		double melhorValor = Double.MAX_VALUE;
@@ -294,11 +294,11 @@ public class Particula {
 		for (Iterator<Particula> iter = repositorio.iterator(); iter.hasNext();) {
 			Particula rep = iter.next();
 			double[] vetorSoma = new double[solucao.objetivosMedio.length];
-			//Calcula a soma dos vetores médios da soluçãi entre todos os vetores do repositório
+			//Calcula a soma dos vetores mï¿½dios da soluï¿½ï¿½i entre todos os vetores do repositï¿½rio
 			for (int i = 0; i < vetorSoma.length; i++) {
 				vetorSoma[i] = solucao.objetivosMedio[i] + rep.solucao.objetivosMedio[i];
 			}
-			//Escolheo vetor que leva a partícula mais próxima ao centro - Diferença entre os valores objetivos igual à zero
+			//Escolheo vetor que leva a partï¿½cula mais prï¿½xima ao centro - Diferenï¿½a entre os valores objetivos igual ï¿½ zero
 			double temp = distanciaEuclidiana(vetorSoma, vetorZero);
 			if(temp<melhorValor){
 				melhorValor = temp;
@@ -346,6 +346,7 @@ public class Particula {
 	}
 	
 	
+	//Pior que o ideal - mÃ©todo acima
 	public double[] escolherGlobalBestIdeal2(ArrayList<Particula> repositorio){
 		double[] ideal = new double[problema.m];
 		Particula[] melhores = new Particula[problema.m+1];
