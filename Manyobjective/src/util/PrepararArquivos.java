@@ -567,14 +567,14 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 	public static void main(String[] args) {
 		PrepararArquivos pre = new PrepararArquivos();
 
-		String dir = "/home/andre/gemini/doutorado/experimentos/rank/";		
+		String dir = "/home/andre/gemini/doutorado/experimentos/neuro/";		
 		//String dir = "/media/Dados/Andre/Manyobjective/";
-		String dir2 = "/home/andre/gemini/doutorado/experimentos/rank/";
+		String dir2 = "/home/andre/gemini/doutorado/experimentos/neuro/";
 		//int objetivo = 2;
 		String problema  = "DTLZ4";
-		//String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
+		String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
 		//String[] algs = {"0.5_ar", "0.5_bro", "0.5_mr", "0.5_nsga", "0.5_mr_bro", "0.5_ar_bro", "0.3_nsga", "0.35_nsga", "0.4_nsga" };
-		String[] algs = {"0.5_br", "0.5_ar", "0.5_mr", "0.5_gb", "0.5_ar_br", "0.5_ar_gb", "0.5_br_gb", "0.5"};
+		//String[] algs = {"0.5_br", "0.5_ar", "0.5_mr", "0.5_gb", "0.5_ar_br", "0.5_ar_gb", "0.5_br_gb", "0.5"};
 		String metodo = "smopso";
 		
 		int objs[] = {2,3,5,10,15,20};
@@ -584,11 +584,11 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			
 
 
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "gd", objs, algs);
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "igd", objs, algs);
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "spread", objs, algs);
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "np", objs, algs);
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "tempo", objs, algs);
+			//pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "gd", objs, algs);
+			//pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "igd", objs, algs);
+			//pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "spread", objs, algs);
+			//pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "np", objs, algs);
+			//pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "tempo", objs, algs);
 
 			
 
@@ -601,9 +601,9 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			//pre.preparArquivosIndicadores(dir, problema, ""+objetivo, algs, exec, metodo, "np", null);
 			//pre.preparArquivoTempo(dir, problema, ""+objetivo, algs, exec, metodo,  null);
 
-			/*pre.preparArquivosComandosFriedman(dir, dir2,   problema, ""+objetivo, algs, exec, metodo, "gd");
-			pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "igd");
-			pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "spread");*/
+			//pre.preparArquivosComandosFriedman(dir, dir2,   problema, ""+objetivo, algs, exec, metodo, "gd");
+			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "igd");
+			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "spread");
 			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "pnf");
 			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "np");
 
@@ -611,10 +611,11 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "pnf");
 			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "np");
 			
-			/*for (int i = 0; i < objs.length; i++) {
+			for (int i = 0; i < objs.length; i++) {
 				System.out.println(objs[i]);
-				pre.preparArquivosTcheb(dir,  problema, ""+objs[i], algs, exec, metodo);
-			}*/
+				//pre.preparArquivosTcheb(dir,  problema, ""+objs[i], algs, exec, metodo);
+				pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objs[i], algs, exec, metodo, "spread");
+			}
 			
 
 		} catch (IOException ex){ex.printStackTrace();}

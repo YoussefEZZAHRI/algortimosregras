@@ -146,7 +146,9 @@ public class DTLZ7 extends Problema {
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r);
+		double ocupacao = 0;
+		
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao);
 		                         
 				
 		while(pareto.fronteira.size()<numSol){
@@ -200,7 +202,9 @@ public class DTLZ7 extends Problema {
 		int inicio = 0;
 		int fim = m-2;
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r);
+		double ocupacao = 0;
+		
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao);
 		
 		SolucaoNumerica solucaoBase = new SolucaoNumerica(n, m);
 		
@@ -304,15 +308,19 @@ public class DTLZ7 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int m = 20;
-		int numSol = 10000;
+		int m = 2;
+		int numSol = 1000;
 		int k = 10;
 		int n = m + k - 1;
 		
 		int decimalPlace = 5;
 		DTLZ7 dtlz7 = new DTLZ7(m);
 		
-		dtlz7.inc = 0.01;
+		try{
+			dtlz7.imprimirFronteirar(n, m, numSol);
+		} catch (IOException ex){ex.printStackTrace();}
+		
+		/*dtlz7.inc = 0.01;
 		
 		//dtlz7.obterFronteira2(n, numSol);
 		System.out.println(Calendar.getInstance().getTime());
@@ -345,7 +353,7 @@ public class DTLZ7 extends Problema {
 			}
 		} catch (IOException ex){ex.printStackTrace();}
 		
-		
+	*/	
 	}
 
 }

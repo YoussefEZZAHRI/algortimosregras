@@ -31,8 +31,8 @@ public class SMOPSO extends MOPSO{
 	//PrintStream psSol;
 	
 		
-	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank){
-		super(n,prob,g,a,t,s, maxmim, tRank);
+	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double ocupacao){
+		super(n,prob,g,a,t,s, maxmim, tRank, ocupacao);
 		tamanhoRepositorio = tamRep;	
 	
 		
@@ -65,7 +65,7 @@ public class SMOPSO extends MOPSO{
 			iniciarRepositorioRank();	
 		
 		
-		calcularCrowdingDistance(pareto.fronteira);
+		//calcularCrowdingDistance(pareto.fronteira);
 
 		//Obt�m os melhores globais para todas as part�culas da popula��o
 		escolherLideres();
@@ -98,51 +98,46 @@ public class SMOPSO extends MOPSO{
 
 		}*/
 		
-		
-		pareto.retornarFronteiraNuvem();
+		//removerGranularRaio(pareto.getFronteira());
+		calcularCrowdingDistance(pareto.fronteira);
+		pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 		
 		return pareto.getFronteira();
 		
 	}
 	
 	public ArrayList<Solucao> executarAvaliacoes(){
-		
-
-
-
-
 
 		//Apaga todas as listas antes do inicio da execu��o
 		reiniciarExecucao();
 		//Inicia a popul�ao
 		inicializarPopulacao();
 		//Obt�m as melhores part�culas da popula��o
-		//if(!rank)
+		if(!rank)
 			atualizarRepositorio();
-		//else
-			//iniciarRepositorioRank();
+		else
+			iniciarRepositorioRank();
+		
+		//calcularCrowdingDistance(pareto.fronteira);
 		//Obt�m os melhores globais para todas as part�culas da popula��o
 		escolherLideres();
 
 		escolherParticulasMutacao();
 		//In�cia o la�o evolutivo
 		while(problema.avaliacoes < numeroavalicoes){
-			if(problema.avaliacoes%1000 == 0)
-				System.out.print(problema.avaliacoes + " - " + numeroavalicoes + " ");
+			//if(problema.avaliacoes%1000 == 0)
+			//	System.out.print(problema.avaliacoes + " - " + numeroavalicoes + " ");
 			lacoEvolutivo(problema.avaliacoes);
 		}
 
-
-		pareto.retornarFronteiraNuvem();
-
+		//removerGranularRaio(pareto.getFronteira());
+		calcularCrowdingDistance(pareto.fronteira);
+		pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 		return pareto.getFronteira();
 		
 	}
 
 	private void lacoEvolutivo(int i) {
-		
-		
-			
 		
 		//Itera sobre todas as part�culas da popula��o
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
@@ -168,13 +163,16 @@ public class SMOPSO extends MOPSO{
 		//Obt�m as melhores particulas da popula��o
 		atualizarRepositorio();
 		
-		try{
+		
+		/*try{
 			imprimirFronteira(pareto.getFronteira());
-		} catch (IOException ex) {ex.printStackTrace();}
-		System.out.print(pareto.getFronteira().size());
-		removerGranular(pareto.getFronteira());
-		System.out.println(" -  " + pareto.getFronteira().size());
-		//System.out.println(pareto.fronteira.size());
+		} catch (IOException ex) {ex.printStackTrace();}*/
+		
+		//System.out.println(pareto.getFronteira().size());
+		/*removerGranularRaio(pareto.getFronteira());
+		System.out.println(" -  " + pareto.getFronteira().size());*/
+		
+		
 		
 		calcularCrowdingDistance(pareto.fronteira);
 		
@@ -182,7 +180,7 @@ public class SMOPSO extends MOPSO{
 		
 		//System.out.println(pareto.getFronteira().size());
 		
-		pareto.podarLideresCrowdOperatorParticula(tamanhoRepositorio);
+		pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 				
 		//Recalcula a Crowding distance dos lideres
 		calcularCrowdingDistance(pareto.fronteira);
@@ -218,17 +216,17 @@ public class SMOPSO extends MOPSO{
 	 *
 	 */
 	public void escolherLideres(){
-		for (Iterator<Particula> iter = pareto.fronteiraNuvem.iterator(); iter.hasNext();) {
-			Particula partRepositorio =  iter.next();
-			partRepositorio.solucao.setVetorObjetivosMedio();
-			partRepositorio.calcularSigmaVector();
+		for (Iterator<Solucao> iter = pareto.fronteira.iterator(); iter.hasNext();) {
+			Solucao solucaotRepositorio =  iter.next();
+			solucaotRepositorio.setVetorObjetivosMedio();
+			solucaotRepositorio.calcularSigmaVector();
 		}
 		
 		
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = iter.next();
-			//particula.escolherGlobalOposto(pareto.fronteiraNuvem);
-			particula.escolherGlobalBestBinario(pareto.fronteiraNuvem);
+			//particula.escolherGlobalOposto(pareto.fronteira);
+			particula.escolherGlobalBestBinario(pareto.fronteira);
 			//particula.escolherGlobalBestIdeal(pareto.fronteiraNuvem);
 			//particula.escolherGlobalBestIdeal2(pareto.fronteiraNuvem);
 			//particula.calcularSigmaVector();
@@ -258,10 +256,9 @@ public class SMOPSO extends MOPSO{
 		Collections.sort(populacao, comp);
 		for(int i = 0; i<(tamanhoRepositorio); i++){
 			Particula particula = populacao.get(i);
-			pareto.fronteiraNuvem.add((Particula)particula.clone());
+			pareto.fronteira.add((Solucao)particula.solucao.clone());
 		}
 		
-		pareto.retornarFronteiraNuvem();
 		
 	}
 	

@@ -88,6 +88,8 @@ public class Principal {
 	
 	public String tipoSolucao;
 	
+	public double ocupacao = 0;
+	
 	 
 	public static void main(String[] args) {	
 		Principal principal = new Principal();
@@ -101,13 +103,13 @@ public class Principal {
 					principal.executarIndicador();
 				else{
 					if(principal.alg.equals("sigma"))
-						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank);
+						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank, principal.ocupacao);
 					if(principal.alg.equals("smopso"))
-						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank);
+						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank, principal.ocupacao);
 					if(principal.alg.equals("misa"))
-						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank);
+						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank, principal.ocupacao);
 					if(principal.alg.equals("nsga2"))
-						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao, principal.maxmimObjetivos, principal.tipoRank);
+						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao, principal.maxmimObjetivos, principal.tipoRank, principal.ocupacao);
 					
 					
 					principal.executar();
@@ -385,8 +387,8 @@ public class Principal {
 			solGeral.println(solucao);
 			solExecucao.println(solucao);
 			for(int i = 0; i<m; i++){				
-				psFronteiraExec.print(new Double( solucao.objetivos[i]).toString().replace('.', ',')+ " ");
-				psFronteiraGeral.print(new Double(solucao.objetivos[i]).toString().replace('.', ',') + " ");	
+				psFronteiraExec.print(new Double( solucao.objetivos[i]).toString().replace('.', ',')+ "\t");
+				psFronteiraGeral.print(new Double(solucao.objetivos[i]).toString().replace('.', ',') + "\t");	
 			}
 			psFronteiraExec.println();
 			psFronteiraGeral.println();
@@ -460,6 +462,8 @@ public class Principal {
 					m = new Integer(valor).intValue();
 				if(tag.equals("n"))
 					n = new Integer(valor).intValue();
+				if(tag.equals("ocupacao"))
+					ocupacao = new Double(valor).doubleValue();
 
 				if(tag.equals("num_sol_fronteira"))
 					num_sol_fronteira = new Integer(valor).intValue();

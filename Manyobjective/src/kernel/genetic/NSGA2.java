@@ -32,11 +32,11 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	
 	
 	
-	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts, String[] maxmim, String tRank){
-		super(n,prob,g, a,t, tRank);
+	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts, String[] maxmim, String tRank, double ocupacao){
+		super(n,prob,g, a,t, tRank, 0);
 		
 		this.maxmim = maxmim;
-		pareto = new FronteiraPareto(s, maxmim,rank);
+		pareto = new FronteiraPareto(s, maxmim,rank, ocupacao);
 		metodoRank.setPareto(pareto);
 		problema = prob;
 		tipoSolucao = ts;
@@ -47,7 +47,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	public ArrayList<Solucao> executar() {
 		
 		
-		pareto = new FronteiraPareto(pareto.S, maxmim, rank);
+		pareto = new FronteiraPareto(pareto.S, maxmim, rank, limite_ocupacao);
 		populacao = new ArrayList<Solucao>();
 		offspring = new ArrayList<Solucao>();
 		

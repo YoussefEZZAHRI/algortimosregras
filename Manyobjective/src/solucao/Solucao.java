@@ -26,6 +26,16 @@ public abstract class Solucao {
 	
 	public double diff;
 	
+	public int ocupacao;
+
+	
+	//Valor da distancia sigma da solucao
+	public double[] sigmaVector = null;
+	
+	public double[] objetivosMedio;
+	
+	public double S;
+	
 	
 	/**
 	 * Construtor da classe
@@ -47,6 +57,85 @@ public abstract class Solucao {
 	
 	//Metodo que gera uma solucao aleatorio
 	public abstract void iniciarSolucaoAleatoria();
+	
+	/**
+	 * M�todo que c�lcula o vetor sigma de acordo com a f�rmula proposta por Mostaghim
+	 * @return Vetor sigma
+	 */
+	public double[] calcularSigmaVector(){
+		int tamVetor = (int) combinacao(objetivos.length, 2);
+		sigmaVector = new double[tamVetor];
+		int  cont = 0;
+		for(int i = 0; i<objetivos.length-1; i++){
+			for(int j = i+1; j<objetivos.length;j++){
+				double obj1 = objetivos[i];
+				double obj2 = objetivos[j];
+				sigmaVector[cont++] =  calcularSigma(obj1, obj2);
+			}
+		}
+		
+		return sigmaVector;
+		
+	}
+	
+	/**
+	 * C�lcula a combina��o de m, n a n.
+	 * @param m 
+	 * @param n
+	 * @return Combina��o (m n) 
+	 */
+	public double combinacao(int m, int n){
+		if(n==m)
+			return 1;
+		else{
+			double fatM = fatorial(m);
+			double fatN = fatorial(n);
+			double fatNM = fatorial(m-n);
+			return (fatM)/(fatN*fatNM);
+		}
+	}
+	
+	/**
+	 * C�lcula o fatorial de n
+	 * @param n
+	 * @return n!
+	 */
+	public double fatorial(int n){
+		double fat = 1;
+		for(int i = n;i>0;i--){
+			fat*=i;
+		}
+		return fat;
+	}
+	
+	/**
+	 * M�todo que c�lculo o valor sigma para dois objetivos
+	 * @param f1 Objetivo 1
+	 * @param f2 Objetivo 2
+	 * @return Valor da fun��o sigma
+	 */
+	public double calcularSigma(double f1, double f2){
+		double valor = (f1*f1) - (f2*f2);
+	
+		double denominador = (f1*f1)+ (f2*f2);
+		if(denominador!=0)
+			return  valor/denominador;
+		else
+			return 0;
+	}
+	
+	public void setVetorObjetivosMedio(){
+		double valorMedio = 0;
+		for(int i = 0 ;i<objetivos.length; i++){
+			valorMedio+=objetivos[i];
+		}
+		valorMedio = valorMedio/objetivos.length;
+		
+		objetivosMedio = new double[objetivos.length];
+		for(int i= 0 ; i <objetivosMedio.length; i++){
+			objetivosMedio[i] = objetivos[i] - valorMedio;
+		}			
+	}
 		
 	
 	

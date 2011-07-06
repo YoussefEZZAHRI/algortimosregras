@@ -76,7 +76,9 @@ public class DTLZ4 extends Problema {
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r);
+		double ocupacao = 0;
+		
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao);
 		
 		while(melhores.size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
@@ -130,8 +132,8 @@ public class DTLZ4 extends Problema {
 		System.out.println(pareto);
 		*/
 		
-		int m = 10;
-		int numSol = 100;
+		int m = 2;
+		int numSol = 1000;
 		int k = 10;
 		
 		int n = m + k - 1;

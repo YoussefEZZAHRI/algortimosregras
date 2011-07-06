@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import kernel.AlgoritmoAprendizado;
 import kernel.nuvemparticulas.ComparetorCrowdedOperatorParticula;
 import kernel.nuvemparticulas.ComparetorRankParticula;
 import kernel.nuvemparticulas.Particula;
 
 import solucao.ComparetorCrowdDistance;
+import solucao.ComparetorCrowdedOperator;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -17,9 +19,11 @@ public class FronteiraPareto {
 	
 	public ArrayList<Solucao> fronteira = null;
 	
-	public ArrayList<Particula> fronteiraNuvem = null;
+	//public ArrayList<Particula> fronteiraNuvem = null;
 	
 	public double S;
+	
+	public double limite_ocupacao;
 	
 	public boolean rank;
 	
@@ -33,11 +37,12 @@ public class FronteiraPareto {
 		
 	}*/
 	
-	public FronteiraPareto(double s, String[] maxmim, boolean r){
+	public FronteiraPareto(double s, String[] maxmim, boolean r, double ocupacao){
 		fronteira = new ArrayList<Solucao>();
-		fronteiraNuvem = new ArrayList<Particula>();
+		//fronteiraNuvem = new ArrayList<Particula>();
 		S = s;
 		rank= r;
+		limite_ocupacao = ocupacao;
 		preencherObjetivosMaxMin(maxmim);
 	}
 	
@@ -64,22 +69,22 @@ public class FronteiraPareto {
 		}
 	}
 	
-	public void setFronteiraNuvem(ArrayList<Particula> temp){
+	/*public void setFronteiraNuvem(ArrayList<Particula> temp){
 		fronteiraNuvem.clear();
 		for (Iterator<Particula> iter = temp.iterator(); iter.hasNext();) {
 			Particula p = (Particula) iter.next();
 			fronteiraNuvem.add(p);
 			
 		}
-	}
+	}*/
 	
 	public void apagarFronteira(){
 		fronteira.clear();
 	}
 	
-	public void apagarFronteiraNuvem(){
+	/*public void apagarFronteiraNuvem(){
 		fronteiraNuvem.clear();
-	}
+	}*/
 	
 	/**
 	 * M�todo que adiciona um nova solu��o na fronteira de pareto
@@ -134,6 +139,19 @@ public class FronteiraPareto {
 			if(comp == 1)
 				fronteira.remove(temp);
 			
+			/*if(limite_ocupacao!=0)
+			if(comp == 0){
+				double dist = AlgoritmoAprendizado.distanciaEuclidiana(solucao.objetivos, temp.objetivos);
+				if(dist<limite_ocupacao){
+					//Remocao da solucao no mesmo quadrado, mas menos em uma regiao menos povoada
+					if(solucao.crowdDistance < temp.crowdDistance)
+						fronteira.remove(temp);
+					else{
+						solucao.numDominacao++;
+					}
+				}
+			}*/
+			
 		}
 		if(solucao.numDominacao == 0){
 			fronteira.add(solucao);	
@@ -143,17 +161,88 @@ public class FronteiraPareto {
 		
 	}
 	
-
-
-	public void addRank(Particula particula){
-		if(fronteiraNuvem.size()==0){
-			fronteiraNuvem.add(particula);
+	
+	/**
+	 * M�todo que adiciona um nova solu��o na fronteira de pareto
+	 * @param regra Regra a ser adicionada
+	 * @return Valor booleano que especifica se o elemento foi inserido ou nao na fronteira 
+	 */
+	@SuppressWarnings("unchecked")
+	public double add2(Solucao solucao){
+		//S� adiciona na fronteira caso a regra seja da classe passada como parametro
+		solucao.numDominacao = 0;
+		if(fronteira.size()==0){
+			fronteira.add(solucao);
+			return solucao.numDominacao;
 		}
 		
-		for (Iterator<Particula> iter = fronteiraNuvem.iterator(); iter.hasNext();) {
-			Particula temp = (Particula) iter.next();
-			if(particula.solucao.rank< temp.solucao.rank){
-				fronteiraNuvem.add(particula);
+		int comp;
+		
+		ArrayList<SolucaoNumerica> cloneFronteira = (ArrayList<SolucaoNumerica>)fronteira.clone();
+		
+		
+		
+		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
+		
+		double r = 0;
+		r = r(solucao.objetivos);
+		for (int i = 0; i < solucao.objetivos.length; i++) {
+			novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, solucao.S);
+		}
+	
+		
+		for (Iterator<SolucaoNumerica> iter = cloneFronteira.iterator(); iter.hasNext();) {
+			SolucaoNumerica temp = (SolucaoNumerica) iter.next();
+			
+			double[] novosObjetivosTemp = new double[temp.objetivos.length];
+			
+			
+			r = r(temp.objetivos);
+			for (int i = 0; i < temp.objetivos.length; i++) {
+				novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.objetivos[i], r, solucao.S);
+			}
+			
+			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
+			
+			
+			
+			if(comp == -1)
+				solucao.numDominacao++;
+			if(comp == 1)
+				fronteira.remove(temp);
+			
+			if(limite_ocupacao!=0)
+			if(comp == 0){
+				double dist = AlgoritmoAprendizado.distanciaEuclidiana(solucao.objetivos, temp.objetivos);
+				if(dist<limite_ocupacao){
+					//Remocao da solucao no mesmo quadrado, mas menos em uma regiao menos povoada
+					if(solucao.crowdDistance < temp.crowdDistance)
+						fronteira.remove(temp);
+					else{
+						solucao.numDominacao++;
+					}
+				}
+			}
+			
+		}
+		if(solucao.numDominacao == 0){
+			fronteira.add(solucao);	
+		}
+		
+		return solucao.numDominacao;
+		
+	}
+
+
+	public void addRank(Solucao solucao){
+		if(fronteira.size()==0){
+			fronteira.add(solucao);
+		}
+		
+		for (Iterator<Solucao> iter = fronteira.iterator(); iter.hasNext();) {
+			Solucao temp = (Solucao) iter.next();
+			if(solucao.rank< temp.rank){
+				fronteira.add(solucao);
 				break;
 			}
 		}
@@ -162,7 +251,7 @@ public class FronteiraPareto {
 
 	
 	
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	public double add(Particula particula){
 		//S� adiciona na fronteira caso a regra seja da classe passada como parametro
 		particula.solucao.numDominacao = 0;
@@ -209,21 +298,20 @@ public class FronteiraPareto {
 		} else{
 			return particula.solucao.numDominacao;
 		}
-	}
+	}*/
 	
-	public void podarLideresCrowd(int tamanhoRepositorio){
-		if(tamanhoRepositorio<fronteiraNuvem.size()){
-			ComparetorCrowdDistance comp = new ComparetorCrowdDistance();
+	public void podarLideresCrowdedOperator(int tamanhoRepositorio){
+		if(tamanhoRepositorio<fronteira.size()){
+			ComparetorCrowdedOperator comp = new ComparetorCrowdedOperator();
 			//ComparetorCrowdedOperator comp = new ComparetorCrowdedOperator();
-			Collections.sort(fronteiraNuvem, comp);
-			int diferenca = fronteiraNuvem.size() - tamanhoRepositorio; 
+			Collections.sort(fronteira, comp);
+			int diferenca = fronteira.size() - tamanhoRepositorio; 
 			for(int i = 0; i<diferenca; i++)
-				fronteiraNuvem.remove(fronteiraNuvem.remove(fronteiraNuvem.size()-1));
-			retornarFronteiraNuvem();
+				fronteira.remove(fronteira.remove(fronteira.size()-1));
 		}
 	}
 	
-	public void podarLideresCrowdOperatorParticula(int tamanhoRepositorio){
+	/*public void podarLideresCrowdOperatorParticula(int tamanhoRepositorio){
 		if(tamanhoRepositorio<fronteiraNuvem.size()){
 			ComparetorCrowdedOperatorParticula comp = new ComparetorCrowdedOperatorParticula();
 			Collections.sort(fronteiraNuvem, comp);
@@ -232,9 +320,9 @@ public class FronteiraPareto {
 				fronteiraNuvem.remove(fronteiraNuvem.remove(fronteiraNuvem.size()-1));
 			retornarFronteiraNuvem();
 		}
-	}
+	}*/
 	
-	public void podarLideresRank(int tamanhoRepositorio){
+	/*public void podarLideresRank(int tamanhoRepositorio){
 		if(tamanhoRepositorio<fronteiraNuvem.size()){
 			ComparetorRankParticula	comp = new ComparetorRankParticula();
 			Collections.sort(fronteiraNuvem, comp);
@@ -243,19 +331,19 @@ public class FronteiraPareto {
 				fronteiraNuvem.remove(fronteiraNuvem.remove(fronteiraNuvem.size()-1));
 			retornarFronteiraNuvem();
 		}
-	}
+	}*/
 	
 	
 	
 	
-	public void retornarFronteiraNuvem(){
+	/*public void retornarFronteiraNuvem(){
 		fronteira.clear();
 		for (Iterator<Particula> iterator = fronteiraNuvem.iterator(); iterator.hasNext();) {
 			Particula particula = (Particula) iterator.next();
 			fronteira.add(particula.solucao);
 			
 		}
-	}
+	}*/
 	
 	
 	
@@ -424,17 +512,15 @@ public class FronteiraPareto {
 
 		
 		int j = 0;
-		for (Iterator<Particula> iterator = fronteiraNuvem.iterator(); iterator.hasNext();) {
-			Particula particula = (Particula) iterator.next();
+		for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
+			Solucao solucao = (Solucao) iterator.next();
 			System.out.print(j + "\t");
-			for (int i = 0; i < particula.solucao.objetivos.length; i++) {
-				System.out.print(new Double(particula.solucao.objetivos[i]).toString().replace('.', ',') + "\t");
+			for (int i = 0; i < solucao.objetivos.length; i++) {
+				System.out.print(new Double(solucao.objetivos[i]).toString().replace('.', ',') + "\t");
 			}
 			System.out.print("\t");
 			
-			
-
-			SolucaoNumerica solucao = particula.solucao;
+					
 			double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
 
 			double r = r(solucao.objetivos);

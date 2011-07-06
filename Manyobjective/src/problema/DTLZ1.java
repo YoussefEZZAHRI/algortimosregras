@@ -70,7 +70,9 @@ public class DTLZ1 extends Problema {
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r);
+		double ocupacao = 0;
+		
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao);
 		
 		while(pareto.fronteira.size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);

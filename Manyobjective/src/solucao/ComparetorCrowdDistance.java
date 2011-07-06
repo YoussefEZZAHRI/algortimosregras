@@ -4,13 +4,13 @@ import java.util.Comparator;
 
 import kernel.nuvemparticulas.Particula;
 
-public class ComparetorCrowdDistance implements Comparator<Particula>{
+public class ComparetorCrowdDistance implements Comparator<Solucao>{
 	
-	public int compare(Particula p1, Particula p2){
-		if(p1.solucao.crowdDistance>p2.solucao.crowdDistance)
+	public int compare(Solucao s1, Solucao s2){
+		if(s1.crowdDistance>s2.crowdDistance)
 			return -1;
 		else
-			if(p1.solucao.crowdDistance<p2.solucao.crowdDistance)
+			if(s1.crowdDistance<s2.crowdDistance)
 				return 1;
 			else
 				return 0;
