@@ -28,7 +28,7 @@ public class MISA extends AlgoritmoAprendizado {
 	public AdaptiveGrid populacaoSecundaria = null;
 	public ArrayList<Solucao> clones = null;
 	
-	//Total de elementos após a clonagem
+	//Total de elementos apï¿½s a clonagem
 	public int totalClonagem;
 	
 	public double s;
@@ -47,16 +47,16 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	/**
 	 * 
-	 * @param n Número de variaveis
+	 * @param n Nï¿½mero de variaveis
 	 * @param prob Problema
-	 * @param g Número de gerações
-	 * @param t Tamanho máximo da população
-	 * @param s Valor do S do método do Sato
+	 * @param g Nï¿½mero de geraï¿½ï¿½es
+	 * @param t Tamanho mï¿½ximo da populaï¿½ï¿½o
+	 * @param s Valor do S do mï¿½todo do Sato
 	 * @param tc Taxa de clonagem
-	 * * @param pg Número de partes da divisão do grid da população secundária
+	 * * @param pg Nï¿½mero de partes da divisï¿½o do grid da populaï¿½ï¿½o secundï¿½ria
 	 */
-	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg, String[] maxmim, String tRank){
-		super(n,prob,g,a,t, tRank);
+	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg, String[] maxmim, String tRank, double ocupacao){
+		super(n,prob,g,a,t, tRank, ocupacao);
 		
 		taxaClonagem = tc;
 		totalClonagem = taxaClonagem * tamanhoPopulacao;
@@ -66,9 +66,9 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		this.maxmim = maxmim;
 		
-		//Probabilidade inicial da mutacao não uniforme
+		//Probabilidade inicial da mutacao nï¿½o uniforme
 		non_uniform_prob = 0.6;
-		//Decremento da mutação não uniforme, variando do incial até 1/n
+		//Decremento da mutaï¿½ï¿½o nï¿½o uniforme, variando do incial atï¿½ 1/n
 		double diff = non_uniform_prob - PROB_MUT_COD;
 		decremento = diff/(double) t;
 		
@@ -78,17 +78,17 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	public ArrayList<Solucao> executar() {
 		
-		//Inicio aleatório da população
+		//Inicio aleatï¿½rio da populaï¿½ï¿½o
 		iniciarPopulacao();
 		
 		problema.avaliacoes = 0;
 		
 		
-		//Laço evolutivo
+		//Laï¿½o evolutivo
 		for(int g = 0; g<geracoes; g++){
 			if(g%10 == 0)
 				System.out.print(g + " ");
-			//Seleção das melhores soluções
+			//Seleï¿½ï¿½o das melhores soluï¿½ï¿½es
 			lacoEvolutivo();	
 		}
 		return populacao;
@@ -96,13 +96,13 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	public ArrayList<Solucao> executarAvaliacoes() {
 		
-		//Inicio aleatório da população
+		//Inicio aleatï¿½rio da populaï¿½ï¿½o
 		iniciarPopulacao();
 		//System.out.println(this.toString());
 		problema.avaliacoes = 0;
 		
 		
-		//Laço evolutivo
+		//Laï¿½o evolutivo
 		while(problema.avaliacoes<numeroavalicoes){
 			lacoEvolutivo();
 			if(problema.avaliacoes % 10 == 0)
@@ -118,26 +118,26 @@ public class MISA extends AlgoritmoAprendizado {
 	private void lacoEvolutivo() {
 		encontrarSolucoesNaoDominadas(populacao, pareto);
 		ArrayList<Solucao> melhores = obterMelhoresAnticorpos(pareto, populacao, 0.05);
-		//Adiciona as melhores soluções do problema no grid da populacao secundaria
+		//Adiciona as melhores soluï¿½ï¿½es do problema no grid da populacao secundaria
 		for (Iterator<Solucao> iterator = melhores.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 			solucao.aceita = populacaoSecundaria.add(solucao);
 		}
-		//Obtém as soluções presentes no grid
+		//Obtï¿½m as soluï¿½ï¿½es presentes no grid
 		clones = populacaoSecundaria.getAll();
 		
 		//Colna os melhores anticorpos
 		clonarMelhoresAnticorpos(clones);	
-		//Aplica uma mutação em todos os clones
+		//Aplica uma mutaï¿½ï¿½o em todos os clones
 		mutacao(clones, PROB_MUT_COD);
-		//Aplica uma mutação não uniform nos clones dominados
+		//Aplica uma mutaï¿½ï¿½o nï¿½o uniform nos clones dominados
 		//mutacaoSolucoesNaoTaoBoas(clones);			
-		//Adiciona todos os clones na população atual
+		//Adiciona todos os clones na populaï¿½ï¿½o atual
 		populacao.addAll(clones);
-		//Obtém os novos líderes da população
-		FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S, maxmim, rank);
+		//Obtï¿½m os novos lï¿½deres da populaï¿½ï¿½o
+		FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S, maxmim, rank, limite_ocupacao);
 		encontrarSolucoesNaoDominadas(populacao, paretoTemp);
-		//Reduz a população com o tamanho passado como parametro
+		//Reduz a populaï¿½ï¿½o com o tamanho passado como parametro
 		reduzirPopulacao(populacao, paretoTemp);
 	}
 	
@@ -150,7 +150,7 @@ public class MISA extends AlgoritmoAprendizado {
 	}*/
 	
 	/**
-	 * Método que inicia a população aleatoriamente e inicia a população secundária como vazia
+	 * Mï¿½todo que inicia a populaï¿½ï¿½o aleatoriamente e inicia a populaï¿½ï¿½o secundï¿½ria como vazia
 	 */
 	public void iniciarPopulacao(){
 		populacao = new ArrayList<Solucao>();
@@ -163,19 +163,19 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		populacaoSecundaria = new AdaptiveGrid(problema.m, partesGrid);
 		clones = null;
-		pareto = new FronteiraPareto(s, maxmim, rank);
+		pareto = new FronteiraPareto(s, maxmim, rank, limite_ocupacao);
 	}
 	
 
 	/**
-	 * Método que reduz a população para o tamanho máximo passado como parametro
-	 * @param populacaoFinal População final da iteração
-	 * @param paretoTemp Conjunto das melhore soluçõs encontradas até então
+	 * Mï¿½todo que reduz a populaï¿½ï¿½o para o tamanho mï¿½ximo passado como parametro
+	 * @param populacaoFinal Populaï¿½ï¿½o final da iteraï¿½ï¿½o
+	 * @param paretoTemp Conjunto das melhore soluï¿½ï¿½s encontradas atï¿½ entï¿½o
 	 */
 	public void reduzirPopulacao(ArrayList<Solucao> populacaoFinal, FronteiraPareto paretoTemp){
-		//Se o número das melhores soluções é menor que o tamanho máximo, todas as soluções são adicionadas na população final 
-		//e as melhores soluções (domindas por menos soluções) dominadas da população
-		//Caso contrário somente as melhore soluções são adicionadas na população final
+		//Se o nï¿½mero das melhores soluï¿½ï¿½es ï¿½ menor que o tamanho mï¿½ximo, todas as soluï¿½ï¿½es sï¿½o adicionadas na populaï¿½ï¿½o final 
+		//e as melhores soluï¿½ï¿½es (domindas por menos soluï¿½ï¿½es) dominadas da populaï¿½ï¿½o
+		//Caso contrï¿½rio somente as melhore soluï¿½ï¿½es sï¿½o adicionadas na populaï¿½ï¿½o final
 		if(paretoTemp.fronteira.size()<tamanhoPopulacao){
 			ArrayList<Solucao> temp = obterMelhoresAnticorpos(paretoTemp, populacaoFinal, 1.0);
 			populacaoFinal.clear();
@@ -183,7 +183,7 @@ public class MISA extends AlgoritmoAprendizado {
 		}
 		else{
 			ArrayList<Solucao> solucoesFinais = paretoTemp.fronteira;
-			//Escolhe as melhores soluções atraves do metodo AR 
+			//Escolhe as melhores soluï¿½ï¿½es atraves do metodo AR 
 			rankear(solucoesFinais);
 			ComparetorRank comp = new ComparetorRank();
 			Collections.sort(solucoesFinais, comp);
@@ -196,17 +196,17 @@ public class MISA extends AlgoritmoAprendizado {
 	}
 	
 	/**
-	 * Método que obtém as melhores soluções. Caso o número de soluções seja menor que o valor porcentagemaMinima passado como parametro,
-	 * as melhores dominadas soluções são adicionadas nas melhores.
-	 * @param paretoAtual Soluçoes não dominadas
-	 * @param porcentagemaMinima Porcentagem mínima de soluções que devem ser retornadas
+	 * Mï¿½todo que obtï¿½m as melhores soluï¿½ï¿½es. Caso o nï¿½mero de soluï¿½ï¿½es seja menor que o valor porcentagemaMinima passado como parametro,
+	 * as melhores dominadas soluï¿½ï¿½es sï¿½o adicionadas nas melhores.
+	 * @param paretoAtual Soluï¿½oes nï¿½o dominadas
+	 * @param porcentagemaMinima Porcentagem mï¿½nima de soluï¿½ï¿½es que devem ser retornadas
 	 * @return
 	 */
 	public ArrayList<Solucao> obterMelhoresAnticorpos(FronteiraPareto paretoAtual, ArrayList<Solucao> populacao,  double porcentagemaMinima){
 		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
 		melhores.addAll(paretoAtual.fronteira);
 		int maxMelhores = (int)(porcentagemaMinima*tamanhoPopulacao);
-		//Caso o número das melhores soluções seja menor que a porcentamge tamanhoMelhores da população deve-se preencher os array das melhores soluções
+		//Caso o nï¿½mero das melhores soluï¿½ï¿½es seja menor que a porcentamge tamanhoMelhores da populaï¿½ï¿½o deve-se preencher os array das melhores soluï¿½ï¿½es
 		if(melhores.size()< maxMelhores){
 			ArrayList<Solucao> dominadas = new ArrayList<Solucao>();
 			for (Iterator<Solucao> iterator = populacao.iterator(); iterator.hasNext();) {
@@ -216,7 +216,7 @@ public class MISA extends AlgoritmoAprendizado {
 				}
 			}
 			
-			//Ordena as soluções de acordo com o número de dominacao de cada solucao
+			//Ordena as soluï¿½ï¿½es de acordo com o nï¿½mero de dominacao de cada solucao
 			ComparetorDominacao comp = new ComparetorDominacao();
 			Collections.sort(dominadas, comp);
 			int resto = maxMelhores - melhores.size();
@@ -227,8 +227,8 @@ public class MISA extends AlgoritmoAprendizado {
 	}
 	
 	/**
-	 * Clona as melhores soluções da iteração
-	 * @param clones Melhores solucoes da iteração
+	 * Clona as melhores soluï¿½ï¿½es da iteraï¿½ï¿½o
+	 * @param clones Melhores solucoes da iteraï¿½ï¿½o
 	 */
 	public void clonarMelhoresAnticorpos(ArrayList<Solucao> clones){
 		//Calcula o numero estimado de clones para cada elemento a ser colnado
@@ -242,9 +242,9 @@ public class MISA extends AlgoritmoAprendizado {
 	}
 	
 	/**
-	 * Clona as melhores soluções caso a população secundária esteja cheia
-	 * @param numBase Número estimado de clones para cada solução
-	 * @param melhores Soluções que serão clonadas
+	 * Clona as melhores soluï¿½ï¿½es caso a populaï¿½ï¿½o secundï¿½ria esteja cheia
+	 * @param numBase Nï¿½mero estimado de clones para cada soluï¿½ï¿½o
+	 * @param melhores Soluï¿½ï¿½es que serï¿½o clonadas
 	 */
 	public void clonarFull(int numBase, ArrayList<Solucao> melhores){
 		for (Iterator<Solucao> iterator = melhores.iterator(); iterator.hasNext();) {
@@ -253,7 +253,7 @@ public class MISA extends AlgoritmoAprendizado {
 			if(!solucao.aceita)
 				fator = 0;
 			else{
-				//Calcula quanto cada elemento vai ser clonado de acordo com a ocupação da célula em que o elemento pertence no grid
+				//Calcula quanto cada elemento vai ser clonado de acordo com a ocupaï¿½ï¿½o da cï¿½lula em que o elemento pertence no grid
 				double mediaOcupacao = populacaoSecundaria.obterMediaOcupacao();
 				Integer celula = populacaoSecundaria.contains(solucao);				
 				int crowdCelula = populacaoSecundaria.obterLotacao(celula, solucao);
@@ -272,9 +272,9 @@ public class MISA extends AlgoritmoAprendizado {
 	}
 	
 	/**
-	 * Clona as melhores soluções caso a população secundária não esteja cheia
-	 * @param numBase Número estimado de clones para cada solução
-	 * @param melhores Soluções que serão clonadas
+	 * Clona as melhores soluï¿½ï¿½es caso a populaï¿½ï¿½o secundï¿½ria nï¿½o esteja cheia
+	 * @param numBase Nï¿½mero estimado de clones para cada soluï¿½ï¿½o
+	 * @param melhores Soluï¿½ï¿½es que serï¿½o clonadas
 	 */
 	public void clonarNotFull(int numBase, ArrayList<Solucao> melhores){
 		double[][] distancias = new double[melhores.size()][melhores.size()];
@@ -312,18 +312,18 @@ public class MISA extends AlgoritmoAprendizado {
 		for (Iterator<Solucao> iterator = melhores.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 			double fator = 1;
-			//Se a solução pertence à parte de baixo
+			//Se a soluï¿½ï¿½o pertence ï¿½ parte de baixo
 			if(mediasIndividuais[i]<mediaDistancias){
-				//Se a parte de baixo é mais densa então reduz o número de clones em 50%
+				//Se a parte de baixo ï¿½ mais densa entï¿½o reduz o nï¿½mero de clones em 50%
 				if(densidadeAbaixo>=densidadeAcima)
 					fator = 0.5;
 				else
-					//Caso contrário aumenta o número em 50%
+					//Caso contrï¿½rio aumenta o nï¿½mero em 50%
 					fator = 1.5;
 			} else {
-				//Se a solução pertence à parte de cima
+				//Se a soluï¿½ï¿½o pertence ï¿½ parte de cima
 				if(mediasIndividuais[i]>mediaDistancias)
-					//Se a parte de cima é mais densa reduz em 50%, caso contrário aumenta em 50%
+					//Se a parte de cima ï¿½ mais densa reduz em 50%, caso contrï¿½rio aumenta em 50%
 					if(densidadeAbaixo<densidadeAcima)
 						fator = 0.5;
 					else
@@ -338,7 +338,7 @@ public class MISA extends AlgoritmoAprendizado {
 	}
 	
 	/**
-	 * Aplica uma mutação polinomial com probabilidade prob em todos os clones
+	 * Aplica uma mutaï¿½ï¿½o polinomial com probabilidade prob em todos os clones
 	 * @param solucoes
 	 */
 	public void mutacao(ArrayList<Solucao> solucoes, double prob){
@@ -356,7 +356,7 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	public void mutacaoSolucoesNaoTaoBoas(ArrayList<Solucao> clones){
 		
-		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S, maxmim, rank);
+		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S, maxmim, rank, limite_ocupacao);
 		encontrarSolucoesNaoDominadas(clones, clonesNaoDominados);
 		ArrayList<Solucao> melhores = clonesNaoDominados.getFronteira();
 		
@@ -408,7 +408,7 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		String[] mm = {"-","-","-"};
 		
-		MISA misa = new MISA(n, prob, g, a,t, 0.25, 7, 25,mm, "false");
+		MISA misa = new MISA(n, prob, g, a,t, 0.25, 7, 25,mm, "false", 0);
 		
 		misa.executar();
 		

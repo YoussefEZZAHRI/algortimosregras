@@ -80,7 +80,9 @@ public class DTLZ2 extends Problema {
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r);
+		double ocupacao = 0;
+		
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao);
 		
 		while(melhores.size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
@@ -136,7 +138,7 @@ public class DTLZ2 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int m = 3;
+		int m = 2;
 		int numSol = 1000;
 		int k = 10;
 		
@@ -147,7 +149,7 @@ public class DTLZ2 extends Problema {
 		//dtlz2.obterSolucoesExtremas(n, s);
 				 
 				
-		try{
+		/*try{
 			PrintStream ps = new PrintStream("fronteira_dtlz2" + m);
 			for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
@@ -158,12 +160,12 @@ public class DTLZ2 extends Problema {
 				ps.println();
 				
 			}
-		} catch (IOException ex){ex.printStackTrace();}
-		
-		
-		/*try{
-			dtlz2.imprimirFronteirar(n, m, numSol);
 		} catch (IOException ex){ex.printStackTrace();}*/
+		
+		
+		try{
+			dtlz2.imprimirFronteirar(n, m, numSol);
+		} catch (IOException ex){ex.printStackTrace();}
 		
 		
 		

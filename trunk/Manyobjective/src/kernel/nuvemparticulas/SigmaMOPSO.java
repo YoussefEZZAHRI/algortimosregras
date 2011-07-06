@@ -20,8 +20,8 @@ public class SigmaMOPSO extends MOPSO{
 
 
 	
-	public SigmaMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank){
-		super(n,prob,g, a,t, s, maxmim,tRank);
+	public SigmaMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao){
+		super(n,prob,g, a,t, s, maxmim,tRank, ocupacao);
 
 	}
 	
@@ -45,8 +45,6 @@ public class SigmaMOPSO extends MOPSO{
 			lacoEvolutivo();
 		}
 		
-		
-		pareto.retornarFronteiraNuvem();
 		return pareto.getFronteira();
 	}
 	
@@ -70,8 +68,6 @@ public class SigmaMOPSO extends MOPSO{
 			lacoEvolutivo();
 		}
 		
-	
-		pareto.retornarFronteiraNuvem();
 		return pareto.getFronteira();
 	}
 
@@ -103,15 +99,15 @@ public class SigmaMOPSO extends MOPSO{
 	 *
 	 */
 	public void escolherLideres(){
-		for (Iterator<Particula> iter = pareto.fronteiraNuvem.iterator(); iter.hasNext();) {
-			Particula partRepositorio =  iter.next();
+		for (Iterator<Solucao> iter = pareto.fronteira.iterator(); iter.hasNext();) {
+			Solucao partRepositorio =  iter.next();
 			partRepositorio.calcularSigmaVector();
 		}
 		
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = iter.next();
-			particula.calcularSigmaVector();
-			particula.escolherGlobalBestSigma(pareto.fronteiraNuvem);
+			particula.solucao.calcularSigmaVector();
+			particula.escolherGlobalBestSigma(pareto.fronteira);
 		}
 	}
 	
@@ -125,7 +121,7 @@ public class SigmaMOPSO extends MOPSO{
 		int a = -1;
 		String[] mm = {"-","-","-"};
 		for(int i = 0; i<5; i++){
-			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25, mm, "false");
+			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25, mm, "false",0);
 			nuvem.executar();
 			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();

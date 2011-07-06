@@ -91,7 +91,9 @@ public class DTLZ6 extends Problema {
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r);
+		double ocupacao = 0;
+		
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao);
 		                         
 				
 		while(melhores.size()<numSol){
@@ -128,7 +130,7 @@ public class DTLZ6 extends Problema {
 	
 	public static void main(String[] args) {
 		int m = 2;
-		int numSol = 500;
+		int numSol = 1000;
 		int k = 10;
 		int n = m + k - 1;
 		
@@ -137,11 +139,15 @@ public class DTLZ6 extends Problema {
 		
 		dtlz6.inc = 0.001;
 		
+		try{
+			dtlz6.imprimirFronteirar(n, m, numSol);
+		} catch (IOException ex){ex.printStackTrace();}
+		
 		//dtlz7.obterFronteira2(n, numSol);
 		
 		
 		
-		ArrayList<SolucaoNumerica> f = dtlz6.obterFronteira(n, numSol);
+		/*ArrayList<SolucaoNumerica> f = dtlz6.obterFronteira(n, numSol);
 		
 		
 		try{
@@ -168,7 +174,7 @@ public class DTLZ6 extends Problema {
 				
 			}
 		} catch (IOException ex){ex.printStackTrace();}
-	
+	*/
 		
 		
 	}

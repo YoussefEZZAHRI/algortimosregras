@@ -25,7 +25,7 @@ public class SolucaoNumerica extends Solucao {
 	public double[] limitesPosicaoInferior;
 	public double[] limitesPosicaoSuperior;
 	
-	public double[] objetivosMedio;
+	
 	
 	
 	/**
@@ -121,6 +121,8 @@ public class SolucaoNumerica extends Solucao {
 		novaSolucao.rank = rank;
 		novaSolucao.crowdDistance = crowdDistance;
 		novaSolucao.numDominacao = numDominacao;
+		novaSolucao.ocupacao = ocupacao;
+		novaSolucao.S = S;
 				
 		novaSolucao.limitesPosicaoInferior = new double[limitesPosicaoInferior.length];
 		novaSolucao.limitesPosicaoSuperior = new double[limitesPosicaoSuperior.length];
@@ -131,6 +133,7 @@ public class SolucaoNumerica extends Solucao {
 			
 		}
 		
+			
 		return novaSolucao;
 	}
 	
@@ -193,17 +196,6 @@ public class SolucaoNumerica extends Solucao {
 		return false;
 	}
 	
-	public void setVetorObjetivosMedio(){
-		double valorMedio = 0;
-		for(int i = 0 ;i<objetivos.length; i++){
-			valorMedio+=objetivos[i];
-		}
-		valorMedio = valorMedio/objetivos.length;
-		
-		objetivosMedio = new double[objetivos.length];
-		for(int i= 0 ; i <objetivosMedio.length; i++){
-			objetivosMedio[i] = objetivos[i] - valorMedio;
-		}			
-	}
+	
 
 }

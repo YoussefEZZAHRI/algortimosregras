@@ -45,6 +45,8 @@ public abstract class AlgoritmoAprendizado {
 	
 	public final double PROB_MUT_COD;
 	
+	public double limite_ocupacao;
+	
 	
 	
 	
@@ -57,7 +59,7 @@ public abstract class AlgoritmoAprendizado {
 	
 	
 	
-	public AlgoritmoAprendizado(int n, Problema p, int g, int avaliacoes, int t, String tRank){
+	public AlgoritmoAprendizado(int n, Problema p, int g, int avaliacoes, int t, String tRank, double ocupacao){
 		this.n = n;
 		problema = p;
 		geracoes = g;
@@ -68,6 +70,8 @@ public abstract class AlgoritmoAprendizado {
 		tipoRank = tRank;
 		iniciarMetodoRank();
 		
+		limite_ocupacao = ocupacao;
+		
 	}
 	
 	public abstract ArrayList<Solucao> executar();
@@ -75,7 +79,7 @@ public abstract class AlgoritmoAprendizado {
 	public abstract ArrayList<Solucao> executarAvaliacoes();
 	
 	
-	public double distanciaEuclidiana(double[] vetor1, double[] vetor2){
+	public static double distanciaEuclidiana(double[] vetor1, double[] vetor2){
 		double soma = 0;
 		for (int i = 0; i < vetor1.length; i++) {
 			soma += Math.pow(vetor1[i]-vetor2[i],2);
@@ -106,31 +110,33 @@ public abstract class AlgoritmoAprendizado {
 		
 	}
 	
+	/**
+	 * Metodo que remove as solucoes que estao num mesmo cuboide com distancia limite_ocupacao
+	 * @param solucoes Solucoes que serao refinadas
+	 */
 	public void removerGranular(ArrayList<Solucao> solucoes){
+		//Calcula a distancia de crowding e o limite de ocupacao das solucoes. Um dos estimadores sera utilizado para podar as solucoes
 		calcularCrowdingDistance(solucoes);
-		for(int i = 0; i<solucoes.size(); i++){
-			Solucao solucao_i = solucoes.get(i);
-			contarSolucoesLimites(solucoes);	
-		}
-		
+		//Conta para cada solucao, se existe alguma outra no mesmo raio de ocupacao
+		contarSolucoesLimitesCuboide(solucoes);	
+				
 		ArrayList<Solucao> cloneSolucoes = (ArrayList<Solucao>)solucoes.clone();
-		
-		
+		//Percorre todas as solucoes para remover as solucoes num mesmo cuboide		
 		for(int k = 0; k<cloneSolucoes.size(); k++){
 			Solucao solucao = cloneSolucoes.get(k);
-			
+			//Se a solucao possui alguma outra em seu raio de ocupacao, decide se retira ela ou não
 			if(solucao.ocupacao!= 0){
 				double[] limites = new double[problema.m*2];
-
+				//Define os limites de ocupacao da solucao
 				for(int i = 0;i<problema.m;i++){
 					//Posicao final (2 * numero do objetivo) = valor do objetivo menos o  limite. (Limite inferior)  
-					limites[2*i] = Math.max(solucao.objetivos[i] - solucao.limite_ocupacao, 0);
+					limites[2*i] = Math.max(solucao.objetivos[i] - limite_ocupacao, 0);
 					//Posicao incial (2 * numero do objetivo + 1) = valor do objetivo mais limite. (Limite superior)
-					limites[2*i + 1] = solucao.objetivos[i] + solucao.limite_ocupacao;
+					limites[2*i + 1] = solucao.objetivos[i] + limite_ocupacao;
 				}
 				
 				boolean removida = false;
-
+				//Percorre todas as solucoes, para se ela foi removida ou se todas as solucoes foram percorridas
 				for(int i = 0; i<cloneSolucoes.size() && !removida; i++){
 					Solucao solucao_i = cloneSolucoes.get(i);
 					boolean dentro = true;
@@ -153,9 +159,9 @@ public abstract class AlgoritmoAprendizado {
 								solucoes.remove(solucao);
 								removida = true;
 							}
-							try{
+							/*try{
 								imprimirFronteira(solucoes);
-							}catch(IOException ex){ex.printStackTrace();}
+							}catch(IOException ex){ex.printStackTrace();}*/
 						}
 					}			
 				}
@@ -163,8 +169,11 @@ public abstract class AlgoritmoAprendizado {
 		}
 	}
 	
-	
-	public void contarSolucoesLimites(ArrayList<Solucao> solucoes){
+	/**
+	 * Conta para cada solucao quantas solucoes estao dentro do limite definido por solucao.limiteOcupacao
+	 * @param solucoes
+	 */
+	public void contarSolucoesLimitesCuboide(ArrayList<Solucao> solucoes){
 
 		for(int k = 0; k<solucoes.size(); k++){
 			Solucao solucao = solucoes.get(k);
@@ -176,9 +185,9 @@ public abstract class AlgoritmoAprendizado {
 
 			for(int i = 0;i<problema.m;i++){
 				//Posicao final (2 * numero do objetivo) = valor do objetivo menos o  limite. (Limite inferior)  
-				limites[2*i] = Math.max(solucao.objetivos[i] - solucao.limite_ocupacao, 0);
+				limites[2*i] = Math.max(solucao.objetivos[i] - limite_ocupacao, 0);
 				//Posicao incial (2 * numero do objetivo + 1) = valor do objetivo mais limite. (Limite superior)
-				limites[2*i + 1] = solucao.objetivos[i] + solucao.limite_ocupacao;
+				limites[2*i + 1] = solucao.objetivos[i] + limite_ocupacao;
 			}
 
 			for(int i = 0; i<solucoes.size(); i++){
@@ -196,6 +205,68 @@ public abstract class AlgoritmoAprendizado {
 							dentro = false;
 					}
 					if(dentro)
+						solucao.ocupacao++;
+				}			
+			}
+		}
+
+	}
+	
+	/**
+	 * Metodo que remove as solucoes que estao num mesmo cuboide com distancia limite_ocupacao
+	 * @param solucoes Solucoes que serao refinadas
+	 */
+	public void removerGranularRaio(ArrayList<Solucao> solucoes){
+		//Calcula a distancia de crowding e o limite de ocupacao das solucoes. Um dos estimadores sera utilizado para podar as solucoes
+		calcularCrowdingDistance(solucoes);
+		//Conta para cada solucao, se existe alguma outra no mesmo raio de ocupacao
+		contarSolucoesLimitesRaio(solucoes);	
+				
+		ArrayList<Solucao> cloneSolucoes = (ArrayList<Solucao>)solucoes.clone();
+		//Percorre todas as solucoes para remover as solucoes num mesmo cuboide		
+		for(int k = 0; k<cloneSolucoes.size(); k++){
+			Solucao solucao = cloneSolucoes.get(k);
+			//Se a solucao possui alguma outra em seu raio de ocupacao, decide se retira ela ou não
+			if(solucao.ocupacao!= 0){
+				
+				boolean removida = false;
+				//Percorre todas as solucoes, para se ela foi removida ou se todas as solucoes foram percorridas
+				for(int i = 0; i<cloneSolucoes.size() && !removida; i++){
+					Solucao solucao_i = cloneSolucoes.get(i);
+					
+					if(i != k){
+						
+						double dist = distanciaEuclidiana(solucao.objetivos, solucao_i.objetivos);
+						if(dist<limite_ocupacao){
+							//Remocao da solucao no mesmo quadrado, mas menos em uma regiao menos povoada
+							if(solucao.crowdDistance < solucao_i.crowdDistance)
+							//if(solucao.ocupacao < solucao_i.ocupacao)
+								solucoes.remove(solucao_i);
+							else{
+								solucoes.remove(solucao);
+								removida = true;
+							}
+						}
+						
+					}			
+				}
+			}
+		}
+	}
+	
+	public void contarSolucoesLimitesRaio(ArrayList<Solucao> solucoes){
+
+		for(int k = 0; k<solucoes.size(); k++){
+			Solucao solucao = solucoes.get(k);
+			solucao.ocupacao = 0;
+
+			for(int i = 0; i<solucoes.size(); i++){
+				Solucao solucao_i = solucoes.get(i);
+				//Se não é a solução corrente
+				if(i != k){
+					
+					double dist = distanciaEuclidiana(solucao.objetivos, solucao_i.objetivos);
+					if(dist<limite_ocupacao)
 						solucao.ocupacao++;
 				}			
 			}
@@ -235,7 +306,7 @@ public abstract class AlgoritmoAprendizado {
 	}
 	
 	/**
-	 * Muta��o probabil�stica
+	 * Mutacao probabilistica
 	 * @param prob_mutacao Probabilidade de efetuar a muta��o em uma posi��o
 	 * @param 
 	 */
