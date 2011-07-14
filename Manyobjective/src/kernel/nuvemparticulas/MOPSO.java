@@ -33,12 +33,12 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	
 	Problema problema = null;
 	
-	
-	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao){
+		
+	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator){
 		super(n,prob,g, a,t, tRank, ocupacao);
 		populacao = new ArrayList<Particula>();
 		//repositorio = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(s, maxmim,rank, ocupacao);
+		pareto = new FronteiraPareto(s, maxmim,rank, ocupacao, fator);
 		if(rank)
 			metodoRank.setPareto(pareto);
 		this.maxmim = maxmim;
@@ -51,7 +51,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 */
 	public void reiniciarExecucao(){
 		populacao = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.limite_ocupacao);
+		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.limite_ocupacao, pareto.fator);
 		problema.avaliacoes =0; 
 	}
 	
@@ -113,8 +113,10 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula =  iter.next();
 			if(!pareto.fronteira.contains(particula.solucao)){
-				if(!rank)
+				if(!rank){
 					particula.solucao.numDominacao = pareto.add((Solucao)particula.solucao.clone());
+					
+				}
 				else
 					pareto.addRank((Solucao)particula.solucao.clone());
 				

@@ -93,7 +93,7 @@ public class DTLZ6 extends Problema {
 		
 		double ocupacao = 0;
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao);
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao,0);
 		                         
 				
 		while(melhores.size()<numSol){
