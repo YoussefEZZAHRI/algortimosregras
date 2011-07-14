@@ -29,6 +29,10 @@ public class FronteiraPareto {
 	
 	public double[] objetivosMaxMin = null;
 	
+	public String[] maxmim = null;
+	
+
+	public double fator;
 	
 	/*public FronteiraPareto(double s){
 		fronteira = new ArrayList<Solucao>();
@@ -37,12 +41,15 @@ public class FronteiraPareto {
 		
 	}*/
 	
-	public FronteiraPareto(double s, String[] maxmim, boolean r, double ocupacao){
+	public FronteiraPareto(double s, String[] maxmim, boolean r, double ocupacao, double f){
 		fronteira = new ArrayList<Solucao>();
 		//fronteiraNuvem = new ArrayList<Particula>();
 		S = s;
 		rank= r;
 		limite_ocupacao = ocupacao;
+		fator = f;
+		this.maxmim = maxmim;
+		
 		preencherObjetivosMaxMin(maxmim);
 	}
 	
@@ -104,18 +111,18 @@ public class FronteiraPareto {
 		
 		ArrayList<SolucaoNumerica> cloneFronteira = (ArrayList<SolucaoNumerica>)fronteira.clone();
 		
-		
-		
 		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
-		
+
 		double r = 0;
 		if(S!=0.5){
 			r = r(solucao.objetivos);
 			for (int i = 0; i < solucao.objetivos.length; i++) {
-				novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
+				novosObjetivosSolucao[i] = modificacaoDominanciaParetoCDAS(solucao.objetivos[i], r, S);
 			}
-		} else
-			novosObjetivosSolucao = solucao.objetivos;
+		} else{
+			novosObjetivosSolucao  = modificacaoDominanciaParetoEqualizar(solucao.objetivos, fator);
+			//System.out.println();
+		}
 		
 		for (Iterator<SolucaoNumerica> iter = cloneFronteira.iterator(); iter.hasNext();) {
 			SolucaoNumerica temp = (SolucaoNumerica) iter.next();
@@ -125,10 +132,10 @@ public class FronteiraPareto {
 			if(S!=0.5){
 				r = r(temp.objetivos);
 				for (int i = 0; i < temp.objetivos.length; i++) {
-					novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.objetivos[i], r, S);
+					novosObjetivosTemp[i] = modificacaoDominanciaParetoCDAS(temp.objetivos[i], r, S);
 				}
 			} else
-				novosObjetivosTemp = temp.objetivos;
+				novosObjetivosTemp = modificacaoDominanciaParetoEqualizar(temp.objetivos, fator);
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
 			
@@ -138,19 +145,6 @@ public class FronteiraPareto {
 				solucao.numDominacao++;
 			if(comp == 1)
 				fronteira.remove(temp);
-			
-			/*if(limite_ocupacao!=0)
-			if(comp == 0){
-				double dist = AlgoritmoAprendizado.distanciaEuclidiana(solucao.objetivos, temp.objetivos);
-				if(dist<limite_ocupacao){
-					//Remocao da solucao no mesmo quadrado, mas menos em uma regiao menos povoada
-					if(solucao.crowdDistance < temp.crowdDistance)
-						fronteira.remove(temp);
-					else{
-						solucao.numDominacao++;
-					}
-				}
-			}*/
 			
 		}
 		if(solucao.numDominacao == 0){
@@ -187,7 +181,7 @@ public class FronteiraPareto {
 		double r = 0;
 		r = r(solucao.objetivos);
 		for (int i = 0; i < solucao.objetivos.length; i++) {
-			novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, solucao.S);
+			novosObjetivosSolucao[i] = modificacaoDominanciaParetoCDAS(solucao.objetivos[i], r, solucao.S);
 		}
 	
 		
@@ -199,7 +193,7 @@ public class FronteiraPareto {
 			
 			r = r(temp.objetivos);
 			for (int i = 0; i < temp.objetivos.length; i++) {
-				novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.objetivos[i], r, solucao.S);
+				novosObjetivosTemp[i] = modificacaoDominanciaParetoCDAS(temp.objetivos[i], r, solucao.S);
 			}
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
@@ -425,7 +419,7 @@ public class FronteiraPareto {
 	 * @param si Par�metro da modifica��o da dominacia (Varia entre 0 e 1)
 	 * @return
 	 */
-	public double modificacaoDominanciaPareto(double fix, double r, double si){
+	public double modificacaoDominanciaParetoCDAS(double fix, double r, double si){
 		double cosWi = fix/r;
 		double cosWi2 = cosWi*cosWi;
 		double senWi = Math.sqrt(1-cosWi2);
@@ -440,6 +434,48 @@ public class FronteiraPareto {
 		novoFix = fix + diff;*/
 		
 		return Math.max(novoFix, 0);
+	}
+	
+	/**
+	 * Método que modifica os valores dos objetivos de acordo com a diferença entre cada valor
+	 * Visa deslocar os objetivos para o centro do espaco de objetivos
+	 * Um valor de objetivo pequeno e muito deslocado se existe um valor grande.
+	 * Um valor grande nao sofre deslocamente
+	 * Solucoes com valores proximos sao privilegiadas
+	 * 
+	 * @param fx vetor objetivo
+	 * @return vetor objetivo modificado
+	 */
+	public double[] modificacaoDominanciaParetoEqualizar(double[] fx, double fator){
+		if(fator !=0){
+			double[] retorno = new double[fx.length];
+			double maiorValor = 0;
+			double menorValor = Double.MAX_VALUE;
+			
+			//Procura o maior e o menor valor dos objetivos
+			for (int i = 0; i < fx.length; i++) {
+				double d = fx[i];
+				if(d > maiorValor)
+					maiorValor = d;
+				if(d< menorValor)
+					menorValor = d;
+			}
+
+			double diferenca = maiorValor - menorValor;
+			//Modifica a cada objetivo de acordo com sua relação a diferenca
+			for (int i = 0; i < fx.length; i++) {
+				double d = fx[i];
+				//Obtem a relacao entre a maior diferenca dos objetivos e o valor do objetivo i
+				double relacao = diferenca/d;
+				//Calcula a variacao do objetivo. Em funcao do valor do objetivo e a relacao com a diferenca
+				//Quanto menor eh o objetivo em relacao a deferenca, maior sera o aumento
+				double variacao = (Math.abs(1-relacao)*d)/fator;
+				retorno[i] = d+variacao; 
+			}
+
+			return retorno;
+		}
+		else return fx;
 	}
 	
 	public double r(double[] objetivos){
@@ -466,7 +502,7 @@ public class FronteiraPareto {
 		
 		double r = r(solucao.objetivos);
 		for (int i = 0; i < solucao.objetivos.length; i++) {
-			novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
+			novosObjetivosSolucao[i] = modificacaoDominanciaParetoCDAS(solucao.objetivos[i], r, S);
 		}
 		
 		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
@@ -476,7 +512,7 @@ public class FronteiraPareto {
 
 			r = r(temp.objetivos);
 			for (int i = 0; i < temp.objetivos.length; i++) {
-				novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.objetivos[i], r, S);
+				novosObjetivosTemp[i] = modificacaoDominanciaParetoCDAS(temp.objetivos[i], r, S);
 			}
 
 			
@@ -525,7 +561,7 @@ public class FronteiraPareto {
 
 			double r = r(solucao.objetivos);
 			for (int i = 0; i < solucao.objetivos.length; i++) {
-				novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
+				novosObjetivosSolucao[i] = modificacaoDominanciaParetoCDAS(solucao.objetivos[i], r, S);
 			}
 
 
@@ -559,7 +595,7 @@ public void imprimir(ArrayList<Particula> pop){
 
 			double r = r(solucao.objetivos);
 			for (int i = 0; i < solucao.objetivos.length; i++) {
-				novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
+				novosObjetivosSolucao[i] = modificacaoDominanciaParetoCDAS(solucao.objetivos[i], r, S);
 			}
 			
 			

@@ -28,14 +28,15 @@ public class SMOPSO extends MOPSO{
 	
 	public int tamanhoRepositorio;
 	
+	
 	//PrintStream psSol;
 	
 		
-	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double ocupacao){
-		super(n,prob,g,a,t,s, maxmim, tRank, ocupacao);
+	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double ocupacao, double fator){
+		super(n,prob,g,a,t,s, maxmim, tRank, ocupacao, fator);
 		tamanhoRepositorio = tamRep;	
-	
 		
+			
 		/*try{
 			psSol = new PrintStream("solucoes_" + pareto.S);
 		}catch(IOException ex){ex.printStackTrace();}*/
@@ -58,6 +59,7 @@ public class SMOPSO extends MOPSO{
 		//iniciarPopulacaoTeste();
 		
 		//Obt�m as melhores part�culas da popula��o
+		
 					
 		if(!rank)
 			atualizarRepositorio();
@@ -164,13 +166,20 @@ public class SMOPSO extends MOPSO{
 		atualizarRepositorio();
 		
 		
-		/*try{
-			imprimirFronteira(pareto.getFronteira());
-		} catch (IOException ex) {ex.printStackTrace();}*/
+		try{
+			imprimirFronteira(pareto.getFronteira(),0 , "");
+			//imprimirFronteira(removerGranularRaio2(pareto.getFronteira(), 0.05),0 , "OC");
+			//imprimirFronteira(removerCDAS(pareto.getFronteira(), 0.45),0 , "CDAS");
+		} catch (IOException ex) {ex.printStackTrace();}
 		
-		//System.out.println(pareto.getFronteira().size());
-		/*removerGranularRaio(pareto.getFronteira());
-		System.out.println(" -  " + pareto.getFronteira().size());*/
+		System.out.println(pareto.getFronteira().size());
+		removerGranularLimites(pareto.getFronteira());
+		try{
+			imprimirFronteira(pareto.getFronteira(),0 , "");
+			//imprimirFronteira(removerGranularRaio2(pareto.getFronteira(), 0.05),0 , "OC");
+			//imprimirFronteira(removerCDAS(pareto.getFronteira(), 0.45),0 , "CDAS");
+		} catch (IOException ex) {ex.printStackTrace();}
+	   // System.out.println(" -  " + pareto.getFronteira().size());
 		
 		
 		

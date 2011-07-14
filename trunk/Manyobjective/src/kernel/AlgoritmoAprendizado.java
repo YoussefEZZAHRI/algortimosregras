@@ -212,6 +212,76 @@ public abstract class AlgoritmoAprendizado {
 
 	}
 	
+	public void removerGranularLimites(ArrayList<Solucao> solucoes){
+		//Calcula a distancia de crowding e o limite de ocupacao das solucoes. Um dos estimadores sera utilizado para podar as solucoes
+		calcularCrowdingDistance(solucoes);
+		//Conta para cada solucao, se existe alguma outra no mesmo raio de ocupacao
+		contarSolucoesLimites(solucoes);	
+				
+		ArrayList<Solucao> cloneSolucoes = (ArrayList<Solucao>)solucoes.clone();
+		//Percorre todas as solucoes para remover as solucoes num mesmo cuboide		
+		for(int k = 0; k<cloneSolucoes.size()-1; k++){
+			Solucao solucao = cloneSolucoes.get(k);
+			//Se a solucao possui alguma outra em seu raio de ocupacao, decide se retira ela ou não
+			if(solucao.ocupacao!= 0){
+				boolean removida = false;
+				for(int j = 0;j<problema.m;j++){
+					double limite_inf = solucao.objetivos[j] - limite_ocupacao; 
+					double limite_sup = solucao.objetivos[j] + limite_ocupacao;
+					//Percorre todas as solucoes, para se ela foi removida ou se todas as solucoes foram percorridas
+					for(int i = k+1; i<cloneSolucoes.size() && !removida; i++){
+						Solucao solucao_i = cloneSolucoes.get(i);
+						boolean dentro = false;
+						//Se não é a solução corrente
+						
+						double obj = solucao_i.objetivos[j];
+						if(obj >= limite_inf && obj <= limite_sup){
+							//Remocao da solucao no mesmo quadrado, mas menos em uma regiao menos povoada
+							if(solucao.crowdDistance < solucao_i.crowdDistance)							
+								solucoes.remove(solucao_i);
+							else{
+								solucoes.remove(solucao);
+								removida = true;
+							}
+							/*try{
+								imprimirFronteira(solucoes,0,"");
+							}catch(IOException ex){ex.printStackTrace();}*/
+						}
+					}			
+				}
+			}
+		}
+	}
+	
+	
+	public void contarSolucoesLimites(ArrayList<Solucao> solucoes){
+		
+		for(int k = 0; k<solucoes.size(); k++){
+			Solucao solucao = solucoes.get(k);
+			solucao.ocupacao = 0;
+		}
+
+		for(int k = 0; k<solucoes.size()-1; k++){
+			Solucao solucao = solucoes.get(k);
+			for(int j = 0;j<problema.m;j++){
+				double limite_inf = Math.max(solucao.objetivos[j] - limite_ocupacao, 0); 
+				double limite_sup = solucao.objetivos[j] + limite_ocupacao;
+				for(int i = k+1; i<solucoes.size(); i++){
+					Solucao solucao_i = solucoes.get(i);
+					//Se não é a solução corrente
+					double obj = solucao_i.objetivos[j];
+					//Objetivo abaixo do limite inferior
+					if(obj >= limite_inf && obj <= limite_sup){
+						solucao.ocupacao++;
+						solucao_i.ocupacao++;
+					}
+
+				}			
+			}
+		}
+
+	}
+	
 	/**
 	 * Metodo que remove as solucoes que estao num mesmo cuboide com distancia limite_ocupacao
 	 * @param solucoes Solucoes que serao refinadas
@@ -220,7 +290,7 @@ public abstract class AlgoritmoAprendizado {
 		//Calcula a distancia de crowding e o limite de ocupacao das solucoes. Um dos estimadores sera utilizado para podar as solucoes
 		calcularCrowdingDistance(solucoes);
 		//Conta para cada solucao, se existe alguma outra no mesmo raio de ocupacao
-		contarSolucoesLimitesRaio(solucoes);	
+		contarSolucoesLimitesRaio(solucoes, limite_ocupacao);	
 				
 		ArrayList<Solucao> cloneSolucoes = (ArrayList<Solucao>)solucoes.clone();
 		//Percorre todas as solucoes para remover as solucoes num mesmo cuboide		
@@ -254,7 +324,60 @@ public abstract class AlgoritmoAprendizado {
 		}
 	}
 	
-	public void contarSolucoesLimitesRaio(ArrayList<Solucao> solucoes){
+	public ArrayList<Solucao> removerGranularRaio2(ArrayList<Solucao> solucoes, double limite_ocupacao){
+		//Calcula a distancia de crowding e o limite de ocupacao das solucoes. Um dos estimadores sera utilizado para podar as solucoes
+		calcularCrowdingDistance(solucoes);
+		//Conta para cada solucao, se existe alguma outra no mesmo raio de ocupacao
+		contarSolucoesLimitesRaio(solucoes, limite_ocupacao);	
+				
+		ArrayList<Solucao> retorno = (ArrayList<Solucao>)solucoes.clone();
+		//Percorre todas as solucoes para remover as solucoes num mesmo cuboide		
+		for(int k = 0; k<solucoes.size(); k++){
+			Solucao solucao = solucoes.get(k);
+			//Se a solucao possui alguma outra em seu raio de ocupacao, decide se retira ela ou não
+			if(solucao.ocupacao!= 0){
+				
+				boolean removida = false;
+				//Percorre todas as solucoes, para se ela foi removida ou se todas as solucoes foram percorridas
+				for(int i = 0; i<solucoes.size() && !removida; i++){
+					Solucao solucao_i = solucoes.get(i);
+					
+					if(i != k){
+						
+						double dist = distanciaEuclidiana(solucao.objetivos, solucao_i.objetivos);
+						if(dist<limite_ocupacao){
+							//Remocao da solucao no mesmo quadrado, mas menos em uma regiao menos povoada
+							if(solucao.crowdDistance < solucao_i.crowdDistance)
+							//if(solucao.ocupacao < solucao_i.ocupacao)
+								retorno.remove(solucao_i);
+							else{
+								retorno.remove(solucao);
+								removida = true;
+							}
+						}
+						
+					}			
+				}
+			}
+		}
+		
+		return retorno;
+	}
+	
+	public ArrayList<Solucao> removerCDAS(ArrayList<Solucao> solucoes, double S){
+		FronteiraPareto pareto2 = new FronteiraPareto(S, pareto.maxmim, pareto.rank, 0.0, 0.0);
+		
+		for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+			if(!pareto2.fronteira.contains(solucao))
+				pareto2.add((Solucao)solucao.clone());
+		}
+		
+		return pareto2.getFronteira();
+	}
+	
+		
+	public void contarSolucoesLimitesRaio(ArrayList<Solucao> solucoes, double limite_ocupacao){
 
 		for(int k = 0; k<solucoes.size(); k++){
 			Solucao solucao = solucoes.get(k);
@@ -480,12 +603,12 @@ public abstract class AlgoritmoAprendizado {
 		}
 	}
 	
-	public void imprimirFronteira(ArrayList<Solucao> solucoes) throws IOException{
-		PrintStream ps = new PrintStream("fronteira.txt");
+	public void imprimirFronteira(ArrayList<Solucao> solucoes, int j, String id) throws IOException{
+		PrintStream ps = new PrintStream("fronteiras/fronteira_" + id + "_" +j+".txt");
 		for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
 			Solucao solucao = (Solucao) iterator.next();
 			for(int i = 0; i<problema.m;i++){
-				ps.print(solucao.objetivos[i] + "\t");
+				ps.print(new Double (solucao.objetivos[i]).toString().replace('.', ',') + "\t");
 			}
 			ps.println();
 		}

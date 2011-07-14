@@ -63,6 +63,7 @@ public class DTLZ2 extends Problema {
 			//System.out.print("Sen " + j  + " ");
 			//System.out.println();
 			solucao.objetivos[i] = fxi;
+			
 		}
 		
 		avaliacoes++;
@@ -81,8 +82,9 @@ public class DTLZ2 extends Problema {
 		rand.setSeed(1000);
 		
 		double ocupacao = 0;
+		double fator = 0;
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao);
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao, fator);
 		
 		while(melhores.size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
