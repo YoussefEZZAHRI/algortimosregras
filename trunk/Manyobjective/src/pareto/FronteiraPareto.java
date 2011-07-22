@@ -124,7 +124,8 @@ public class FronteiraPareto {
 			//System.out.println();
 		}
 		
-		for (Iterator<SolucaoNumerica> iter = cloneFronteira.iterator(); iter.hasNext();) {
+		int k = 0;
+		for (Iterator<SolucaoNumerica> iter = cloneFronteira.iterator(); iter.hasNext(); k++) {
 			SolucaoNumerica temp = (SolucaoNumerica) iter.next();
 			
 			double[] novosObjetivosTemp = new double[temp.objetivos.length];
@@ -141,10 +142,14 @@ public class FronteiraPareto {
 			
 			
 			
-			if(comp == -1)
+			if(comp == -1){
 				solucao.numDominacao++;
-			if(comp == 1)
+			//	System.out.println("dominada por: " +temp.indice);
+			}
+			if(comp == 1){
 				fronteira.remove(temp);
+				//System.out.println("domina: " + temp.indice);
+			}
 			
 		}
 		if(solucao.numDominacao == 0){
@@ -200,10 +205,14 @@ public class FronteiraPareto {
 			
 			
 			
-			if(comp == -1)
+			if(comp == -1){
 				solucao.numDominacao++;
-			if(comp == 1)
+				//System.out.println("dominada por: " +temp.indice);
+			}
+			if(comp == 1){
 				fronteira.remove(temp);
+				//System.out.println("domina: " + temp.indice);
+			}
 			
 			if(limite_ocupacao!=0)
 			if(comp == 0){

@@ -61,6 +61,7 @@ public class Principal {
 	
 	
 	public double S;
+	public double S_MAX;
 	
 	public boolean rank;
 	public String tipoRank;
@@ -104,9 +105,9 @@ public class Principal {
 					principal.executarIndicador();
 				else{
 					if(principal.alg.equals("sigma"))
-						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank, principal.ocupacao, principal.fator);
+						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank, principal.ocupacao, principal.fator, principal.S_MAX);
 					if(principal.alg.equals("smopso"))
-						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank, principal.ocupacao, principal.fator);
+						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank, principal.ocupacao, principal.fator, principal.S_MAX);
 					if(principal.alg.equals("misa"))
 						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank, principal.ocupacao, principal.fator);
 					if(principal.alg.equals("nsga2"))
@@ -508,6 +509,8 @@ public class Principal {
 
 				if(tag.equals("s"))
 					S = new Double(valor).doubleValue();
+				if(tag.equals("s_max"))
+					S_MAX = new Double(valor).doubleValue();
 				if(tag.equals("partesgrid")){
 					partesgrid = new Integer(valor).intValue();
 				}

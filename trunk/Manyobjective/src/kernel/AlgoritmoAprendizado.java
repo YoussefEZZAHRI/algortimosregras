@@ -615,6 +615,18 @@ public abstract class AlgoritmoAprendizado {
 		
 	}
 	
+	public void imprimirFronteira2(ArrayList<SolucaoNumerica> solucoes, int j, String id) throws IOException{
+		PrintStream ps = new PrintStream("fronteiras/fronteira_" + id + "_" +j+".txt");
+		for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
+			Solucao solucao = (Solucao) iterator.next();
+			for(int i = 0; i<problema.m;i++){
+				ps.print(new Double (solucao.objetivos[i]).toString().replace('.', ',') + "\t");
+			}
+			ps.println();
+		}
+		
+	}
+	
 
 	
 	

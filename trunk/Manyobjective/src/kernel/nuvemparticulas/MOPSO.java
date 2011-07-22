@@ -33,12 +33,15 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	
 	Problema problema = null;
 	
+	public double S_MAX = 0.5;
+	
 		
-	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator){
+	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator, double smax){
 		super(n,prob,g, a,t, tRank, ocupacao);
 		populacao = new ArrayList<Particula>();
 		//repositorio = new ArrayList<Particula>();
 		pareto = new FronteiraPareto(s, maxmim,rank, ocupacao, fator);
+		S_MAX = smax;
 		if(rank)
 			metodoRank.setPareto(pareto);
 		this.maxmim = maxmim;
@@ -97,9 +100,9 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		
 		//contarParticulasLimitesRaio(populacao);
 				
-		/*try{
+		try{
 			imprimirParticulas(populacao);
-		} catch (IOException ex) {ex.printStackTrace();}*/
+		} catch (IOException ex) {ex.printStackTrace();}
 		
 		//ComparetorCrowdedOperatorParticula comp = new ComparetorCrowdedOperatorParticula();
 		
@@ -107,8 +110,8 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		
 		//Collections.sort(populacao, comp);
 		
-		//definirS(populacao);
-		
+		definirSExtremos(populacao);
+		//System.out.println();
 		
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula =  iter.next();
@@ -122,12 +125,57 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 				
 			}
 		}	
+		try{
+			imprimirFronteira(pareto.getFronteira(), 0, "temp");
+		} catch(IOException ex){ex.printStackTrace();}
+		//System.out.println();
+	}
+	
+	public void definirSExtremos(ArrayList<Particula> particulas){
+		double max = pareto.S;
+		double min = S_MAX;
+		
+		double maiorDiff = 0;
+		double menorDiff = Double.MAX_VALUE;
+		
+		for (Iterator<Particula> iterator = particulas.iterator(); iterator.hasNext();) {
+			
+			Solucao solucao = ((Particula) iterator.next()).solucao; 
+			solucao.setDiferenca();
+			if(solucao.diff > maiorDiff){
+				//System.out.println("Maior: " + solucao);
+				maiorDiff = solucao.diff;
+			}
+			if(solucao.diff < menorDiff){
+				//System.out.println("Menor: " + solucao);
+				menorDiff = solucao.diff;
+			}
+			
+		}
+		
+		
+		
+		double denominador = maiorDiff - menorDiff;
+		for (Iterator<Particula> iterator = particulas.iterator(); iterator.hasNext();) {
+			Solucao solucao = ((Particula) iterator.next()).solucao; 
+			double diff = solucao.diff;
+
+			double parte1 = (max-min)*(maiorDiff-diff);
+			double parte2 = 0;
+			if(denominador != 0)
+				parte2 = parte1/denominador;
+			double S = -1.0*parte2 + max;
+			solucao.S = S;
+			//System.out.println(solucao.diff + " - " +  S);
+			
+		}
+	//	System.out.println();
 	}
 	
 	public void definirS(ArrayList<Particula> particulas){
 		double maiorCD = 0;
-		double max = 0.35;
-		double min = 0.45;
+		double max = 0.5;
+		double min = 0.25;
 		
 		/*for (Iterator<Particula> iterator = particulas.iterator(); iterator.hasNext();) {
 			Particula particula =  iterator.next();
@@ -206,7 +254,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	}
 	
 	public void imprimirParticulas(ArrayList<Particula> particulas) throws IOException{
-		PrintStream ps = new PrintStream("fronteira.txt");
+		PrintStream ps = new PrintStream("fronteiras/particulas.txt");
 		for (Iterator iterator = particulas.iterator(); iterator.hasNext();) {
 			Particula particula = (Particula) iterator.next();
 			for(int i = 0; i<problema.m;i++){
