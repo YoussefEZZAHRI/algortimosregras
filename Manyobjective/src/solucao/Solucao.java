@@ -1,5 +1,7 @@
 package solucao;
 
+import java.util.Iterator;
+
 
 
 /**
@@ -35,6 +37,8 @@ public abstract class Solucao {
 	public double[] objetivosMedio;
 	
 	public double S;
+	
+	public int indice;
 	
 	
 	/**
@@ -135,6 +139,23 @@ public abstract class Solucao {
 		for(int i= 0 ; i <objetivosMedio.length; i++){
 			objetivosMedio[i] = objetivos[i] - valorMedio;
 		}			
+	}
+	
+	public void setDiferenca(){
+		double maiorValor = 0;
+		double menorValor = Double.MAX_VALUE;
+		
+		//Procura o maior e o menor valor dos objetivos
+		for (int i = 0; i < objetivos.length; i++) {
+			double d = objetivos[i];
+			if(d > maiorValor)
+				maiorValor = d;
+			if(d< menorValor)
+				menorValor = d;
+		}
+		
+		diff = maiorValor - menorValor;
+		
 	}
 		
 	

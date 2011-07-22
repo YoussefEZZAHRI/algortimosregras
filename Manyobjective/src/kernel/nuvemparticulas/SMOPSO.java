@@ -12,6 +12,7 @@ import java.util.Iterator;
 import pareto.FronteiraPareto;
 import problema.DTLZ2;
 import problema.Problema;
+import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -32,8 +33,8 @@ public class SMOPSO extends MOPSO{
 	//PrintStream psSol;
 	
 		
-	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double ocupacao, double fator){
-		super(n,prob,g,a,t,s, maxmim, tRank, ocupacao, fator);
+	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double ocupacao, double fator, double smax){
+		super(n,prob,g,a,t,s, maxmim, tRank, ocupacao, fator, smax);
 		tamanhoRepositorio = tamRep;	
 		
 			
@@ -47,7 +48,7 @@ public class SMOPSO extends MOPSO{
 	 */
 	public ArrayList<Solucao> executar(){
 		
-			
+//		teste();
 		//Apaga todas as listas antes do inicio da execu��o
 		reiniciarExecucao();
 		
@@ -59,6 +60,8 @@ public class SMOPSO extends MOPSO{
 		//iniciarPopulacaoTeste();
 		
 		//Obt�m as melhores part�culas da popula��o
+		
+				
 		
 					
 		if(!rank)
@@ -172,7 +175,7 @@ public class SMOPSO extends MOPSO{
 			//imprimirFronteira(removerCDAS(pareto.getFronteira(), 0.45),0 , "CDAS");
 		} catch (IOException ex) {ex.printStackTrace();}
 		
-		System.out.println(pareto.getFronteira().size());
+		//System.out.println(pareto.getFronteira().size());
 		removerGranularLimites(pareto.getFronteira());
 		try{
 			imprimirFronteira(pareto.getFronteira(),0 , "");
@@ -303,6 +306,56 @@ public class SMOPSO extends MOPSO{
 		
 		if(rank)
 			rankParticula(populacao);
+	}
+	
+	public void iniciarPopulacaoTeste2(){
+		
+		
+		ArrayList<SolucaoNumerica> solucoes =  problema.obterFronteira(tamanhoRepositorio, 250);
+		ComparetorObjetivo comp = new ComparetorObjetivo(0);
+		Collections.sort(solucoes, comp);
+		
+		
+		
+		for (Iterator<SolucaoNumerica> iterator = solucoes.iterator(); iterator.hasNext();) {
+			Particula particula = new Particula();
+			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
+			particula.iniciarParticulaAleatoriamente(problema, solucaoNumerica);
+			problema.calcularObjetivos(solucaoNumerica);
+			particula.localBestObjetivos = particula.solucao.objetivos;
+			populacao.add(particula);
+				
+		}
+		
+	}
+	
+	public void teste(){
+		
+		iniciarPopulacaoTeste2();
+		
+		
+		
+		definirSExtremos(populacao);
+		System.out.println();
+		
+		
+		int k = 0;
+		for (Iterator iterator = populacao.iterator(); iterator.hasNext(); k++) {
+			Solucao solucao = ((Particula) iterator.next()).solucao; 
+			solucao.indice = k;
+		}
+		
+		for (Iterator iterator = populacao.iterator(); iterator.hasNext();) {
+			Solucao solucao = ((Particula) iterator.next()).solucao;
+			System.out.println("Solucao: " + solucao.indice);
+			double dom  = pareto.add2(solucao);
+			if(dom ==0)
+				System.out.print("");
+				
+		}
+		try{
+			imprimirFronteira(pareto.getFronteira(), 0, "temp");
+			} catch(IOException ex){ex.printStackTrace();}
 	}
 	
 
