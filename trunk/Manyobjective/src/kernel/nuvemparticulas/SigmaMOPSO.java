@@ -99,7 +99,7 @@ public class SigmaMOPSO extends MOPSO{
 	 *
 	 */
 	public void escolherLideres(){
-		for (Iterator<Solucao> iter = pareto.fronteira.iterator(); iter.hasNext();) {
+		for (Iterator<Solucao> iter = pareto.getFronteira().iterator(); iter.hasNext();) {
 			Solucao partRepositorio =  iter.next();
 			partRepositorio.calcularSigmaVector();
 		}
@@ -107,7 +107,7 @@ public class SigmaMOPSO extends MOPSO{
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = iter.next();
 			particula.solucao.calcularSigmaVector();
-			particula.escolherGlobalBestSigma(pareto.fronteira);
+			particula.escolherGlobalBestSigma(pareto.getFronteira());
 		}
 	}
 	
@@ -123,7 +123,7 @@ public class SigmaMOPSO extends MOPSO{
 		for(int i = 0; i<5; i++){
 			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25, mm, "false",0, 0, 0.25);
 			nuvem.executar();
-			for (Iterator<Solucao> iterator = nuvem.pareto.fronteira.iterator(); iterator.hasNext();) {
+			for (Iterator<Solucao> iterator = nuvem.pareto.getFronteira().iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 				prob.calcularObjetivos(solucao);
 				//System.out.println(solucao);

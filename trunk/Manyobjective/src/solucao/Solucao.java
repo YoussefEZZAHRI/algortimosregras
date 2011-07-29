@@ -1,6 +1,5 @@
 package solucao;
 
-import java.util.Iterator;
 
 
 
@@ -39,6 +38,10 @@ public abstract class Solucao {
 	public double S;
 	
 	public int indice;
+	
+	public double menorDistancia;
+	
+	public int guia;
 	
 	
 	/**

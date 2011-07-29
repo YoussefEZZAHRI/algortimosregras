@@ -95,7 +95,7 @@ public class DTLZ4 extends Problema {
 			
 			calcularObjetivos(melhor);
 			
-			if(!pareto.fronteira.contains(melhor))
+			if(!pareto.getFronteira().contains(melhor))
 				pareto.add(melhor);
 			
 			
@@ -105,7 +105,7 @@ public class DTLZ4 extends Problema {
 		}
 								
 		ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();
-		for (Iterator<Solucao> iterator = pareto.fronteira.iterator(); iterator.hasNext();) {
+		for (Iterator<Solucao> iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
 			saida.add(solucaoNumerica);
 		}

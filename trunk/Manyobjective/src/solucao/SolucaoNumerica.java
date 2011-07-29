@@ -123,6 +123,7 @@ public class SolucaoNumerica extends Solucao {
 		novaSolucao.numDominacao = numDominacao;
 		novaSolucao.ocupacao = ocupacao;
 		novaSolucao.S = S;
+		novaSolucao.indice = indice;
 				
 		novaSolucao.limitesPosicaoInferior = new double[limitesPosicaoInferior.length];
 		novaSolucao.limitesPosicaoSuperior = new double[limitesPosicaoSuperior.length];

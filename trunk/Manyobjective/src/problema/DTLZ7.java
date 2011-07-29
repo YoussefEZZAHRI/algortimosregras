@@ -151,7 +151,7 @@ public class DTLZ7 extends Problema {
 		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao,0);
 		                         
 				
-		while(pareto.fronteira.size()<numSol){
+		while(pareto.getFronteira().size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
 
 			for (int i = m-1; i <n; i++) {
@@ -165,7 +165,7 @@ public class DTLZ7 extends Problema {
 			
 			calcularObjetivos(melhor);
 					
-			if(!pareto.fronteira.contains(melhor))
+			if(!pareto.getFronteira().contains(melhor))
 				pareto.add(melhor);
 			
 			
@@ -173,7 +173,7 @@ public class DTLZ7 extends Problema {
 		}
 		
 		ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();
-		for (Iterator iterator = pareto.fronteira.iterator(); iterator.hasNext();) {
+		for (Iterator iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
 			saida.add(solucaoNumerica);
 		}
@@ -236,7 +236,7 @@ public class DTLZ7 extends Problema {
 			
 
 			
-			if(!pareto.fronteira.contains(melhor))
+			if(!pareto.getFronteira().contains(melhor))
 				pareto.add(melhor);
 			
 			
@@ -252,7 +252,7 @@ public class DTLZ7 extends Problema {
 		
 		
 		ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();
-		for (Iterator iterator = pareto.fronteira.iterator(); iterator.hasNext();) {
+		for (Iterator iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
 			saida.add(solucaoNumerica);
 		}

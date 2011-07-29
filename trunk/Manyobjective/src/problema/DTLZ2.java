@@ -105,14 +105,14 @@ public class DTLZ2 extends Problema {
 				somaParcial += melhor.objetivos[i]*melhor.objetivos[i];
 			}
 			if(somaParcial==1){
-				if(!pareto.fronteira.contains(melhor))
+				if(!pareto.getFronteira().contains(melhor))
 					pareto.add(melhor);
 				melhores.add(melhor);
 			}
 		}
 		
 		ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();
-		for (Iterator<Solucao> iterator = pareto.fronteira.iterator(); iterator.hasNext();) {
+		for (Iterator<Solucao> iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
 			saida.add(solucaoNumerica);
 		}
