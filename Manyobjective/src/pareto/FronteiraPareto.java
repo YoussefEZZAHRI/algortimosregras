@@ -12,12 +12,13 @@ import kernel.nuvemparticulas.Particula;
 
 import solucao.ComparetorCrowdDistance;
 import solucao.ComparetorCrowdedOperator;
+import solucao.ComparetorDistancia;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
 public class FronteiraPareto {
 	
-	public ArrayList<Solucao> fronteira = null;
+	private ArrayList<Solucao> fronteira = null;
 	
 	//public ArrayList<Particula> fronteiraNuvem = null;
 	
@@ -67,10 +68,10 @@ public class FronteiraPareto {
 		}
 	}
 	
-	public void setFronteira(ArrayList<SolucaoNumerica> temp){
+	public void setFronteira(ArrayList<Solucao> temp){
 		fronteira.clear();
-		for (Iterator<SolucaoNumerica> iter = temp.iterator(); iter.hasNext();) {
-			SolucaoNumerica s = (SolucaoNumerica) iter.next();
+		for (Iterator<Solucao> iter = temp.iterator(); iter.hasNext();) {
+			Solucao s = (Solucao) iter.next();
 			fronteira.add(s);
 			
 		}
@@ -112,15 +113,19 @@ public class FronteiraPareto {
 		ArrayList<SolucaoNumerica> cloneFronteira = (ArrayList<SolucaoNumerica>)fronteira.clone();
 		
 		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
+		
+		double eps = 0.01;
 
 		double r = 0;
 		if(S!=0.5){
-			r = r(solucao.objetivos);
-			for (int i = 0; i < solucao.objetivos.length; i++) {
-				novosObjetivosSolucao[i] = modificacaoDominanciaParetoCDAS(solucao.objetivos[i], r, S);
-			}
+		r = r(solucao.objetivos);
+		for (int i = 0; i < solucao.objetivos.length; i++) {
+			novosObjetivosSolucao[i] = modificacaoDominanciaParetoCDAS(solucao.objetivos[i], r, S);
+		}
 		} else{
-			novosObjetivosSolucao  = modificacaoDominanciaParetoEqualizar(solucao.objetivos, fator);
+			//novosObjetivosSolucao  = modificacaoDominanciaParetoEqualizar(solucao.objetivos, fator);
+			novosObjetivosSolucao  = modificacaoDominanciaParetoEpsilon(solucao.objetivos, eps);
+			//novosObjetivosSolucao  = solucao.objetivos;
 			//System.out.println();
 		}
 		
@@ -136,7 +141,9 @@ public class FronteiraPareto {
 					novosObjetivosTemp[i] = modificacaoDominanciaParetoCDAS(temp.objetivos[i], r, S);
 				}
 			} else
-				novosObjetivosTemp = modificacaoDominanciaParetoEqualizar(temp.objetivos, fator);
+				novosObjetivosTemp = modificacaoDominanciaParetoEpsilon(temp.objetivos, eps);
+				//novosObjetivosTemp = temp.objetivos;
+				//novosObjetivosTemp = modificacaoDominanciaParetoEqualizar(temp.objetivos, fator);
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
 			
@@ -306,6 +313,17 @@ public class FronteiraPareto {
 	public void podarLideresCrowdedOperator(int tamanhoRepositorio){
 		if(tamanhoRepositorio<fronteira.size()){
 			ComparetorCrowdedOperator comp = new ComparetorCrowdedOperator();
+			//ComparetorCrowdedOperator comp = new ComparetorCrowdedOperator();
+			Collections.sort(fronteira, comp);
+			int diferenca = fronteira.size() - tamanhoRepositorio; 
+			for(int i = 0; i<diferenca; i++)
+				fronteira.remove(fronteira.remove(fronteira.size()-1));
+		}
+	}
+	
+	public void podarLideresDistancia(int tamanhoRepositorio){
+		if(tamanhoRepositorio<fronteira.size()){
+			ComparetorDistancia comp = new ComparetorDistancia();
 			//ComparetorCrowdedOperator comp = new ComparetorCrowdedOperator();
 			Collections.sort(fronteira, comp);
 			int diferenca = fronteira.size() - tamanhoRepositorio; 
@@ -485,6 +503,18 @@ public class FronteiraPareto {
 			return retorno;
 		}
 		else return fx;
+	}
+	
+	public double[] modificacaoDominanciaParetoEpsilon(double[] fx, double epsilon){
+		double[] retorno = new double[fx.length];
+	
+		for (int i = 0; i < fx.length; i++) {
+			double d = fx[i];
+			double novo_valor = d-epsilon;
+			retorno[i] = Math.max(0, novo_valor);
+		}
+		
+		return retorno;
 	}
 	
 	public double r(double[] objetivos){

@@ -27,7 +27,7 @@ public class SMOPSO extends MOPSO{
 	
 	public final double INDICE_MUTACAO = 0.15;
 	
-	public int tamanhoRepositorio;
+	
 	
 	
 	//PrintStream psSol;
@@ -69,6 +69,7 @@ public class SMOPSO extends MOPSO{
 		else
 			iniciarRepositorioRank();	
 		
+		//obterSolucoesIdeais(pareto.getFronteira());
 		
 		//calcularCrowdingDistance(pareto.fronteira);
 
@@ -104,8 +105,9 @@ public class SMOPSO extends MOPSO{
 		}*/
 		
 		//removerGranularRaio(pareto.getFronteira());
-		calcularCrowdingDistance(pareto.fronteira);
+		calcularCrowdingDistance(pareto.getFronteira());
 		pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
+		//pareto.podarLideresDistancia(tamanhoRepositorio);
 		
 		return pareto.getFronteira();
 		
@@ -136,7 +138,7 @@ public class SMOPSO extends MOPSO{
 		}
 
 		//removerGranularRaio(pareto.getFronteira());
-		calcularCrowdingDistance(pareto.fronteira);
+		calcularCrowdingDistance(pareto.getFronteira());
 		pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 		return pareto.getFronteira();
 		
@@ -169,7 +171,7 @@ public class SMOPSO extends MOPSO{
 		atualizarRepositorio();
 		
 		
-		try{
+		/*try{
 			imprimirFronteira(pareto.getFronteira(),0 , "");
 			//imprimirFronteira(removerGranularRaio2(pareto.getFronteira(), 0.05),0 , "OC");
 			//imprimirFronteira(removerCDAS(pareto.getFronteira(), 0.45),0 , "CDAS");
@@ -182,20 +184,21 @@ public class SMOPSO extends MOPSO{
 			//imprimirFronteira(removerGranularRaio2(pareto.getFronteira(), 0.05),0 , "OC");
 			//imprimirFronteira(removerCDAS(pareto.getFronteira(), 0.45),0 , "CDAS");
 		} catch (IOException ex) {ex.printStackTrace();}
-	   // System.out.println(" -  " + pareto.getFronteira().size());
+	   // System.out.println(" -  " + pareto.getFronteira().size());*/
 		
 		
 		
-		calcularCrowdingDistance(pareto.fronteira);
+		calcularCrowdingDistance(pareto.getFronteira());
 		
 		
 		
-		//System.out.println(pareto.getFronteira().size());
-		
-		pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
-				
+		System.out.print (pareto.getFronteira().size()  + " - ");
+		selecionarSolucoesNosExtremos(pareto, tamanhoRepositorio);
+		//pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
+		//pareto.podarLideresDistancia(tamanhoRepositorio);
+		System.out.println(pareto.getFronteira().size());
 		//Recalcula a Crowding distance dos lideres
-		calcularCrowdingDistance(pareto.fronteira);
+		calcularCrowdingDistance(pareto.getFronteira());
 		
 		/*if(rank){
 
@@ -228,7 +231,7 @@ public class SMOPSO extends MOPSO{
 	 *
 	 */
 	public void escolherLideres(){
-		for (Iterator<Solucao> iter = pareto.fronteira.iterator(); iter.hasNext();) {
+		for (Iterator<Solucao> iter = pareto.getFronteira().iterator(); iter.hasNext();) {
 			Solucao solucaotRepositorio =  iter.next();
 			solucaotRepositorio.setVetorObjetivosMedio();
 			solucaotRepositorio.calcularSigmaVector();
@@ -238,11 +241,11 @@ public class SMOPSO extends MOPSO{
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = iter.next();
 			//particula.escolherGlobalOposto(pareto.fronteira);
-			particula.escolherGlobalBestBinario(pareto.fronteira);
-			//particula.escolherGlobalBestIdeal(pareto.fronteiraNuvem);
+			particula.escolherGlobalBestBinario(pareto.getFronteira());
+			//particula.escolherGlobalBestIdeal(pareto.getFronteira());
 			//particula.escolherGlobalBestIdeal2(pareto.fronteiraNuvem);
-			//particula.calcularSigmaVector();
-			//particula.escolherGlobalBestSigma(pareto.fronteiraNuvem);
+			//particula.solucao.calcularSigmaVector();
+			//particula.escolherGlobalBestSigma(pareto.getFronteira());
 		}
 	}
 	
@@ -268,7 +271,7 @@ public class SMOPSO extends MOPSO{
 		Collections.sort(populacao, comp);
 		for(int i = 0; i<(tamanhoRepositorio); i++){
 			Particula particula = populacao.get(i);
-			pareto.fronteira.add((Solucao)particula.solucao.clone());
+			pareto.getFronteira().add((Solucao)particula.solucao.clone());
 		}
 		
 		

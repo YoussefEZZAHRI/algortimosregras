@@ -74,7 +74,7 @@ public class DTLZ1 extends Problema {
 		
 		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao,0);
 		
-		while(pareto.fronteira.size()<numSol){
+		while(pareto.getFronteira().size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
 
 			for (int i = m-1; i <n; i++) {
@@ -93,14 +93,14 @@ public class DTLZ1 extends Problema {
 				somaParcial += melhor.objetivos[i];
 			}
 			if(somaParcial==0.5){
-				if(!pareto.fronteira.contains(melhor))
+				if(!pareto.getFronteira().contains(melhor))
 					pareto.add(melhor);	
 			}
 			
 		}
 			
 		ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();
-		for (Iterator<Solucao> iterator = pareto.fronteira.iterator(); iterator.hasNext();) {
+		for (Iterator<Solucao> iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
 			saida.add(solucaoNumerica);
 		}

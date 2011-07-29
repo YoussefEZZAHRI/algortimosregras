@@ -178,13 +178,13 @@ public class MISA extends AlgoritmoAprendizado {
 		//Se o n�mero das melhores solu��es � menor que o tamanho m�ximo, todas as solu��es s�o adicionadas na popula��o final 
 		//e as melhores solu��es (domindas por menos solu��es) dominadas da popula��o
 		//Caso contr�rio somente as melhore solu��es s�o adicionadas na popula��o final
-		if(paretoTemp.fronteira.size()<tamanhoPopulacao){
+		if(paretoTemp.getFronteira().size()<tamanhoPopulacao){
 			ArrayList<Solucao> temp = obterMelhoresAnticorpos(paretoTemp, populacaoFinal, 1.0);
 			populacaoFinal.clear();
 			populacaoFinal.addAll(temp);
 		}
 		else{
-			ArrayList<Solucao> solucoesFinais = paretoTemp.fronteira;
+			ArrayList<Solucao> solucoesFinais = paretoTemp.getFronteira();
 			//Escolhe as melhores solu��es atraves do metodo AR 
 			rankear(solucoesFinais);
 			ComparetorRank comp = new ComparetorRank();
@@ -206,7 +206,7 @@ public class MISA extends AlgoritmoAprendizado {
 	 */
 	public ArrayList<Solucao> obterMelhoresAnticorpos(FronteiraPareto paretoAtual, ArrayList<Solucao> populacao,  double porcentagemaMinima){
 		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
-		melhores.addAll(paretoAtual.fronteira);
+		melhores.addAll(paretoAtual.getFronteira());
 		int maxMelhores = (int)(porcentagemaMinima*tamanhoPopulacao);
 		//Caso o n�mero das melhores solu��es seja menor que a porcentamge tamanhoMelhores da popula��o deve-se preencher os array das melhores solu��es
 		if(melhores.size()< maxMelhores){
@@ -392,7 +392,7 @@ public class MISA extends AlgoritmoAprendizado {
 		buff.append("Populacao: " +tamPop + "\n");
 		buff.append("Clones: " +tamClone + "\n");
 		buff.append("Secundaria: " + tamSec + "\n");
-		buff.append("Pareto: " + pareto.fronteira.size());
+		buff.append("Pareto: " + pareto.getFronteira().size());
 		return buff.toString();
 	}
 	

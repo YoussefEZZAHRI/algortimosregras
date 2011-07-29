@@ -9,6 +9,7 @@ import java.util.Iterator;
 
 import problema.Problema;
 import pareto.FronteiraPareto;
+import solucao.ComparetorDistancia;
 import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
@@ -34,6 +35,8 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	Problema problema = null;
 	
 	public double S_MAX = 0.5;
+	
+	public int tamanhoRepositorio;
 	
 		
 	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator, double smax){
@@ -110,21 +113,34 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		
 		//Collections.sort(populacao, comp);
 		
-		definirSExtremos(populacao);
+		//definirSExtremos(populacao);
 		//System.out.println();
 		
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula =  iter.next();
-			if(!pareto.fronteira.contains(particula.solucao)){
+			if(!pareto.getFronteira().contains(particula.solucao)){
 				if(!rank){
-					particula.solucao.numDominacao = pareto.add((Solucao)particula.solucao.clone());
-					
+					particula.solucao.numDominacao = pareto.add((Solucao)particula.solucao.clone());	
 				}
 				else
 					pareto.addRank((Solucao)particula.solucao.clone());
-				
 			}
 		}	
+		
+		//Solucao[] extremos = obterSolucoesIdeais(pareto.fronteira);
+		//selecionarSolucoesProximasIdeais(extremos, pareto.getFronteira());
+		
+		/*ComparetorDistancia comp = new ComparetorDistancia();
+		Collections.sort(pareto.fronteira, comp);
+		
+		int fim = Math.min(pareto.getFronteira().size(), tamanhoRepositorio);
+		
+		for(int i = 0; i<fim;i++){
+			Solucao sol = (Solucao)pareto.getFronteira().get(i);
+			System.out.println(sol.guia + "-" +  sol.menorDistancia);
+		}
+		System.out.println(pareto.getFronteira().size());*/
+		
 		try{
 			imprimirFronteira(pareto.getFronteira(), 0, "temp");
 		} catch(IOException ex){ex.printStackTrace();}
