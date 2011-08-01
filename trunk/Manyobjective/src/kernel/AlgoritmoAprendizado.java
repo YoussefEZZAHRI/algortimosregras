@@ -23,7 +23,6 @@ import rank.Rank;
 import rank.RankDominancia;
 import rank.SumWeightedGlobalRatios;
 import rank.SumWeightedRatios;
-import solucao.ComparetorDistancia;
 import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoBinaria;
@@ -51,10 +50,12 @@ public abstract class AlgoritmoAprendizado {
 	
 	
 	
+	
+	
 	private final double MAX_MUT = 0.5;
 	//Flag que indica se algum metodo de rankeamento many-objetivo sera utilizado
 	public boolean rank = false;
-	public String tipoRank;
+	public String tipoRank = "";
 	
 	public Rank metodoRank = null;
 	
@@ -72,6 +73,8 @@ public abstract class AlgoritmoAprendizado {
 		iniciarMetodoRank();
 		
 		limite_ocupacao = ocupacao;
+		
+		
 		
 	}
 	
@@ -171,9 +174,6 @@ public abstract class AlgoritmoAprendizado {
 								solucoes.remove(solucao);
 								removida = true;
 							}
-							/*try{
-								imprimirFronteira(solucoes);
-							}catch(IOException ex){ex.printStackTrace();}*/
 						}
 					}			
 				}
@@ -264,7 +264,10 @@ public abstract class AlgoritmoAprendizado {
 		}
 	}
 	
-	
+	/**
+	 * Para cada solucao, conta quantas solucoes estao presentes nos limites definidos por limite_ocupacao
+	 * @param solucoes
+	 */
 	public void contarSolucoesLimites(ArrayList<Solucao> solucoes){
 		
 		for(int k = 0; k<solucoes.size(); k++){
@@ -337,6 +340,9 @@ public abstract class AlgoritmoAprendizado {
 	}
 	
 	@SuppressWarnings("unchecked")
+	/**
+	 * Metodo que remove as solucoes que estejam num mesmo raio de valor limite_ocupacao
+	 */
 	public ArrayList<Solucao> removerGranularRaio2(ArrayList<Solucao> solucoes, double limite_ocupacao){
 		//Calcula a distancia de crowding e o limite de ocupacao das solucoes. Um dos estimadores sera utilizado para podar as solucoes
 		calcularCrowdingDistance(solucoes);
@@ -376,6 +382,7 @@ public abstract class AlgoritmoAprendizado {
 		
 		return retorno;
 	}
+	
 	
 	public ArrayList<Solucao> removerCDAS(ArrayList<Solucao> solucoes, double S){
 		FronteiraPareto pareto2 = new FronteiraPareto(S, pareto.maxmim, pareto.rank, 0.0, 0.0);
@@ -554,12 +561,13 @@ public abstract class AlgoritmoAprendizado {
 	
 	public void rankear(ArrayList<Solucao> solucoes){
 		if(metodoRank == null){
-			//AverageRank ar = new AverageRank(problema.m);
-			BalancedRank br = new BalancedRank(problema.m);
-			//MaximumRank mr = new MaximumRank(problema.m);
-			metodoRank = br;
+			AverageRank rank = new AverageRank(problema.m);
+			//BalancedRank rank = new BalancedRank(problema.m);
+			//MaximumRank rank = new MaximumRank(problema.m);
+			metodoRank = rank;
 		}
 		metodoRank.rankear(solucoes, -1);
+		
 		//if(tipoRank.equals("ar") ||tipoRank.equals("ar2"))
 		/*	averageRank(solucoes);
 			int i = 0;
@@ -606,8 +614,8 @@ public abstract class AlgoritmoAprendizado {
 
 	
 	/**
-	 * M�todo que busca as solu��es n�o dominadas da popula��o atual
-	 * @return Solu��es n�o dominadas da popula��o
+	 * Metodo que busca as solucoes nao dominadas da populacao atual
+	 * @return Solucoes nao dominadas da populacao
 	 */
 	public void encontrarSolucoesNaoDominadas(ArrayList<Solucao> solucoes, FronteiraPareto pareto){
 		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
@@ -616,37 +624,14 @@ public abstract class AlgoritmoAprendizado {
 		}
 	}
 	
-	public void imprimirFronteira(ArrayList<Solucao> solucoes, int j, String id) throws IOException{
-		PrintStream ps = new PrintStream("fronteiras/fronteira_" + id + "_" +j+".txt");
-		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
-			Solucao solucao = (Solucao) iterator.next();
-			for(int i = 0; i<problema.m;i++){
-				ps.print(new Double (solucao.objetivos[i]).toString().replace('.', ',') + "\t");
-			}
-			ps.println();
-		}
-		
-	}
-	
-	public void imprimirFronteira2(ArrayList<SolucaoNumerica> solucoes, int j, String id) throws IOException{
-		PrintStream ps = new PrintStream("fronteiras/fronteira_" + id + "_" +j+".txt");
-		for (Iterator<SolucaoNumerica> iterator = solucoes.iterator(); iterator.hasNext();) {
-			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
-			for(int i = 0; i<problema.m;i++){
-				ps.print(new Double (solucao.objetivos[i]).toString().replace('.', ',') + "\t");
-			}
-			ps.println();
-		}
-		
-	}
-	
 	
 	/**
 	 * Metodo que encontra as solucoes nos extremos dos objetivos e a solucao mais proxima a ideal
 	 * @param solucoes
+	 * @param prox_ideal flag que decide se vai ser escolhida a solucao ideal ou a solucao mais proxima a ideal
 	 * @return Array com as solucoes nos extremos e a ideal
 	 */
-	public Solucao[] obterSolucoesIdeais(ArrayList<Solucao> solucoes){
+	public Solucao[] obterSolucoesExtremasIdeais(ArrayList<Solucao> solucoes, boolean prox_ideal){
 		
 		//double[][] retorno = new double[problema.m+1][problema.m];
 		
@@ -674,18 +659,21 @@ public abstract class AlgoritmoAprendizado {
 		extremos[problema.m] = ideal;
 		
 		//Busca a solucao mais proxima ideal
-		/*double menorDist = Double.MAX_VALUE;
-		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
-			Solucao rep = iter.next();
-			double distancia = distanciaEuclidiana(rep.objetivos, ideal.objetivos);
-			if(distancia<menorDist){
-				extremos[problema.m] = rep;
-				menorDist = distancia;
+		
+		if(prox_ideal){
+			double menorDist = Double.MAX_VALUE;
+			for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
+				Solucao rep = iter.next();
+				double distancia = distanciaEuclidiana(rep.objetivos, ideal.objetivos);
+				if(distancia<menorDist){
+					extremos[problema.m] = rep;
+					menorDist = distancia;
+				}
+
+
+
 			}
-				
-			
-			
-		}*/
+		}
 		
 		return extremos;		
 	}
@@ -693,37 +681,46 @@ public abstract class AlgoritmoAprendizado {
 	/**
 	 * Método que obtem para cada solucao a solucao do extremo em que ela esta mais perto
 	 * @param extremos Solucoes no extremo e a ideal
+	 * @param define qual metodo de distancia sera utilizado, euclidiana ou Tchebycheff, e se usa o vetor objetivos ou vetor sigma
 	 * @param solucoes
 	 */
-	public void selecionarSolucoesProximasIdeais(Solucao[] extremos, ArrayList<Solucao> solucoes){
+	public void definirDistanciasSolucoesProximasIdeais(Solucao[] extremos, ArrayList<Solucao> solucoes, String metodoDistancia){
 		
 		double[] lambda = new double[problema.m];
 		for (int i = 0; i < lambda.length; i++) {
 			lambda[i] = 1;
 		}
 		
-		for (int i = 0; i < extremos.length; i++) {
-			extremos[i].calcularSigmaVector();
+		
+		if(metodoDistancia.equals("sigma")){
+			for (int i = 0; i < extremos.length; i++) {
+				extremos[i].calcularSigmaVector();
+
+			}
 		}
 		
+		//Variavel utiliza para identificar como eh definida a proporcao da distribuicao das solucoes
 		int[] contador = new int[problema.m+1];
 		
 		//Percorre todas as solucoes a atribui a cada uma a solucao extrema mais proxima
 		//Pode ser utilizada a distancia euclidiana, de tchebycheff ou a distancia dos vetores sigmas
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			Solucao solucao = iterator.next();
-			solucao.calcularSigmaVector();
+			if(metodoDistancia.equals("sigma"))
+				solucao.calcularSigmaVector();
 			solucao.menorDistancia = Double.MAX_VALUE;
 			for(int i =0; i<problema.m+1; i++){
-				//double distancia = distanciaEuclidiana(extremos[i].objetivos, solucao.objetivos);
-				double distancia = distanciaTchebycheff(extremos[i].objetivos, solucao.objetivos, lambda);
-				//System.out.println(extremos[i].sigmaVector[0] + " - " + solucao.sigmaVector[0]);
-				//double distancia = distanciaEuclidiana(extremos[i].sigmaVector, solucao.sigmaVector);
+				double distancia = 0 ;
+				if(metodoDistancia.equals("euclidiana"))
+					distancia = distanciaEuclidiana(extremos[i].objetivos, solucao.objetivos);
+				if(metodoDistancia.equals("tcheb"))
+					distancia = distanciaTchebycheff(extremos[i].objetivos, solucao.objetivos, lambda);
+				if(metodoDistancia.equals("sigma"))
+					distancia = distanciaEuclidiana(extremos[i].sigmaVector, solucao.sigmaVector);
 				if(distancia< solucao.menorDistancia){
 					solucao.menorDistancia = distancia;
 					solucao.guia = i;
 				}
-				//System.out.println();
 				
 			}
 			contador[solucao.guia]++;
@@ -733,62 +730,34 @@ public abstract class AlgoritmoAprendizado {
 			System.out.print(contador[i] +  " ");
 		}
 		System.out.println();*/
-		
-		
+	}
+	
+	
+	public void imprimirFronteira(ArrayList<Solucao> solucoes, int j, String id) throws IOException{
+		PrintStream ps = new PrintStream("fronteiras/fronteira_" + id + "_" +j+".txt");
+		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
+			Solucao solucao = (Solucao) iterator.next();
+			for(int i = 0; i<problema.m;i++){
+				ps.print(new Double (solucao.objetivos[i]).toString().replace('.', ',') + "\t");
+			}
+			ps.println();
+		}
 		
 	}
 	
-	public void selecionarSolucoesNosExtremos(FronteiraPareto pareto, int tamanhoRepositorio){
-		ArrayList<Solucao> solucoes = pareto.getFronteira();
-		if(solucoes.size()> tamanhoRepositorio){
-			double proporcao = 1.0/(problema.m+1);
-			int num_sol = (int)(tamanhoRepositorio*proporcao);
-
-			ArrayList<Solucao> selecionadas = new ArrayList<Solucao>();
-
-			for(int i = 0; i< problema.m; i++){
-				int contador = 0;
-				ComparetorObjetivo comp = new ComparetorObjetivo(i);
-				Collections.sort(solucoes, comp);
-				int j = 0;
-				while(contador<num_sol){
-					Solucao solucao = solucoes.get(j++);
-					if(!selecionadas.contains(solucao)){
-						selecionadas.add(solucao);
-						contador++;
-					}
-				}
+	public void imprimirFronteira2(ArrayList<SolucaoNumerica> solucoes, int j, String id) throws IOException{
+		PrintStream ps = new PrintStream("fronteiras/fronteira_" + id + "_" +j+".txt");
+		for (Iterator<SolucaoNumerica> iterator = solucoes.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+			for(int i = 0; i<problema.m;i++){
+				ps.print(new Double (solucao.objetivos[i]).toString().replace('.', ',') + "\t");
 			}
-
-			Solucao ideal = obterSolucoesIdeais(solucoes)[problema.m];
-
-			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
-				Solucao solucao = iterator.next();
-				solucao.menorDistancia = Double.MAX_VALUE;
-				for(int i =0; i<problema.m+1; i++){
-					double distancia = distanciaEuclidiana(ideal.objetivos, solucao.objetivos);
-					solucao.menorDistancia = distancia;
-					solucao.guia = i;
-				}
-			}
-
-			ComparetorDistancia comp = new ComparetorDistancia();
-			Collections.sort(solucoes, comp);
-
-			int contador = 0;
-			int j = 0;
-			int tamanho = tamanhoRepositorio - selecionadas.size();
-			while(contador<tamanho){
-				Solucao solucao = solucoes.get(j++);
-				if(!selecionadas.contains(solucao)){
-					selecionadas.add(solucao);
-					contador++;
-				}
-			}
-			pareto.setFronteira(selecionadas);
+			ps.println();
 		}
-
+		
 	}
+	
+	
 	
 	
 	

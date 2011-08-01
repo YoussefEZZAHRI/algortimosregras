@@ -28,10 +28,9 @@ public class SMOPSO extends MOPSO{
 	//PrintStream psSol;
 	
 		
-	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double ocupacao, double fator, double smax){
-		super(n,prob,g,a,t,s, maxmim, tRank, ocupacao, fator, smax);
+	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double ocupacao, double fator, double smax, String tPoda){
+		super(n,prob,g,a,t,s, maxmim, tRank, ocupacao, fator, smax, tPoda);
 		tamanhoRepositorio = tamRep;	
-		
 			
 		/*try{
 			psSol = new PrintStream("solucoes_" + pareto.S);
@@ -44,36 +43,30 @@ public class SMOPSO extends MOPSO{
 	public ArrayList<Solucao> executar(){
 		
 //		teste();
-		//Apaga todas as listas antes do inicio da execu��o
+		//Apaga todas as listas antes do inicio da execucao
 		reiniciarExecucao();
 		
 		//iniciarPopulacaoTeste();
 		//rankParticula(populacao);
 		
-		//Inicia a popul�ao
+		//Inicia a populcaao
 		inicializarPopulacao();
-		//iniciarPopulacaoTeste();
 		
-		//Obt�m as melhores part�culas da popula��o
-		
-				
-		
+		//Obtem as melhores partaculas da populacao
 					
 		if(!rank)
 			atualizarRepositorio();
 		else
 			iniciarRepositorioRank();	
+	
 		
-		//obterSolucoesIdeais(pareto.getFronteira());
-		
-		//calcularCrowdingDistance(pareto.fronteira);
-
-		//Obt�m os melhores globais para todas as part�culas da popula��o
-		escolherLideres();
+		calcularCrowdingDistance(pareto.getFronteira());
+		//Obtem os melhores globais para todas as particulas da populacao
+		escolherLider.escolherLideres(populacao, pareto.getFronteira());
 		
 		
 		escolherParticulasMutacao();
-		//In�cia o la�o evolutivo
+		//Inicia o laco evolutivo
 		for(int i = 0; i<geracoes; i++){
 			if(i%10 == 0)
 				System.out.print(i + " ");
@@ -82,27 +75,10 @@ public class SMOPSO extends MOPSO{
 			lacoEvolutivo(i);
 		}
 		
-		/*if(rank){
-
-			ArrayList<Particula> cloneFronteira = (ArrayList<Particula>)pareto.fronteiraNuvem.clone();
-
-			pareto.apagarFronteiraNuvem();
-
-			for (Iterator<Particula> iter = cloneFronteira.iterator(); iter.hasNext();) {
-				Particula particula =  iter.next();
-				particula.problema = this.problema;
-				if(!pareto.fronteiraNuvem.contains(particula)){
-					particula.solucao.numDominacao = pareto.add((Particula)particula.clone());
-
-				}
-			}	
-
-		}*/
-		
 		//removerGranularRaio(pareto.getFronteira());
 		calcularCrowdingDistance(pareto.getFronteira());
-		pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
-		//pareto.podarLideresDistancia(tamanhoRepositorio);
+		
+		efetuarPoda();
 		
 		return pareto.getFronteira();
 		
@@ -110,43 +86,44 @@ public class SMOPSO extends MOPSO{
 	
 	public ArrayList<Solucao> executarAvaliacoes(){
 
-		//Apaga todas as listas antes do inicio da execu��o
+		//Apaga todas as listas antes do inicio da execucao
 		reiniciarExecucao();
-		//Inicia a popul�ao
+		//Inicia a populcao
 		inicializarPopulacao();
-		//Obt�m as melhores part�culas da popula��o
+		//Obtem as melhores particulas da populacao
 		if(!rank)
 			atualizarRepositorio();
 		else
 			iniciarRepositorioRank();
 		
 		//calcularCrowdingDistance(pareto.fronteira);
-		//Obt�m os melhores globais para todas as part�culas da popula��o
-		escolherLideres();
+		//Obtem os melhores globais para todas as particulas da populacao
+		escolherLider.escolherLideres(populacao, pareto.getFronteira());
 
 		escolherParticulasMutacao();
-		//In�cia o la�o evolutivo
+		//Inicia o laco evolutivo
 		while(problema.avaliacoes < numeroavalicoes){
-			//if(problema.avaliacoes%1000 == 0)
-			//	System.out.print(problema.avaliacoes + " - " + numeroavalicoes + " ");
+			if(problema.avaliacoes%5000 == 0)
+				System.out.print(problema.avaliacoes + " ");
 			lacoEvolutivo(problema.avaliacoes);
 		}
 
 		//removerGranularRaio(pareto.getFronteira());
 		calcularCrowdingDistance(pareto.getFronteira());
-		pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
+		efetuarPoda();
+
 		return pareto.getFronteira();
 		
 	}
 
 	private void lacoEvolutivo(int i) {
 		
-		//Itera sobre todas as part�culas da popula��o
+		//Itera sobre todas as particulas da populacao
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = (Particula) iter.next();
 			//Calcula a nova velocidade
 			particula.calcularNovaVelocidadeConstriction();
-			//Calcula a nova posi��o
+			//Calcula a nova posicao
 			particula.calcularNovaPosicao();
 			if(particula.mutacao){
 				mutacaoPolinomial(PROB_MUT_COD,particula.posicao);
@@ -154,7 +131,7 @@ public class SMOPSO extends MOPSO{
 			}
 			
 			particula.truncar();
-			//Avalia a part�cula
+			//Avalia a particula
 			problema.calcularObjetivos(particula.solucao);
 			//Define o melhor local
 			particula.escolherLocalBest(pareto);
@@ -162,86 +139,28 @@ public class SMOPSO extends MOPSO{
 		
 		if(rank)
 			rankParticula(populacao);
-		//Obt�m as melhores particulas da popula��o
+		//Obtem as melhores particulas da populacao
 		atualizarRepositorio();
 		
-		
-		/*try{
-			imprimirFronteira(pareto.getFronteira(),0 , "");
-			//imprimirFronteira(removerGranularRaio2(pareto.getFronteira(), 0.05),0 , "OC");
-			//imprimirFronteira(removerCDAS(pareto.getFronteira(), 0.45),0 , "CDAS");
-		} catch (IOException ex) {ex.printStackTrace();}
-		
 		//System.out.println(pareto.getFronteira().size());
-		removerGranularLimites(pareto.getFronteira());
-		try{
-			imprimirFronteira(pareto.getFronteira(),0 , "");
-			//imprimirFronteira(removerGranularRaio2(pareto.getFronteira(), 0.05),0 , "OC");
-			//imprimirFronteira(removerCDAS(pareto.getFronteira(), 0.45),0 , "CDAS");
-		} catch (IOException ex) {ex.printStackTrace();}
-	   // System.out.println(" -  " + pareto.getFronteira().size());*/
-		
+		//removerGranularLimites(pareto.getFronteira());
+		// System.out.println(" -  " + pareto.getFronteira().size());
 		
 		
 		calcularCrowdingDistance(pareto.getFronteira());
-		
-		
-		
-		System.out.print (pareto.getFronteira().size()  + " - ");
-		selecionarSolucoesNosExtremos(pareto, tamanhoRepositorio);
-		//pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
-		//pareto.podarLideresDistancia(tamanhoRepositorio);
-		System.out.println(pareto.getFronteira().size());
+				
+		//System.out.print (pareto.getFronteira().size()  + " - ");
+		efetuarPoda();
+		//System.out.println(pareto.getFronteira().size());
+
 		//Recalcula a Crowding distance dos lideres
-		calcularCrowdingDistance(pareto.getFronteira());
-		
-		/*if(rank){
-
-			ArrayList<Particula> cloneFronteira = (ArrayList<Particula>)pareto.fronteiraNuvem.clone();
-
-			pareto.apagarFronteiraNuvem();
-
-			for (Iterator<Particula> iter = cloneFronteira.iterator(); iter.hasNext();) {
-				Particula particula =  iter.next();
-				particula.problema = this.problema;
-				if(!pareto.fronteiraNuvem.contains(particula)){
-					particula.solucao.numDominacao = pareto.add((Particula)particula.clone());
-
-				}
-			}	
-			
-			pareto.retornarFronteiraNuvem();
-
-		}*/
-	
+		if(pareto.getFronteira().size()==tamanhoRepositorio)
+			calcularCrowdingDistance(pareto.getFronteira());
 		
 		//Escolhe os novos melhores globais
-		escolherLideres();
+		escolherLider.escolherLideres(populacao, pareto.getFronteira());
 		
 		escolherParticulasMutacao();
-	}
-	
-	/**
-	 * M�todo que escolhe para cada particula da populacao uma particula presente no repositorio
-	 *
-	 */
-	public void escolherLideres(){
-		for (Iterator<Solucao> iter = pareto.getFronteira().iterator(); iter.hasNext();) {
-			Solucao solucaotRepositorio =  iter.next();
-			solucaotRepositorio.setVetorObjetivosMedio();
-			solucaotRepositorio.calcularSigmaVector();
-		}
-		
-		
-		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
-			Particula particula = iter.next();
-			//particula.escolherGlobalOposto(pareto.fronteira);
-			particula.escolherGlobalBestBinario(pareto.getFronteira());
-			//particula.escolherGlobalBestIdeal(pareto.getFronteira());
-			//particula.escolherGlobalBestIdeal2(pareto.fronteiraNuvem);
-			//particula.solucao.calcularSigmaVector();
-			//particula.escolherGlobalBestSigma(pareto.getFronteira());
-		}
 	}
 	
 	/**

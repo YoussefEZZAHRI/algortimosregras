@@ -1,8 +1,5 @@
 package kernel.nuvemparticulas;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import pareto.FronteiraPareto;
 import problema.Problema;
 import solucao.Solucao;
@@ -33,7 +30,7 @@ public class Particula {
 	
 	public Solucao globalBestSolucao = null;
 	
-	//Coeficientes da equa��o do c�lculo da velocidade
+	//Coeficientes da equacao do calculo da velocidade
 	public double phi1;
 	public double phi2;
 	
@@ -187,183 +184,8 @@ public class Particula {
 	}
 	
 	
-
-	
-	
-	
-	
-	
 	/**
-	 * M�todo que escolhe qual particula do repositorio sera escolhida como global best
-	 * Escolhe a part�cula probabilisticamente atraves de uma roleta com os valores da
-	 * dist�ncia Euclidiana dos sigmaVector
-	 * @param repositorio
-	 * @return
-	 */
-	public double[] escolherGlobalBestSigma(ArrayList<Solucao> repositorio){
-		double melhorValor = Double.MAX_VALUE;
-		Solucao gbest = null; 
-		//Calcula o valor da distancia euclidia dos sigmaVector de cada particula do repositorio
-		//e escolhe a menor
-		for (Iterator<Solucao> iter = repositorio.iterator(); iter.hasNext();) {
-			Solucao rep = iter.next();
-			double temp = distanciaEuclidiana(solucao.sigmaVector, rep.sigmaVector);
-			if(temp<melhorValor){
-				melhorValor = temp;
-				gbest = rep;
-			}
-		}
-
-		globalBest =  ((SolucaoNumerica)gbest).getVariaveis();
-		globalBestSolucao = gbest;
-		return globalBest;
-	}
-	
-	//M�todo que o l�der escolhido leva a part�cula para o centro da fronteira de Pareto
-	public double[] escolherGlobalOposto(ArrayList<Solucao> repositorio){
-		
-		//Calcula um vetor de objetivos m�dio - Valor do objetivo menos a m�dia dos objetivos
-		solucao.setVetorObjetivosMedio();
-		double[] vetorZero = new double[solucao.objetivos.length];
-		double melhorValor = Double.MAX_VALUE;
-			
-		Solucao gbest = null; 
-		//Calcula o valor da distancia euclidia dos sigmaVector de cada particula do repositorio
-		//e escolhe a menor
-		for (Iterator<Solucao> iter = repositorio.iterator(); iter.hasNext();) {
-			Solucao rep = iter.next();
-			double[] vetorSoma = new double[solucao.objetivosMedio.length];
-			//Calcula a soma dos vetores m�dios da solu��i entre todos os vetores do reposit�rio
-			for (int i = 0; i < vetorSoma.length; i++) {
-				vetorSoma[i] = solucao.objetivosMedio[i] + rep.objetivosMedio[i];
-			}
-			//Escolheo vetor que leva a part�cula mais pr�xima ao centro - Diferen�a entre os valores objetivos igual � zero
-			double temp = distanciaEuclidiana(vetorSoma, vetorZero);
-			if(temp<melhorValor){
-				melhorValor = temp;
-				gbest = rep;
-			}
-			
-		}
-		
-		globalBestSolucao = gbest;
-		globalBest =  ((SolucaoNumerica)gbest).getVariaveis();
-		
-		return globalBest;
-	}
-	
-	
-	public double[] escolherGlobalBestIdeal(ArrayList<Solucao> repositorio){
-		double[] ideal = new double[problema.m];
-		for (int i = 0; i < ideal.length; i++) {
-			ideal[i] = Double.POSITIVE_INFINITY;	
-		}
-		
-		for (Iterator<Solucao> iter = repositorio.iterator(); iter.hasNext();) {
-			Solucao rep = iter.next();
-			for(int j = 0; j<problema.m;j++){
-				if(rep.objetivos[j]<ideal[j])
-					ideal[j] = rep.objetivos[j];
-			}
-		}
-		
-		
-		double melhorValor = Double.MAX_VALUE;
-		Solucao gbest = null; 
-		for (Iterator<Solucao> iter = repositorio.iterator(); iter.hasNext();) {
-			Solucao rep = iter.next();
-			double temp = distanciaEuclidiana(ideal, rep.objetivos);
-			if(temp<melhorValor){
-				melhorValor = temp;
-				gbest = rep;
-			}
-		}
-
-		globalBest =  ((SolucaoNumerica)gbest).getVariaveis();
-		globalBestSolucao = gbest;
-		return globalBest;
-	}
-	
-	
-	//Pior que o ideal - método acima
-	public double[] escolherGlobalBestIdeal2(ArrayList<Solucao> repositorio){
-		double[] ideal = new double[problema.m];
-		Solucao[] melhores = new Solucao[problema.m+1];
-		
-		for (int i = 0; i < ideal.length; i++) {
-			ideal[i] = Double.POSITIVE_INFINITY;
-		}
-		
-		for (Iterator<Solucao> iter = repositorio.iterator(); iter.hasNext();) {
-			Solucao rep = iter.next();
-			for(int j = 0; j<problema.m;j++){
-				if(rep.objetivos[j]<ideal[j]){
-					ideal[j] = rep.objetivos[j];
-					melhores[j] = rep;
-				}
-			}
-		}
-		
-		
-		double melhorValor = Double.MAX_VALUE;
-		Solucao gbest = null; 
-		for (Iterator<Solucao> iter = repositorio.iterator(); iter.hasNext();) {
-			Solucao rep = iter.next();
-			double temp = distanciaEuclidiana(ideal, rep.objetivos);
-			if(temp<melhorValor){
-				melhorValor = temp;
-				gbest = rep;
-			}
-		}
-		
-		melhores[melhores.length-1] = gbest;
-
-				
-		int ordem = (int)Math.ceil(Math.log10(melhores.length));
-		int indice1 = (int)(Math.random()*(Math.pow(10, ordem))%melhores.length);
-		int indice2 = (int)(Math.random()*(Math.pow(10, ordem))%melhores.length);
-		Solucao particula1 = melhores[indice1];
-		Solucao particula2 = melhores[indice2];
-		if(particula1.crowdDistance>particula2.crowdDistance){
-			globalBest =  ((SolucaoNumerica)particula1).getVariaveis();
-			globalBestSolucao = particula1;
-		}
-		else{
-			globalBest = ((SolucaoNumerica)particula2).getVariaveis();
-			globalBestSolucao = particula2;
-		}
-		
-		
-		return globalBest;
-	}
-	
-	/**
-	 * M�todo que escolhe qual particula do repositorio sera escolhida como global best
-	 * Escolhe a part�cula probabilisticamente atraves de uma roleta com os valores da
-	 * dist�ncia Euclidiana dos sigmaVector
-	 * @param repositorio
-	 * @return
-	 */
-	public double[] escolherGlobalBestBinario(ArrayList<Solucao> repositorio){
-		int ordem = (int)Math.ceil(Math.log10(repositorio.size()));
-		int indice1 = (int)(Math.random()*(Math.pow(10, ordem))%repositorio.size());
-		int indice2 = (int)(Math.random()*(Math.pow(10, ordem))%repositorio.size());
-		Solucao solucao1 = repositorio.get(indice1);
-		Solucao solucao2 = repositorio.get(indice2);
-		if(solucao1.crowdDistance>solucao2.crowdDistance){
-			globalBest = ((SolucaoNumerica)solucao1).getVariaveis();
-			globalBestSolucao = solucao1;
-		}
-		else{
-			globalBest = ((SolucaoNumerica)solucao2).getVariaveis();
-			globalBestSolucao = solucao2;
-		}
-		
-		return globalBest;
-	}
-	
-	/**
-	 * C�lculo da dist�nca Euclidiana entre dois vetores de mesmo tamanho
+	 * Calculo da dist�nca Euclidiana entre dois vetores de mesmo tamanho
 	 * @return Valor da dist�ncia Euclidiana entre os vetores
 	 */
 	public double distanciaEuclidiana(double[] vetor1, double[] vetor2){
@@ -514,12 +336,23 @@ public class Particula {
 	 */
 	public void escolherLocalBest(FronteiraPareto pareto){
 		double[] objetivos = solucao.objetivos;
-		
+		//Compara os objetivos atuais com os valores guardados para o melhor local
 		int retorno = pareto.compararMedidas(objetivos,localBestObjetivos);
-		if(retorno == 1 || retorno == 0){
+		//Se o melhor local eh dominado, entao eh feita a atualizacao do lider
+		if(retorno == 1){
 			localBestObjetivos = objetivos;
 			localBest = posicao;
-		} 
+		} else{
+			if(retorno == 0){
+				//Se nao ha relacao de dominancia, o lider locao eh escolhido de forma aleatoria, entre os dois valoes
+				double rand = Math.random();
+				if(rand<0.5){
+					localBestObjetivos = objetivos;
+					localBest = posicao;
+				}
+			}
+			
+		}
 	}
 	
 	/**
