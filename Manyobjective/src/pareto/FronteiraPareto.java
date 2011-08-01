@@ -7,6 +7,7 @@ import kernel.AlgoritmoAprendizado;
 import kernel.nuvemparticulas.Particula;
 import solucao.ComparetorCrowdedOperator;
 import solucao.ComparetorDistancia;
+import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -71,22 +72,13 @@ public class FronteiraPareto {
 		}
 	}
 	
-	/*public void setFronteiraNuvem(ArrayList<Particula> temp){
-		fronteiraNuvem.clear();
-		for (Iterator<Particula> iter = temp.iterator(); iter.hasNext();) {
-			Particula p = (Particula) iter.next();
-			fronteiraNuvem.add(p);
-			
-		}
-	}*/
+	
 	
 	public void apagarFronteira(){
 		fronteira.clear();
 	}
 	
-	/*public void apagarFronteiraNuvem(){
-		fronteiraNuvem.clear();
-	}*/
+	
 	
 	/**
 	 * M�todo que adiciona um nova solu��o na fronteira de pareto
@@ -135,8 +127,8 @@ public class FronteiraPareto {
 					novosObjetivosTemp[i] = modificacaoDominanciaParetoCDAS(temp.objetivos[i], r, S);
 				}
 			} else
-				novosObjetivosTemp = modificacaoDominanciaParetoEpsilon(temp.objetivos, eps);
 				//novosObjetivosTemp = temp.objetivos;
+				novosObjetivosTemp = modificacaoDominanciaParetoEpsilon(temp.objetivos, eps);
 				//novosObjetivosTemp = modificacaoDominanciaParetoEqualizar(temp.objetivos, fator);
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
@@ -254,56 +246,6 @@ public class FronteiraPareto {
 	}
 
 	
-	
-	/*@SuppressWarnings("unchecked")
-	public double add(Particula particula){
-		//S� adiciona na fronteira caso a regra seja da classe passada como parametro
-		particula.solucao.numDominacao = 0;
-		if(fronteiraNuvem.size()==0){
-			fronteiraNuvem.add(particula);
-			return particula.solucao.numDominacao;
-		}
-		
-		int comp;
-		
-		ArrayList<Particula> cloneFronteira = (ArrayList<Particula>)fronteiraNuvem.clone();
-		
-		SolucaoNumerica solucao = particula.solucao;
-		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
-		
-		double r = r(solucao.objetivos);
-		for (int i = 0; i < solucao.objetivos.length; i++) {
-			novosObjetivosSolucao[i] = modificacaoDominanciaPareto(solucao.objetivos[i], r, S);
-		}
-		
-		
-		for (Iterator<Particula> iter = cloneFronteira.iterator(); iter.hasNext();) {
-			Particula temp = (Particula) iter.next();
-			
-			double[] novosObjetivosTemp = new double[temp.solucao.objetivos.length];
-			r = r(temp.solucao.objetivos);
-			for (int i = 0; i < temp.solucao.objetivos.length; i++) {
-				novosObjetivosTemp[i] = modificacaoDominanciaPareto(temp.solucao.objetivos[i], r, S);
-			}
-			
-			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
-			
-			
-			if(comp == -1){
-				particula.solucao.numDominacao++;
-			}
-			if(comp == 1)
-				fronteiraNuvem.remove(temp);
-			
-		}
-		if(particula.solucao.numDominacao==0){
-			fronteiraNuvem.add(particula);
-			return particula.solucao.numDominacao;
-		} else{
-			return particula.solucao.numDominacao;
-		}
-	}*/
-	
 	public void podarLideresCrowdedOperator(int tamanhoRepositorio){
 		if(tamanhoRepositorio<fronteira.size()){
 			ComparetorCrowdedOperator comp = new ComparetorCrowdedOperator();
@@ -315,6 +257,11 @@ public class FronteiraPareto {
 		}
 	}
 	
+	/**
+	 * Metodo que deixa que poda o repositorio em tamanhoRepositorio, com as solucoes com menor distancia
+	 * A distancia pode ser calculada atraves de diferentes metodos
+	 * @param tamanhoRepositorio
+	 */
 	public void podarLideresDistancia(int tamanhoRepositorio){
 		if(tamanhoRepositorio<fronteira.size()){
 			ComparetorDistancia comp = new ComparetorDistancia();
@@ -326,41 +273,70 @@ public class FronteiraPareto {
 		}
 	}
 	
-	/*public void podarLideresCrowdOperatorParticula(int tamanhoRepositorio){
-		if(tamanhoRepositorio<fronteiraNuvem.size()){
-			ComparetorCrowdedOperatorParticula comp = new ComparetorCrowdedOperatorParticula();
-			Collections.sort(fronteiraNuvem, comp);
-			int diferenca = fronteiraNuvem.size() - tamanhoRepositorio; 
-			for(int i = 0; i<diferenca; i++)
-				fronteiraNuvem.remove(fronteiraNuvem.remove(fronteiraNuvem.size()-1));
-			retornarFronteiraNuvem();
-		}
-	}*/
-	
-	/*public void podarLideresRank(int tamanhoRepositorio){
-		if(tamanhoRepositorio<fronteiraNuvem.size()){
-			ComparetorRankParticula	comp = new ComparetorRankParticula();
-			Collections.sort(fronteiraNuvem, comp);
-			int diferenca = fronteiraNuvem.size() - tamanhoRepositorio; 
-			for(int i = 0; i<diferenca; i++)
-				fronteiraNuvem.remove(fronteiraNuvem.remove(fronteiraNuvem.size()-1));
-			retornarFronteiraNuvem();
-		}
-	}*/
-	
-	
-	
-	
-	/*public void retornarFronteiraNuvem(){
-		fronteira.clear();
-		for (Iterator<Particula> iterator = fronteiraNuvem.iterator(); iterator.hasNext();) {
-			Particula particula = (Particula) iterator.next();
-			fronteira.add(particula.solucao);
+	/**
+	 * Seleciona as solucoes mais proximas ao extremo e mais proximas a solucao ideal, em partes iguais
+	 * @param tamanhoRepositorio
+	 * @param m
+	 * @param ideal
+	 */
+	public void podarLideresExtremosIdeal(int tamanhoRepositorio, int m, Solucao ideal){
+		ArrayList<Solucao> solucoes = getFronteira();
+		//Se o numero de solucoes eh maior que o tamanho definido para o repositorio
+		if(solucoes.size()> tamanhoRepositorio){
+			//Calcula a proporcao de solucoes selecionadas para cada extremo e para o ideal
+			double proporcao = 1.0/(m+1);
+			int num_sol = (int)(tamanhoRepositorio*proporcao);
+
+			ArrayList<Solucao> selecionadas = new ArrayList<Solucao>();
 			
+			//Percorre todos os objetivo obtende as solucoes com menores valores (nos extremos)
+			for(int i = 0; i< m; i++){
+				int contador = 0;
+				//Ordena as solcoes de acordo com o objetivo i
+				ComparetorObjetivo comp = new ComparetorObjetivo(i);
+				Collections.sort(solucoes, comp);
+				int j = 0;
+				//Preenche a lista "selecionadas" com as menore solucoes por objetivo. Evita colocar solucoes repetidas
+				while(contador<num_sol){
+					Solucao solucao = solucoes.get(j++);
+					if(!selecionadas.contains(solucao)){
+						selecionadas.add(solucao);
+						contador++;
+					}
+				}
+			}
+
+			//Para cada solucao calcula sua distancia em relacao a solucao ideal
+			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
+				Solucao solucao = iterator.next();
+				solucao.menorDistancia = Double.MAX_VALUE;
+				for(int i =0; i<m+1; i++){
+					double distancia = AlgoritmoAprendizado.distanciaEuclidiana(ideal.objetivos, solucao.objetivos);
+					solucao.menorDistancia = distancia;
+					solucao.guia = i;
+				}
+			}
+			
+			//Ordena as solucoes em relacao a distancia do idal
+			ComparetorDistancia comp = new ComparetorDistancia();
+			Collections.sort(solucoes, comp);
+
+			int contador = 0;
+			int j = 0;
+			//Preenche o resto das solucoes selecionadas
+			int tamanho = tamanhoRepositorio - selecionadas.size();
+			while(contador<tamanho){
+				Solucao solucao = solucoes.get(j++);
+				if(!selecionadas.contains(solucao)){
+					selecionadas.add(solucao);
+					contador++;
+				}
+			}
+			setFronteira(selecionadas);
 		}
-	}*/
-	
-	
+
+	}
+		
 	
 	public ArrayList<Solucao> getFronteira(){
 		return fronteira;
@@ -498,6 +474,12 @@ public class FronteiraPareto {
 		else return fx;
 	}
 	
+	/**
+	 * Aplica a epsilon-dominance - (fx - epsilon) 
+	 * @param fx
+	 * @param epsilon
+	 * @return
+	 */
 	public double[] modificacaoDominanciaParetoEpsilon(double[] fx, double epsilon){
 		double[] retorno = new double[fx.length];
 	
@@ -609,7 +591,7 @@ public class FronteiraPareto {
 		System.out.println();
 	}
 	
-public void imprimir(ArrayList<Particula> pop){
+	public void imprimir(ArrayList<Particula> pop){
 
 		
 		int j = 0;

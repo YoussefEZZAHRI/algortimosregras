@@ -11,36 +11,27 @@ public class GerarArquivosConfiguracao {
 		
 		
 
-		String problema  = "dtlz4";
+		String problema  = "dtlz2";
 
 		//String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
-		String[] algs = {"0.50"};
+		String[] algs = {"0.5"};
 		String metodo = "smopso";
 		String exec = "30";
 		String g = "100";
-		String a = "-1";
+		String a = "50000";
 		String p = "250";
 		String r = "250";
-		String rank = "ar_br";
-		String taxaclonagem = "7";
-		String partesgrid = "25";
+		String rank = "false";
+		String poda = "p-tcheb";
 		String maxobjhiper = "1";
-		String dominance = "false";
-		String alg1 = "all";
-		String alg2 = "normal";
-		String indicador = ind;
-		String  direxec = "/home/andre/doutorado/experimentos/rank/";
-		String  num_sol_fronteira = "10000";
-		String programaes = "schedule2";
-		String numerocasosteste = "2710";
-		String funcoesobjetivo = "pdu;tempo";
+		String  direxec = "/home/andre/doutorado/experimentos/poda/";
 		
 		int n = k+m-1;
 		
 		StringBuffer limitesObjetivos = new StringBuffer();
 		StringBuffer objetivos = new StringBuffer();
 		for(int i = 0; i<m; i++){
-			limitesObjetivos.append("4 ");
+			limitesObjetivos.append("8 ");
 			objetivos.append("- ");
 		}
 		
@@ -58,6 +49,8 @@ public class GerarArquivosConfiguracao {
 				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m +"_" + ind+ ".txt";
 			if(!rank.equals("false"))
 				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s + "_" + rank + ".txt";
+			if(!poda.equals("false"))
+				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s + "_" + poda + ".txt";
 			PrintStream ps = new PrintStream(arquivo);
 			ps.println("algoritmo = " + metodo);
 			ps.println("problema = " + problema);
@@ -72,18 +65,9 @@ public class GerarArquivosConfiguracao {
 			ps.println("numexec = " + exec);
 			ps.println("S = " + s);
 			ps.println("rank = " + rank);
-			ps.println("taxaclonagem = " + taxaclonagem);
-			ps.println("partesgrid = " + partesgrid);			
+			ps.println("poda = " + poda);				
 			ps.println("maxobjhiper = " + maxobjhiper);			
-			ps.println("dominance = " + dominance);
-			ps.println("alg1 = " + alg1);
-			ps.println("alg2 = " + alg2);
-			ps.println("indicador = " + indicador);
 			ps.println("direxec =  " + direxec);
-			ps.println("num_sol_fronteira = " + num_sol_fronteira);
-			ps.println("programaes = " + programaes);
-			ps.println("numerocasosteste = " + numerocasosteste);
-			ps.println("funcoesobjetivo = " + funcoesobjetivo);
 			
 			
 		}
@@ -98,9 +82,6 @@ public class GerarArquivosConfiguracao {
 		String ind = "";
 
 		try{
-
-			
-
 			for (int i = 0; i < ms.length; i++) {
 				gerarArquivos(ms[i],ind);
 			}

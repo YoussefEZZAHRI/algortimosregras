@@ -4,6 +4,8 @@ package kernel.nuvemparticulas;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import kernel.nuvemparticulas.lider.EscolherMetodoSigma;
+
 
 import problema.DTLZ2;
 import problema.Problema;
@@ -20,8 +22,10 @@ public class SigmaMOPSO extends MOPSO{
 
 
 	
-	public SigmaMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator, double smax){
-		super(n,prob,g, a,t, s, maxmim,tRank, ocupacao, fator, smax);
+	public SigmaMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator, double smax, String tPoda){
+		super(n,prob,g, a,t, s, maxmim,tRank, ocupacao, fator, smax, tPoda);
+		
+		escolherLider = new EscolherMetodoSigma();
 
 	}
 	
@@ -37,7 +41,7 @@ public class SigmaMOPSO extends MOPSO{
 		//Obt�m as melhores part�culas da popula��o
 		atualizarRepositorio();		
 		//Obt�m os melhores globais para todas as part�culas da popula��o
-		escolherLideres();
+		escolherLider.escolherLideres(populacao, pareto.getFronteira());
 		//In�cia o la�o evolutivo
 		for(int i = 0; i<geracoes; i++){
 			if(i%10 == 0)
@@ -59,7 +63,7 @@ public class SigmaMOPSO extends MOPSO{
 		//Obt�m as melhores part�culas da popula��o
 		atualizarRepositorio();		
 		//Obt�m os melhores globais para todas as part�culas da popula��o
-		escolherLideres();
+		escolherLider.escolherLideres(populacao, pareto.getFronteira());
 		while(problema.avaliacoes < numeroavalicoes){
 			if(problema.avaliacoes%10000 == 0)
 				System.out.print(problema.avaliacoes + " ");
@@ -88,29 +92,12 @@ public class SigmaMOPSO extends MOPSO{
 			//Define o melhor local
 			particula.escolherLocalBest(pareto);
 		}
-		//Obt�m as melhores particulas da popula��o
+		//Obtem as melhores particulas da populacao
 		atualizarRepositorio();
 		//Escolhe os novos melhores globais
-		escolherLideres();
+		escolherLider.escolherLideres(populacao, pareto.getFronteira());
 	}
-	
-	/**
-	 * M�todo que escolhe para cada particula da populacao uma particula presente no repositorio
-	 *
-	 */
-	public void escolherLideres(){
-		for (Iterator<Solucao> iter = pareto.getFronteira().iterator(); iter.hasNext();) {
-			Solucao partRepositorio =  iter.next();
-			partRepositorio.calcularSigmaVector();
-		}
 		
-		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
-			Particula particula = iter.next();
-			particula.solucao.calcularSigmaVector();
-			particula.escolherGlobalBestSigma(pareto.getFronteira());
-		}
-	}
-	
 	
 	public static void main(String[] args) {
 		int m = 3;
@@ -121,7 +108,7 @@ public class SigmaMOPSO extends MOPSO{
 		int a = -1;
 		String[] mm = {"-","-","-"};
 		for(int i = 0; i<5; i++){
-			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25, mm, "false",0, 0, 0.25);
+			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25, mm, "false",0, 0, 0.25, "");
 			nuvem.executar();
 			for (Iterator<Solucao> iterator = nuvem.pareto.getFronteira().iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
