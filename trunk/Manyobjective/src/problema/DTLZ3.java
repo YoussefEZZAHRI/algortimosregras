@@ -5,10 +5,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
-
-import com.sun.org.apache.bcel.internal.generic.DLOAD;
-
-import pareto.FronteiraPareto;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -121,7 +117,7 @@ public class DTLZ3 extends Problema {
 				melhor.setVariavel(i, newVal);
 			}
 
-			double somaParcial = 0;
+			//double somaParcial = 0;
 			calcularObjetivos(melhor);
 
 			/*for (int i = 0; i < melhor.m; i++) {
@@ -158,7 +154,7 @@ public class DTLZ3 extends Problema {
 		
 		try{
 			PrintStream ps = new PrintStream("fronteira_dtlz3_" + m);
-			for (Iterator iterator = f.iterator(); iterator.hasNext();) {
+			for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
 						.next();
 				

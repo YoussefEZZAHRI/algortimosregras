@@ -1,15 +1,7 @@
 package rank;
 
-import indicadores.Indicador;
-
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import pareto.FronteiraPareto;
-
-import kernel.AlgoritmoAprendizado;
-
 import solucao.Solucao;
 
 public class GB extends Rank {

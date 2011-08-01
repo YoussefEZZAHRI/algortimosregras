@@ -3,14 +3,9 @@ package kernel.nuvemparticulas;
 
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-
-
-import pareto.FronteiraPareto;
-import problema.DTLZ2;
 import problema.Problema;
 import solucao.ComparetorObjetivo;
 import solucao.Solucao;
@@ -343,13 +338,13 @@ public class SMOPSO extends MOPSO{
 		
 		
 		int k = 0;
-		for (Iterator iterator = populacao.iterator(); iterator.hasNext(); k++) {
-			Solucao solucao = ((Particula) iterator.next()).solucao; 
+		for (Iterator<Particula> iterator = populacao.iterator(); iterator.hasNext(); k++) {
+			Solucao solucao = iterator.next().solucao; 
 			solucao.indice = k;
 		}
 		
-		for (Iterator iterator = populacao.iterator(); iterator.hasNext();) {
-			Solucao solucao = ((Particula) iterator.next()).solucao;
+		for (Iterator<Particula> iterator = populacao.iterator(); iterator.hasNext();) {
+			Solucao solucao = iterator.next().solucao;
 			System.out.println("Solucao: " + solucao.indice);
 			double dom  = pareto.add2(solucao);
 			if(dom ==0)

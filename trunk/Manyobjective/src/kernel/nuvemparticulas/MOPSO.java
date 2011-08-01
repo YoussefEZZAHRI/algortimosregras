@@ -9,7 +9,6 @@ import java.util.Iterator;
 
 import problema.Problema;
 import pareto.FronteiraPareto;
-import solucao.ComparetorDistancia;
 import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
@@ -271,7 +270,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	
 	public void imprimirParticulas(ArrayList<Particula> particulas) throws IOException{
 		PrintStream ps = new PrintStream("fronteiras/particulas.txt");
-		for (Iterator iterator = particulas.iterator(); iterator.hasNext();) {
+		for (Iterator<Particula> iterator = particulas.iterator(); iterator.hasNext();) {
 			Particula particula = (Particula) iterator.next();
 			for(int i = 0; i<problema.m;i++){
 				ps.print(particula.solucao.objetivos[i] + "\t");

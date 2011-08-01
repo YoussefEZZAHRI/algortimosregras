@@ -1,16 +1,12 @@
 package problema;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
 import pareto.FronteiraPareto;
-import solucao.ComparetorObjetivo;
+
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -22,10 +18,10 @@ import solucao.SolucaoNumerica;
 
 public class DTLZ7 extends Problema {
 	
-	private final double lim_inf1 = 0.26;
+	/*private final double lim_inf1 = 0.26;
 	private final double lim_sup1 = 0.64;
 	private final double lim_inf2 = 0.86;
-	private final double lim_sup2 = 1;
+	private final double lim_sup2 = 1;*/
 	
 	public double s;
 	
@@ -173,7 +169,7 @@ public class DTLZ7 extends Problema {
 		}
 		
 		ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();
-		for (Iterator iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
+		for (Iterator<Solucao> iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
 			saida.add(solucaoNumerica);
 		}
@@ -190,9 +186,6 @@ public class DTLZ7 extends Problema {
 	}
 	
 	public  ArrayList<SolucaoNumerica> obterFronteira2(int n, int numSol){
-		
-	
-		ArrayList<SolucaoNumerica> melhores = new ArrayList<SolucaoNumerica>();
 		
 		Random rand = new Random();
 		rand.setSeed(1000);
@@ -252,7 +245,7 @@ public class DTLZ7 extends Problema {
 		
 		
 		ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();
-		for (Iterator iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
+		for (Iterator<Solucao> iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
 			saida.add(solucaoNumerica);
 		}
@@ -313,7 +306,7 @@ public class DTLZ7 extends Problema {
 		int k = 10;
 		int n = m + k - 1;
 		
-		int decimalPlace = 5;
+		//int decimalPlace = 5;
 		DTLZ7 dtlz7 = new DTLZ7(m);
 		
 		try{

@@ -1,15 +1,11 @@
 package problema;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
 import pareto.FronteiraPareto;
-import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -134,7 +130,7 @@ public class DTLZ6 extends Problema {
 		int k = 10;
 		int n = m + k - 1;
 		
-		int decimalPlace = 5;
+		//int decimalPlace = 5;
 		DTLZ6 dtlz6 = new DTLZ6(m);
 		
 		dtlz6.inc = 0.001;

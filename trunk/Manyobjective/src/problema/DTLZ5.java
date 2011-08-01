@@ -2,8 +2,6 @@ package problema;
 
 import java.util.ArrayList;
 import java.util.Random;
-
-import pareto.FronteiraPareto;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 

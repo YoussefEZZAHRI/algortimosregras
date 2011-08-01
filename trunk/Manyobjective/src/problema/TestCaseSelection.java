@@ -57,8 +57,6 @@ public class TestCaseSelection extends Problema {
 	
 	public double[] calcularObjetivos(Solucao solucao) {
 		
-		
-		double[] objetivos = new double[m];
 		int i = 0;
 		for (Iterator<FuncaoObjetivo> iterator = funcoesObjetivos.iterator(); iterator.hasNext();) {
 			FuncaoObjetivo funcao = (FuncaoObjetivo) iterator.next();
