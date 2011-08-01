@@ -1,16 +1,10 @@
 package pareto;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-
 import kernel.AlgoritmoAprendizado;
-import kernel.nuvemparticulas.ComparetorCrowdedOperatorParticula;
-import kernel.nuvemparticulas.ComparetorRankParticula;
 import kernel.nuvemparticulas.Particula;
-
-import solucao.ComparetorCrowdDistance;
 import solucao.ComparetorCrowdedOperator;
 import solucao.ComparetorDistancia;
 import solucao.Solucao;
@@ -376,19 +370,18 @@ public class FronteiraPareto {
 		return fronteira.toString();
 	}
 	/**
-	 * M�todo que verifica se uma solu��o domina a outra
-	 * @param sol1 Solu��o que ser� comparada com as regras pertencentes a fronteira de pareto
-	 * @param sol2 Solu��o pertencente a fronteira de pareto
+	 * M�todo que verifica se uma solucao domina a outra
+	 * @param sol1 Solucao que sera comparada com as regras pertencentes a fronteira de pareto
+	 * @param sol2 Solucao pertencente a fronteira de pareto
 	 * @return -1 Se sol1 for dominada, 0 se a sol1 nao domina nem eh dominada, 1 sol1 domina sol2 
 	 */
 	public int compararMedidas(double[] sol1, double[] sol2){
-		//Contador que marca quantos valores da regra 1 sao maiores que os da regra2
-		//Se cont for igual ao tamanho dos elementos da regra 1 entao a regra 2 eh dominada pela regra1
-		//Se cont for igual a 0 a regra2 domina a regra1
+		//Contador que marca quantos valores da solucao 1 sao maiores que os da solucao 2
+		//Se cont for igual ao tamanho dos elementos da solucao 1 entao a solucao 2 eh dominada pela sol1
+		//Se cont for igual a 0 a sol2 domina a sol1
 		//Se cont for maior do que 0 e menor que o tamanho ela nao domina e nem eh dominada
 		int cont = 0; 
 		int cont2 = sol1.length;
-		int decimalPlace = 10;
 		for (int i = 0; i < sol1.length; i++) {
 			
 			/*BigDecimal sol1Big = new BigDecimal(sol1[i]);

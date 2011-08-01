@@ -48,7 +48,7 @@ public class AverageRank extends Rank {
 		
 		
 		if(c!=-1)
-			for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
+			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 				Solucao solucao = (Solucao) iterator.next();
 				solucao.rank = solucao.rank/maiorRank;
 				solucao.combRank[c] = solucao.rank;

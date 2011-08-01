@@ -68,7 +68,7 @@ public class GerarArquivosConfiguracao {
 			ps.println("geracoes = " + g);
 			ps.println("numeroavaliacoes = " + a);
 			ps.println("populacao = " + p);
-			ps.println("repositorio = " + p);		
+			ps.println("repositorio = " + r);		
 			ps.println("numexec = " + exec);
 			ps.println("S = " + s);
 			ps.println("rank = " + rank);

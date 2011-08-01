@@ -168,7 +168,7 @@ public class DTLZ1 extends Problema {
 	public static void main(String[] args) {
 
 		int m = 2;
-		int numSol = 1000;
+		//int numSol = 1000;
 		int k = 10;
 		int n = m + k - 1;
 		

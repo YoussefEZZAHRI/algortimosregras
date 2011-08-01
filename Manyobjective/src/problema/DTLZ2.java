@@ -1,7 +1,6 @@
 package problema;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 import java.util.Iterator;
@@ -146,7 +145,7 @@ public class DTLZ2 extends Problema {
 		
 		 DTLZ2 dtlz2 = new DTLZ2(m);
 		 int n = m + k - 1;
-		 ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
+		// ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
 			
 		//dtlz2.obterSolucoesExtremas(n, s);
 				 

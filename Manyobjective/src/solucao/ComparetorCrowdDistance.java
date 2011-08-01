@@ -2,8 +2,6 @@ package solucao;
 
 import java.util.Comparator;
 
-import kernel.nuvemparticulas.Particula;
-
 public class ComparetorCrowdDistance implements Comparator<Solucao>{
 	
 	public int compare(Solucao s1, Solucao s2){
