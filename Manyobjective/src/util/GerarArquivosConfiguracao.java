@@ -22,7 +22,7 @@ public class GerarArquivosConfiguracao {
 		String p = "250";
 		String r = "250";
 		String rank = "false";
-		String poda = "p-tcheb";
+		String poda = "p-rand";
 		String maxobjhiper = "1";
 		String  direxec = "/home/andre/doutorado/experimentos/poda/";
 		

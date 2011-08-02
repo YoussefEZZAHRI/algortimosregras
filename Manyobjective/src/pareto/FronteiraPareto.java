@@ -257,6 +257,18 @@ public class FronteiraPareto {
 		}
 	}
 	
+	public void podarLideresAleatorio(int tamanhoRepositorio){
+		if(tamanhoRepositorio<fronteira.size()){
+			
+			Collections.shuffle(fronteira);
+			int diferenca = fronteira.size() - tamanhoRepositorio; 
+			for(int i = 0; i<diferenca; i++)
+				fronteira.remove(fronteira.remove(fronteira.size()-1));
+			
+			
+		}
+	}
+	
 	/**
 	 * Metodo que deixa que poda o repositorio em tamanhoRepositorio, com as solucoes com menor distancia
 	 * A distancia pode ser calculada atraves de diferentes metodos
