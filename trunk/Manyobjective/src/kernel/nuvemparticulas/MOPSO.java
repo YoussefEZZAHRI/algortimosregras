@@ -149,6 +149,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 * euclidiana = poda que utiliza a menor distancia euclidiana de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
 	 * sigma = poda que utiliza a menor distancia euclidiana do vetor sigma de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
 	 * tcheb = poda que utiliza a menor distancia de tchebycheff de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
+	 * rand = aleatorio
 	 */
 	public void efetuarPoda(){
 		if(rank)
@@ -195,6 +196,8 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 				definirDistanciasSolucoesProximasIdeais(extremos, pareto.getFronteira(), "tcheb");
 				pareto.podarLideresDistancia(tamanhoRepositorio);
 			}
+			if(tipoPoda.equals("p-rand"))
+				pareto.podarLideresAleatorio(tamanhoRepositorio);
 		}
 			
 		

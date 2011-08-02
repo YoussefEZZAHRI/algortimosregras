@@ -555,7 +555,7 @@ public class Principal {
 				
 				if(tag.equals("poda")){
 					if(valor.equals("false")){
-						tipoRank = "";
+						tipoPoda = "";
 					}
 					else{
 						tipoPoda = valor;
