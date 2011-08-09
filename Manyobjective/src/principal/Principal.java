@@ -66,6 +66,7 @@ public class Principal {
 	public boolean rank;
 	public String tipoRank;
 	public String tipoPoda;
+	public String escolhaLider = "";
 	
 	
 	public String alg1;
@@ -109,7 +110,7 @@ public class Principal {
 					if(principal.alg.equals("sigma"))
 						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank, principal.ocupacao, principal.fator, principal.S_MAX, principal.tipoPoda);
 					if(principal.alg.equals("smopso"))
-						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank, principal.ocupacao, principal.fator, principal.S_MAX, principal.tipoPoda);
+						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank, principal.ocupacao, principal.fator, principal.S_MAX, principal.tipoPoda, principal.escolhaLider);
 					if(principal.alg.equals("misa"))
 						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank, principal.ocupacao, principal.fator);
 					if(principal.alg.equals("nsga2"))
@@ -135,15 +136,15 @@ public class Principal {
 						
 		if(!rank){
 			if(tipoPoda.equals("")){
-				caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "/" ;
-				arquivoExec = caminhoDir + id+ S +"_texec.txt";
+				caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "_" + escolhaLider +"/" ;
+				arquivoExec = caminhoDir + id+ S + "_" + escolhaLider+"_texec.txt";
 			} else{
-				caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "_" + tipoPoda + "/" ;
-				arquivoExec = caminhoDir + id+ S + "_" + tipoPoda +"_texec.txt";
+				caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "_" + escolhaLider + "_" + tipoPoda + "/" ;
+				arquivoExec = caminhoDir + id+ S + "_" + escolhaLider+ "_" + tipoPoda +"_texec.txt";
 			}
 		}else{
-			caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" +S  + "_" + tipoRank +"/" ;
-			arquivoExec = caminhoDir + id+ S + "_" + tipoRank + "_texec.txt";
+			caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" +S  + "_" + escolhaLider + "_" + tipoRank +"/" ;
+			arquivoExec = caminhoDir + id+ S+ "_" + escolhaLider  + "_" + tipoRank + "_texec.txt";
 		}
 		
 		File dir = new File(caminhoDir);
@@ -154,17 +155,17 @@ public class Principal {
 		if(!rank){
 			if(tipoPoda.equals("")){
 				psTempo = new PrintStream(arquivoExec);
-				psSolucaoGeral = new PrintStream(caminhoDir +id+  S +"_solucoes.txt");
-				psFronteiraGeral = new PrintStream(caminhoDir+id+ S+"_fronteira.txt");
+				psSolucaoGeral = new PrintStream(caminhoDir +id+  S + "_" + escolhaLider+"_solucoes.txt");
+				psFronteiraGeral = new PrintStream(caminhoDir+id+ S+ "_" + escolhaLider+"_fronteira.txt");
 			}else{
 				psTempo = new PrintStream(arquivoExec);
-				psSolucaoGeral = new PrintStream(caminhoDir +id+ S+ "_" + tipoPoda + "_solucoes.txt");
-				psFronteiraGeral = new PrintStream(caminhoDir+id+ S+"_" + tipoPoda + "_fronteira.txt");
+				psSolucaoGeral = new PrintStream(caminhoDir +id+ S+ "_" + escolhaLider+ "_" + tipoPoda + "_solucoes.txt");
+				psFronteiraGeral = new PrintStream(caminhoDir+id+ S+ "_" + escolhaLider+"_" + tipoPoda + "_fronteira.txt");
 			}
 		}else {
 			psTempo = new PrintStream(arquivoExec);
-			psSolucaoGeral = new PrintStream(caminhoDir +id+ S+ "_" + tipoRank + "_solucoes.txt");
-			psFronteiraGeral = new PrintStream(caminhoDir+id+ S+"_" + tipoRank + "_fronteira.txt");
+			psSolucaoGeral = new PrintStream(caminhoDir +id+ S+ "_" + escolhaLider+ "_" + tipoRank + "_solucoes.txt");
+			psFronteiraGeral = new PrintStream(caminhoDir+id+ S+ "_" + escolhaLider+"_" + tipoRank + "_fronteira.txt");
 		}
 		
 		maioresObjetivos = new double[m];
@@ -241,12 +242,12 @@ public class Principal {
 		
 		if(!rank){
 			if(tipoPoda.equals(""))
-				idInd = id + S;
+				idInd = id + S+ "_" + escolhaLider;
 			else
-				idInd = id + S + "_" + tipoPoda;
+				idInd = id + S + "_" + escolhaLider+ "_" + tipoPoda;
 		}
 		else
-			idInd = id + S + "_" + tipoRank;
+			idInd = id + S + "_" + escolhaLider+ "_" + tipoRank;
 		
 		Hipervolume hiper = new Hipervolume(m, caminhoDir, idInd, limitesHiper);
 		hiper.preencherObjetivosMaxMin(maxmimObjetivos);
@@ -561,6 +562,10 @@ public class Principal {
 						tipoPoda = valor;
 					}
 				}
+				
+				if(tag.equals("lider")){					
+					escolhaLider = valor;
+				}
 			}
 		}
 		
@@ -586,6 +591,8 @@ public class Principal {
 		buff.append("Avaliacoes: " + numeroavaliacoes + "\n");
 		buff.append("Populacao: " + populacao + "\n");
 		buff.append("S: " + S + "\n");
+		buff.append("poda: " + tipoPoda + "\n");
+		buff.append("lider: " + escolhaLider + "\n");
 		return buff.toString();
 	}
 

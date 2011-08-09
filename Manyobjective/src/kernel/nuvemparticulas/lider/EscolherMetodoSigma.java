@@ -10,6 +10,10 @@ import solucao.SolucaoNumerica;
 
 public class EscolherMetodoSigma extends EscolherLider {
 
+	
+	public EscolherMetodoSigma(){
+		id = "sigma";
+	}
 	@Override
 	public void escolherLideres(ArrayList<Particula> populacao, 	ArrayList<Solucao> lideres) {
 		for (Iterator<Solucao> iter = lideres.iterator(); iter.hasNext();) {

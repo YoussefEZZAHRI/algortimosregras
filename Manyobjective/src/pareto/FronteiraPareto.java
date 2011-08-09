@@ -285,6 +285,34 @@ public class FronteiraPareto {
 		}
 	}
 	
+	
+	
+	/**
+	 * Seleciona as solucoes mais proximas ao extremo e mais proximas a solucao ideal, em partes iguais
+	 * @param tamanhoRepositorio
+	 * @param m
+	 * @param ideal
+	 */
+	public void podarLideresIdeal(int tamanhoRepositorio , Solucao ideal){
+		ArrayList<Solucao> solucoes = getFronteira();
+		//Se o numero de solucoes eh maior que o tamanho definido para o repositorio
+		if(solucoes.size()> tamanhoRepositorio){
+			//Para cada solucao calcula sua distancia em relacao a solucao ideal
+			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
+				Solucao solucao = iterator.next();
+				solucao.menorDistancia = AlgoritmoAprendizado.distanciaEuclidiana(ideal.objetivos, solucao.objetivos);				
+			}
+			
+			//Ordena as solucoes em relacao a distancia do idal
+			ComparetorDistancia comp = new ComparetorDistancia();
+			Collections.sort(solucoes, comp);
+			int diferenca = fronteira.size() - tamanhoRepositorio; 
+			for(int i = 0; i<diferenca; i++)
+				fronteira.remove(fronteira.remove(fronteira.size()-1));
+		}
+
+	}
+	
 	/**
 	 * Seleciona as solucoes mais proximas ao extremo e mais proximas a solucao ideal, em partes iguais
 	 * @param tamanhoRepositorio
@@ -321,12 +349,7 @@ public class FronteiraPareto {
 			//Para cada solucao calcula sua distancia em relacao a solucao ideal
 			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 				Solucao solucao = iterator.next();
-				solucao.menorDistancia = Double.MAX_VALUE;
-				for(int i =0; i<m+1; i++){
-					double distancia = AlgoritmoAprendizado.distanciaEuclidiana(ideal.objetivos, solucao.objetivos);
-					solucao.menorDistancia = distancia;
-					solucao.guia = i;
-				}
+				solucao.menorDistancia = AlgoritmoAprendizado.distanciaEuclidiana(ideal.objetivos, solucao.objetivos);				
 			}
 			
 			//Ordena as solucoes em relacao a distancia do idal
@@ -636,6 +659,72 @@ public class FronteiraPareto {
 		}
 		
 		System.out.println();
+	}
+	
+	/**
+	 * Verifica se a solucao tem os mesmos valores de objetivo (+ ou - var) que alguma solucao no repositorio
+	 * @param solucao
+	 * @param var
+	 * @return
+	 */
+	public boolean contemSolucaoVariacao(Solucao solucao, double var){
+		double[] limite_sup = new double[solucao.objetivos.length];
+		double[] limite_inf = new double[solucao.objetivos.length];
+		
+		for (int i = 0; i < solucao.objetivos.length; i++) {
+			limite_sup[i] = solucao.objetivos[i] + var; 
+			limite_inf[i] =  Math.max(solucao.objetivos[i] - var, 0);;
+		}
+		
+		boolean dentro = false;
+		for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
+			Solucao sol_fronteira = (Solucao) iterator.next();
+			for (int i = 0; i < sol_fronteira.objetivos.length && !dentro; i++) {
+				double obj = sol_fronteira.objetivos[i];
+				if(obj>=limite_inf[i] && obj<=limite_sup[i])
+					dentro = true;
+				else{
+					dentro = false;
+					break;
+				}					
+			}
+			
+		}
+		
+		return dentro;
+	}
+	
+	/**
+	 * Verifica se a solucao tem os mesmos valores de objetivo (+ ou - var) que alguma solucao no repositorio
+	 * @param solucao
+	 * @param var
+	 * @return
+	 */
+	public boolean contemSolucaoVariacaoEspacobusca(SolucaoNumerica solucao, double var){
+		double[] limite_sup = new double[solucao.getVariaveis().length];
+		double[] limite_inf = new double[solucao.getVariaveis().length];
+		
+		for (int i = 0; i < solucao.getVariaveis().length; i++) {
+			limite_sup[i] = solucao.getVariavel(i) + var; 
+			limite_inf[i] =  Math.max(solucao.getVariavel(i) - var, 0);;
+		}
+		
+		boolean dentro = false;
+		for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
+			SolucaoNumerica sol_fronteira = (SolucaoNumerica) iterator.next();
+			for (int i = 0; i < sol_fronteira.getVariaveis().length && !dentro; i++) {
+				double obj = sol_fronteira.getVariavel(i);
+				if(obj>=limite_inf[i] && obj<=limite_sup[i])
+					dentro = true;
+				else{
+					dentro = false;
+					break;
+				}					
+			}
+			
+		}
+		
+		return dentro;
 	}
 
 }

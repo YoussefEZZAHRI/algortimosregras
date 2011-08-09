@@ -15,7 +15,10 @@ import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 import kernel.AlgoritmoAprendizado;
+import kernel.nuvemparticulas.lider.EscolherIdeal;
 import kernel.nuvemparticulas.lider.EscolherLider;
+import kernel.nuvemparticulas.lider.EscolherMetodoSigma;
+import kernel.nuvemparticulas.lider.EscolherOposto;
 import kernel.nuvemparticulas.lider.EscolherTorneioBinario;
 
 
@@ -46,7 +49,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	public String tipoPoda = "";
 	
 		
-	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator, double smax, String tPoda){
+	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator, double smax, String tPoda, String el){
 		super(n,prob,g, a,t, tRank, ocupacao);
 		populacao = new ArrayList<Particula>();
 		//repositorio = new ArrayList<Particula>();
@@ -56,7 +59,8 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			metodoRank.setPareto(pareto);
 		this.maxmim = maxmim;
 		problema = prob;
-		escolherLider = new EscolherTorneioBinario();
+		
+		setMetodoEscolhaLider(el);
 		
 		tipoPoda = tPoda;
 		if(tipoPoda.equals("p-ar"))
@@ -144,12 +148,14 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 * crowd = poda pelo CrowdedOperator = distancia de crowding
 	 * AR = poda que calcula o ranking AR e poda pelo valor de AR
 	 * BR = poda que calcula o ranking AR e poda pelo valor de BR
-	 * ideal = poda que seleciona as solucoes mais proximas dos extremos e da solucao ideal
-	 * prox_ideal = poda que seleciona as solucoes mais proximas dos extremos e da solucao mais proxima da ideal
-	 * euclidiana = poda que utiliza a menor distancia euclidiana de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
+	 * ex_id2 = poda que seleciona as solucoes mais proximas dos extremos e da solucao ideal
+	 * ex_id = poda que seleciona as solucoes mais proximas dos extremos e da solucao mais proxima da ideal
+	 * eucli = poda que utiliza a menor distancia euclidiana de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
 	 * sigma = poda que utiliza a menor distancia euclidiana do vetor sigma de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
 	 * tcheb = poda que utiliza a menor distancia de tchebycheff de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
 	 * rand = aleatorio
+	 * p-ideal = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao ideal
+	 *  p-pr_id = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao mais proxiama ideal
 	 */
 	public void efetuarPoda(){
 		if(rank)
@@ -168,31 +174,41 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 				rankear(pareto.getFronteira());
 				pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 			}
-
+			
 			if(tipoPoda.equals("p-ideal")){
-				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), false)[problema.m];
+				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), false).get(problema.m).get(0);
+				pareto.podarLideresIdeal(tamanhoRepositorio, ideal);
+			}
+			
+			if(tipoPoda.equals("p-pr_id")){
+				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), true).get(problema.m).get(0);
 				pareto.podarLideresExtremosIdeal(tamanhoRepositorio, problema.m, ideal);
 			}
 
-			if(tipoPoda.equals("p-prox_ideal")){
-				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), true)[problema.m];
+			if(tipoPoda.equals("p-ex_id2")){
+				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), false).get(problema.m).get(0);
+				pareto.podarLideresExtremosIdeal(tamanhoRepositorio, problema.m, ideal);
+			}
+
+			if(tipoPoda.equals("p-ex_id")){
+				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), true).get(problema.m).get(0);
 				pareto.podarLideresExtremosIdeal(tamanhoRepositorio, problema.m, ideal);
 			}
 			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
-			if(tipoPoda.equals("p-euclid")){
-				Solucao extremos[] = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
+			if(tipoPoda.equals("p-eucli")){
+				ArrayList<ArrayList<Solucao>> extremos = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
 				definirDistanciasSolucoesProximasIdeais(extremos, pareto.getFronteira(), "euclidiana");
 				pareto.podarLideresDistancia(tamanhoRepositorio);
 			}
 			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
 			if(tipoPoda.equals("p-sigma")){
-				Solucao extremos[] = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
+				ArrayList<ArrayList<Solucao>> extremos = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
 				definirDistanciasSolucoesProximasIdeais(extremos, pareto.getFronteira(), "sigma");
 				pareto.podarLideresDistancia(tamanhoRepositorio);
 			}
 			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
 			if(tipoPoda.equals("p-tcheb")){
-				Solucao extremos[] = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
+				ArrayList<ArrayList<Solucao>> extremos = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
 				definirDistanciasSolucoesProximasIdeais(extremos, pareto.getFronteira(), "tcheb");
 				pareto.podarLideresDistancia(tamanhoRepositorio);
 			}
@@ -343,6 +359,20 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 
 	}
 	
+	public void setMetodoEscolhaLider(String escolha){
+		escolherLider = new EscolherTorneioBinario();
+		if(escolha.equals("torneio"))
+			escolherLider = new EscolherTorneioBinario();
+		if(escolha.equals("sigma"))
+			escolherLider = new EscolherMetodoSigma();
+		if(escolha.equals("ideal"))
+			escolherLider = new EscolherIdeal(problema.m);
+		if(escolha.equals("oposto"))
+			escolherLider = new EscolherOposto();
+		
+			
+	}
+	
 	public void imprimirParticulas(ArrayList<Particula> particulas) throws IOException{
 		PrintStream ps = new PrintStream("fronteiras/particulas.txt");
 		for (Iterator<Particula> iterator = particulas.iterator(); iterator.hasNext();) {
@@ -353,6 +383,24 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			ps.println();
 		}
 		
+	}
+	public void populacaoNoRepositorio(){
+		int contador1 = 0;
+		int contador2 = 0;
+		int contador3 = 0;
+		
+		for (Iterator<Particula> iterator = populacao.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucao = (SolucaoNumerica)iterator.next().solucao;
+		
+		if(pareto.getFronteira().contains(solucao))
+				contador2++;
+		if(pareto.contemSolucaoVariacao(solucao, 0.001))
+			contador1++;
+		if(pareto.contemSolucaoVariacaoEspacobusca(solucao, 0.001))
+			contador3++;
+							
+		}
+		System.out.println(pareto.getFronteira().size() + " - " +  contador2 + " - " + contador1);
 	}
 	
 }

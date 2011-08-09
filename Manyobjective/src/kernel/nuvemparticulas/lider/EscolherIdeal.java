@@ -14,6 +14,7 @@ public class EscolherIdeal extends EscolherLider {
 	
 	public EscolherIdeal(int m){
 		this.m = m;
+		id = "ideal";
 	}
 
 	@Override

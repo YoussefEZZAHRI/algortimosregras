@@ -23,7 +23,7 @@ public class SigmaMOPSO extends MOPSO{
 
 	
 	public SigmaMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator, double smax, String tPoda){
-		super(n,prob,g, a,t, s, maxmim,tRank, ocupacao, fator, smax, tPoda);
+		super(n,prob,g, a,t, s, maxmim,tRank, ocupacao, fator, smax, tPoda,"");
 		
 		escolherLider = new EscolherMetodoSigma();
 

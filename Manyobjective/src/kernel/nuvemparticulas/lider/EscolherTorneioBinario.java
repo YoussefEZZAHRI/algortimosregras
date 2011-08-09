@@ -10,6 +10,10 @@ import kernel.nuvemparticulas.Particula;
 
 public class EscolherTorneioBinario extends EscolherLider {
 	
+	public EscolherTorneioBinario(){
+		id = "torneio";
+	}
+	
 	public void escolherLideres(ArrayList<Particula> populacao, ArrayList<Solucao> lideres){
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = iter.next();

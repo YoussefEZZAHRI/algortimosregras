@@ -18,12 +18,13 @@ public class GerarArquivosConfiguracao {
 		String metodo = "smopso";
 		String exec = "30";
 		String g = "100";
-		String a = "50000";
+		String a = "-1";
 		String p = "250";
 		String r = "250";
 		String rank = "false";
 		String poda = "p-rand";
 		String maxobjhiper = "1";
+		String lider = "torneio";
 		String  direxec = "/home/andre/doutorado/experimentos/poda/";
 		
 		int n = k+m-1;
@@ -44,13 +45,13 @@ public class GerarArquivosConfiguracao {
 			String s = algs[i];
 			String arquivo = "";
 			if(ind.equals(""))
-				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s + ind+ ".txt";
+				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s + "_" +  lider + ind+ ".txt";
 			else
 				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m +"_" + ind+ ".txt";
 			if(!rank.equals("false"))
-				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s + "_" + rank + ".txt";
+				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s  + lider + "_" + rank + ".txt";
 			if(!poda.equals("false"))
-				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s + "_" + poda + ".txt";
+				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s  + "_" +  lider+ "_" + poda + ".txt";
 			PrintStream ps = new PrintStream(arquivo);
 			ps.println("algoritmo = " + metodo);
 			ps.println("problema = " + problema);
@@ -66,6 +67,7 @@ public class GerarArquivosConfiguracao {
 			ps.println("S = " + s);
 			ps.println("rank = " + rank);
 			ps.println("poda = " + poda);				
+			ps.println("lider = " + lider);
 			ps.println("maxobjhiper = " + maxobjhiper);			
 			ps.println("direxec =  " + direxec);
 			

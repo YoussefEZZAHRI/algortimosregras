@@ -9,6 +9,10 @@ import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
 public class EscolherOposto extends EscolherLider {
+	
+	public EscolherOposto(){
+		id = "oposto";
+	}
 
 	@Override
 	public void escolherLideres(ArrayList<Particula> populacao,	ArrayList<Solucao> lideres) {
