@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+
 import problema.Problema;
 import solucao.ComparetorObjetivo;
 import solucao.Solucao;
@@ -28,8 +29,8 @@ public class SMOPSO extends MOPSO{
 	//PrintStream psSol;
 	
 		
-	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double ocupacao, double fator, double smax, String tPoda){
-		super(n,prob,g,a,t,s, maxmim, tRank, ocupacao, fator, smax, tPoda);
+	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double ocupacao, double fator, double smax, String tPoda, String el){
+		super(n,prob,g,a,t,s, maxmim, tRank, ocupacao, fator, smax, tPoda, el);
 		tamanhoRepositorio = tamRep;	
 			
 		/*try{
@@ -64,6 +65,8 @@ public class SMOPSO extends MOPSO{
 		//Obtem os melhores globais para todas as particulas da populacao
 		escolherLider.escolherLideres(populacao, pareto.getFronteira());
 		
+		//double exploiting = geracoes -  Math.round(geracoes/10);
+		
 		
 		escolherParticulasMutacao();
 		//Inicia o laco evolutivo
@@ -72,6 +75,8 @@ public class SMOPSO extends MOPSO{
 				System.out.print(i + " ");
 			if(i % 100 ==0)
 				System.out.println();
+			//if(i>exploiting && !escolherLider.id.equals("exploiting"))
+				//escolherLider = new EscolherExploiting(problema.m);
 			lacoEvolutivo(i);
 		}
 		
@@ -99,13 +104,20 @@ public class SMOPSO extends MOPSO{
 		//calcularCrowdingDistance(pareto.fronteira);
 		//Obtem os melhores globais para todas as particulas da populacao
 		escolherLider.escolherLideres(populacao, pareto.getFronteira());
+		
+		//double exploiting = numeroavalicoes -  Math.round(numeroavalicoes/1.5);
+		//System.out.println(exploiting);
 
 		escolherParticulasMutacao();
 		//Inicia o laco evolutivo
 		while(problema.avaliacoes < numeroavalicoes){
 			if(problema.avaliacoes%5000 == 0)
 				System.out.print(problema.avaliacoes + " ");
+			
+		//	if(problema.avaliacoes>exploiting && !escolherLider.id.equals("exploiting"))
+		//		escolherLider = new EscolherExploiting(problema.m);
 			lacoEvolutivo(problema.avaliacoes);
+			
 		}
 
 		//removerGranularRaio(pareto.getFronteira());
@@ -151,6 +163,9 @@ public class SMOPSO extends MOPSO{
 				
 		//System.out.print (pareto.getFronteira().size()  + " - ");
 		efetuarPoda();
+		
+		//populacaoNoRepositorio();
+		
 		//System.out.println(pareto.getFronteira().size());
 
 		//Recalcula a Crowding distance dos lideres

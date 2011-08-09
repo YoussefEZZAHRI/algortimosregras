@@ -631,11 +631,18 @@ public abstract class AlgoritmoAprendizado {
 	 * @param prox_ideal flag que decide se vai ser escolhida a solucao ideal ou a solucao mais proxima a ideal
 	 * @return Array com as solucoes nos extremos e a ideal
 	 */
-	public Solucao[] obterSolucoesExtremasIdeais(ArrayList<Solucao> solucoes, boolean prox_ideal){
+	public ArrayList<ArrayList<Solucao>> obterSolucoesExtremasIdeais(ArrayList<Solucao> solucoes, boolean prox_ideal){
 		
 		//double[][] retorno = new double[problema.m+1][problema.m];
 		
-		Solucao[] extremos = new Solucao[problema.m+1];
+		ArrayList<ArrayList<Solucao>> extremos2 = new ArrayList<ArrayList<Solucao>>();
+		
+		for(int i = 0; i<problema.m+1; i++){
+			ArrayList<Solucao> extremo_i = new ArrayList<Solucao>();
+			extremos2.add(extremo_i);
+		}
+		
+		//Solucao[] extremos = new Solucao[problema.m+1];
 	
 		
 		Solucao ideal = new SolucaoNumerica(n, problema.m);
@@ -649,25 +656,31 @@ public abstract class AlgoritmoAprendizado {
 			Solucao rep = iter.next();
 			
 			for(int j = 0; j<problema.m;j++){
-				if(rep.objetivos[j]<ideal.objetivos[j]){
+				if(rep.objetivos[j]<=ideal.objetivos[j]){
+					if(rep.objetivos[j]<ideal.objetivos[j])
+						extremos2.get(j).clear();
 					ideal.objetivos[j] = rep.objetivos[j];
-					extremos[j] = rep;
+					//extremos[j] = rep;
+					extremos2.get(j).add(rep);
 				}
 			}
 		}	
 	
-		extremos[problema.m] = ideal;
+		//extremos[problema.m] = ideal;
+		extremos2.get(problema.m).add(ideal);
 		
 		//Busca a solucao mais proxima ideal
 		
-		if(prox_ideal){
+		if(prox_ideal){			
 			double menorDist = Double.MAX_VALUE;
 			for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
 				Solucao rep = iter.next();
 				double distancia = distanciaEuclidiana(rep.objetivos, ideal.objetivos);
 				if(distancia<menorDist){
-					extremos[problema.m] = rep;
+					//extremos[problema.m] = rep;
 					menorDist = distancia;
+					extremos2.get(problema.m).clear();
+					extremos2.get(problema.m).add(rep);
 				}
 
 
@@ -675,7 +688,7 @@ public abstract class AlgoritmoAprendizado {
 			}
 		}
 		
-		return extremos;		
+		return extremos2;		
 	}
 	
 	/**
@@ -684,7 +697,8 @@ public abstract class AlgoritmoAprendizado {
 	 * @param define qual metodo de distancia sera utilizado, euclidiana ou Tchebycheff, e se usa o vetor objetivos ou vetor sigma
 	 * @param solucoes
 	 */
-	public void definirDistanciasSolucoesProximasIdeais(Solucao[] extremos, ArrayList<Solucao> solucoes, String metodoDistancia){
+	public void definirDistanciasSolucoesProximasIdeais(ArrayList<ArrayList<Solucao>> extremos2, ArrayList<Solucao> solucoes, String metodoDistancia){
+		
 		
 		double[] lambda = new double[problema.m];
 		for (int i = 0; i < lambda.length; i++) {
@@ -693,10 +707,16 @@ public abstract class AlgoritmoAprendizado {
 		
 		
 		if(metodoDistancia.equals("sigma")){
-			for (int i = 0; i < extremos.length; i++) {
-				extremos[i].calcularSigmaVector();
-
+			for(int i = 0; i<problema.m + 1; i++){
+				ArrayList<Solucao> extremos_i = extremos2.get(i);
+				for (Iterator<Solucao> iterator = extremos_i.iterator(); iterator
+						.hasNext();) {
+					Solucao solucao = (Solucao) iterator.next();
+					solucao.calcularSigmaVector();
+				}
 			}
+			
+			
 		}
 		
 		//Variavel utiliza para identificar como eh definida a proporcao da distribuicao das solucoes
@@ -710,17 +730,28 @@ public abstract class AlgoritmoAprendizado {
 				solucao.calcularSigmaVector();
 			solucao.menorDistancia = Double.MAX_VALUE;
 			for(int i =0; i<problema.m+1; i++){
-				double distancia = 0 ;
-				if(metodoDistancia.equals("euclidiana"))
-					distancia = distanciaEuclidiana(extremos[i].objetivos, solucao.objetivos);
-				if(metodoDistancia.equals("tcheb"))
-					distancia = distanciaTchebycheff(extremos[i].objetivos, solucao.objetivos, lambda);
-				if(metodoDistancia.equals("sigma"))
-					distancia = distanciaEuclidiana(extremos[i].sigmaVector, solucao.sigmaVector);
-				if(distancia< solucao.menorDistancia){
-					solucao.menorDistancia = distancia;
-					solucao.guia = i;
+				ArrayList<Solucao> extremos_i = extremos2.get(i);
+				for (Iterator<Solucao> iterator2 = extremos_i.iterator(); iterator2
+						.hasNext();) {
+					Solucao solucao_extr_i = (Solucao) iterator2.next();
+
+					double distancia = 0 ;
+					if(metodoDistancia.equals("euclidiana"))
+						distancia = distanciaEuclidiana(solucao_extr_i.objetivos, solucao.objetivos);
+					if(metodoDistancia.equals("tcheb"))
+						distancia = distanciaTchebycheff(solucao_extr_i.objetivos, solucao.objetivos, lambda);
+					if(metodoDistancia.equals("sigma"))
+						distancia = distanciaEuclidiana(solucao_extr_i.sigmaVector, solucao.sigmaVector);
+					if(distancia< solucao.menorDistancia){
+						solucao.menorDistancia = distancia;
+						solucao.guia = i;
+					}
+					
 				}
+				
+				
+				
+				
 				
 			}
 			contador[solucao.guia]++;
