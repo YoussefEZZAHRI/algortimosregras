@@ -1,5 +1,7 @@
 package solucao;
 
+import java.math.BigDecimal;
+
 
 
 
@@ -158,6 +160,17 @@ public abstract class Solucao {
 		}
 		
 		diff = maiorValor - menorValor;
+		
+	}
+	
+	public void arredondar(int casasDecimais){
+		
+		for (int i = 0; i < objetivos.length; i++) {
+			BigDecimal b = new BigDecimal(objetivos[i]);		 
+			objetivos[i] = (b.setScale(casasDecimais, BigDecimal.ROUND_UP)).doubleValue();
+		}
+		
+		
 		
 	}
 		

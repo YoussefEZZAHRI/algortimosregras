@@ -763,6 +763,18 @@ public abstract class AlgoritmoAprendizado {
 		System.out.println();*/
 	}
 	
+	/**
+	 * Método que obtem para cada solucao a distancia em relacao ao ideal
+	 * @param solucoes
+	 */
+	public void calcularDistanciaIdeal(ArrayList<Solucao> solucoes ){
+		Solucao ideal = obterSolucoesExtremasIdeais(solucoes, false).get(problema.m).get(0);
+		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
+			Solucao solucao = iterator.next();
+			solucao.menorDistancia = distanciaEuclidiana(ideal.objetivos, solucao.objetivos);
+		}		
+	}
+	
 	
 	public void imprimirFronteira(ArrayList<Solucao> solucoes, int j, String id) throws IOException{
 		PrintStream ps = new PrintStream("fronteiras/fronteira_" + id + "_" +j+".txt");

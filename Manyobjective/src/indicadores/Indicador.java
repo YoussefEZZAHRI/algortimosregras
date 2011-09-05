@@ -113,7 +113,7 @@ public abstract class Indicador {
 				}
 			} else{
 				calcularFronteira = true;
-				String[] valores = line.split(" ");
+				String[] valores = line.split("\t");
 				if(valores.length<m){
 					System.err.println("Arquivo contem fronteiras com menos objetivos (" + valores.length + ") do que passado como parametro (" + m + ")");
 					System.exit(0);
@@ -180,7 +180,8 @@ public abstract class Indicador {
 		}
 		System.out.println(indicador + " = " + valor);
 		comando.append(valor + ",");
-		psIndGeral.println(valor);
+		//psIndGeral.println(valor);
+		psIndGeral.println(new Double(valor).toString().replace('.', ','));
 	}
 	
 	/**

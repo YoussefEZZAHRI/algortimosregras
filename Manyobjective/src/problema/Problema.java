@@ -1,5 +1,7 @@
 package problema;
 
+import indicadores.PontoFronteira;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -7,6 +9,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import solucao.ComparetorObjetivo;
+import solucao.ComparetorObjetivoPF;
 import solucao.ComparetorRank;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
@@ -244,16 +247,25 @@ public double g7(double[] xm){
 	 * @param n
 	 * @return
 	 */
-	public double[] getJoelho(int n, ArrayList<SolucaoNumerica> fronteiraReal){
+	public double[] getJoelho(int n, ArrayList<PontoFronteira> fronteiraReal){
 		
-				joelho = new double[m];
+			joelho = new double[m];
 			lambda = new double[m];
 			
 			if(fronteiraReal ==null){
 				//N�mero de solucoes na fronteira
 				int numSol = 10000;
 				//Obt�m a fronteira de pareto real para o problema
-				fronteiraReal = obterFronteira(n, numSol);
+				ArrayList<SolucaoNumerica> solucoes = obterFronteira(n, numSol);
+				
+				for (Iterator<SolucaoNumerica> iterator = solucoes.iterator(); iterator
+						.hasNext();) {
+					SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
+							.next();
+					PontoFronteira pf = new PontoFronteira(solucaoNumerica.objetivos);
+					fronteiraReal.add(pf);
+					
+				} 
 			}
 
 			double maxValorObjetivo ,minValorObjetivo; 
@@ -262,13 +274,13 @@ public double g7(double[] xm){
 			double[] pontoCentral = new double[m];
 			
 			
-			//Per corre todos as dimensoes buscando o ponto m�dio
+			//Percorre todos as dimensoes buscando o ponto m�dio
 			for (int i = 0; i < m; i++) {
-				ComparetorObjetivo comp = new ComparetorObjetivo(i);
+				ComparetorObjetivoPF comp = new ComparetorObjetivoPF(i);
 				Collections.sort(fronteiraReal, comp);
 				//Busca os valores m�ximo e m�nimo para o objetivo i na fronteira real
-				minValorObjetivo = ((SolucaoNumerica)fronteiraReal.get(0)).objetivos[i];
-				maxValorObjetivo = ((SolucaoNumerica)fronteiraReal.get(fronteiraReal.size()-1)).objetivos[i];
+				minValorObjetivo = (fronteiraReal.get(0)).objetivos[i];
+				maxValorObjetivo = (fronteiraReal.get(fronteiraReal.size()-1)).objetivos[i];
 				//Calcula o intervalo para o objetivo
 				lambda[i] = (maxValorObjetivo - minValorObjetivo);
 				//Calcula o ponto m�dio para o objetivo
@@ -280,10 +292,10 @@ public double g7(double[] xm){
 
 			int i = 0;
 			//Busca o ponto da fronteira real mais pr�ximo do ponto m�dio
-			for (Iterator<SolucaoNumerica> iterator = fronteiraReal.iterator(); iterator.hasNext();) {
-				SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
+			for (Iterator<PontoFronteira> iterator = fronteiraReal.iterator(); iterator.hasNext();) {
+				PontoFronteira pf = iterator.next();
 
-				double dist = distanciaEuclidiana(pontoCentral, solucaoNumerica.objetivos);
+				double dist = distanciaEuclidiana(pontoCentral, pf.objetivos);
 				if(dist < menorDistancia){
 					menorDistancia = dist;
 					indiceMenorDistancia = i;
@@ -293,7 +305,7 @@ public double g7(double[] xm){
 
 
 
-			SolucaoNumerica j = (SolucaoNumerica) (fronteiraReal.get(indiceMenorDistancia));
+			PontoFronteira j = (fronteiraReal.get(indiceMenorDistancia));
 
 			joelho = new double[m];
 
@@ -305,7 +317,7 @@ public double g7(double[] xm){
 		return joelho;
 		}
 	
-	public double[] getLambda(int n, ArrayList<SolucaoNumerica> fronteiraReal){
+	public double[] getLambda(int n, ArrayList<PontoFronteira> fronteiraReal){
 		if(lambda == null)
 			getJoelho(n, fronteiraReal);
 		return lambda;
@@ -341,7 +353,7 @@ public double g7(double[] xm){
 	public ArrayList<SolucaoNumerica> obterSolucoesExtremas(int n, int s) {
 		ArrayList<SolucaoNumerica> retorno = new ArrayList<SolucaoNumerica>();
 		//N�mero de solucoes na fronteira
-		int numSol = 1000;
+		int numSol = 10000;
 		//Obt�m a fronteira de pareto real para o problema
 		ArrayList<SolucaoNumerica> fronteiraReal = obterFronteira(n, numSol);
 		for(int i = 0; i<m; i++){
@@ -352,7 +364,7 @@ public double g7(double[] xm){
 			}
 		}
 		
-		getJoelho(n, fronteiraReal);
+		getJoelho(n, null);
 		 	
 		
 		for(int i = 0; i<numSol; i++){
