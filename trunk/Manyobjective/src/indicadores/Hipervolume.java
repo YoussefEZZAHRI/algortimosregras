@@ -1,6 +1,7 @@
 package indicadores;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -8,8 +9,9 @@ import java.util.Stack;
 
 
 
+
 /**
- * Calcula o hipervolume de um conjunto de pontos, somente para minimização
+ * Calcula o hipervolume de um conjunto de pontos, somente para minimizaï¿½ï¿½o
  * @author Andre
  *
  */
@@ -19,7 +21,7 @@ public class Hipervolume extends Indicador{
 	
 	/**
 	 * Construtor da classe que calcula o hipervolume.
-	 * @param m Número de objetivos do problema
+	 * @param m Nï¿½mero de objetivos do problema
 	 * @param l Limites superiores para cada objetivo
 	 */
 	public Hipervolume(int m, String caminho, String idExec, double[] l){
@@ -30,15 +32,15 @@ public class Hipervolume extends Indicador{
 		
 	/**
 	 * Funciona pior que ordenar as solucoes pelo primeiro objetivo
-	 * Classe que ordena as soluções de acordo com seus objetivos
-	 * Soluções com valores mais baixos dos objetivos são melhores
+	 * Classe que ordena as soluï¿½ï¿½es de acordo com seus objetivos
+	 * Soluï¿½ï¿½es com valores mais baixos dos objetivos sï¿½o melhores
 	 * @param fronteira
 	 */
 	/*@Deprecated 
 	public void ordenarSolucoes(){
 		if(fronteira != null){
 			double[] medias = new double[m];
-			//Calcula a média para cada objetivo
+			//Calcula a mï¿½dia para cada objetivo
 			for (Iterator<PontoFronteira> iterator = fronteira.iterator(); iterator.hasNext();) {
 				PontoFronteira solucao = (PontoFronteira) iterator.next();
 				solucao.objetivosAcimaMedia = 0;
@@ -53,7 +55,7 @@ public class Hipervolume extends Indicador{
 			}
 
 
-			//Marca para cada solução quantos objetivos estão acima da média
+			//Marca para cada soluï¿½ï¿½o quantos objetivos estï¿½o acima da mï¿½dia
 			for (Iterator<PontoFronteira> iterator = fronteira.iterator(); iterator.hasNext();) {
 				PontoFronteira solucao = iterator.next();
 				for(int i = 0; i<m; i++){
@@ -65,27 +67,27 @@ public class Hipervolume extends Indicador{
 			ComparetorHipervolume comp = new ComparetorHipervolume();
 			Collections.sort(fronteira, comp);
 		} else{
-			System.err.println("Fronteira de Pareto não carregada");
+			System.err.println("Fronteira de Pareto nï¿½o carregada");
 			System.exit(0);
 		}
 	}*/
 	
 	/**
-	 * Método que calcula o hipervolume atraves do algoritmo de Leb Measure
+	 * Mï¿½todo que calcula o hipervolume atraves do algoritmo de Leb Measure
 	 * @param list
 	 * @return
 	 */
 	public double calcular(){
 		
 		if(objetivosMaxMin == null){
-			System.err.println("Erro: Não foi definido se cada objetivo é de maximização ou minimização (Executar Método preencherObjetivosMaxMin)");
+			System.err.println("Erro: Nï¿½o foi definido se cada objetivo ï¿½ de maximizaï¿½ï¿½o ou minimizaï¿½ï¿½o (Executar Mï¿½todo preencherObjetivosMaxMin)");
 			System.exit(0);
 		}
 		
 		if(fronteira!=null){
 			Stack<double[]> list = new Stack<double[]>();
 			
-			//Ordena as soluções pelo primeiro objetivo para acelerar o calculo do hipervolume
+			//Ordena as soluï¿½ï¿½es pelo primeiro objetivo para acelerar o calculo do hipervolume
 			ComparetorObjetivoPontoFronteira comp = new ComparetorObjetivoPontoFronteira(0);
 			Collections.sort(fronteira, comp);
 
@@ -126,7 +128,7 @@ public class Hipervolume extends Indicador{
 
 			return lebMeasure;
 		} else{
-			System.err.println("Erro no cálculo do Hipervolume: Fronteira de Pareto não carregada.");
+			System.err.println("Erro no cï¿½lculo do Hipervolume: Fronteira de Pareto nï¿½o carregada.");
 			System.exit(0);
 			return 0;
 		}
@@ -136,10 +138,10 @@ public class Hipervolume extends Indicador{
 	
 	
 	/**
-	 * Método que retorna o menor valor que é dominado pelo valor fx para o objetivo i, dentre as solucoes em tail
+	 * Mï¿½todo que retorna o menor valor que ï¿½ dominado pelo valor fx para o objetivo i, dentre as solucoes em tail
 	 * @param fxi Valor da objetivo corrente
-	 * @param i Índice do objetivo
-	 * @param tail Soluções em que será procurado o valor limite
+	 * @param i ï¿½ndice do objetivo
+	 * @param tail Soluï¿½ï¿½es em que serï¿½ procurado o valor limite
 	 * @return
 	 */
 	public double getBoundValue(double fxi, int i, Stack<double[]> tail){
@@ -165,10 +167,10 @@ public class Hipervolume extends Indicador{
 	}
 	
 	/**
-	 * Método que cria m novos vetores baseado na remoção de p1 da lista
-	 * @param p1 Vetor que será retirado da lista
-	 * @param i Índice do objetivo tratado 
-	 * @param bi Limite para o índice do objetivo
+	 * Mï¿½todo que cria m novos vetores baseado na remoï¿½ï¿½o de p1 da lista
+	 * @param p1 Vetor que serï¿½ retirado da lista
+	 * @param i ï¿½ndice do objetivo tratado 
+	 * @param bi Limite para o ï¿½ndice do objetivo
 	 * @return Novo vetor baseado em p1
 	 */
 	public double[] spawnVector(double[] p1, int i, double bi){
@@ -182,9 +184,9 @@ public class Hipervolume extends Indicador{
 	}
 	
 	/**
-	 * Método que retira dos spawn vector as soluções que sejam dominadas por soluções presentes na lista
-	 * @param list Lista com as soluções que será utilizadas para o cálculo do hipervolume
-	 * @param spawn spawn vector obtido através da solucao p1
+	 * Mï¿½todo que retira dos spawn vector as soluï¿½ï¿½es que sejam dominadas por soluï¿½ï¿½es presentes na lista
+	 * @param list Lista com as soluï¿½ï¿½es que serï¿½ utilizadas para o cï¿½lculo do hipervolume
+	 * @param spawn spawn vector obtido atravï¿½s da solucao p1
 	 */
 	public void ndFilter(Stack<double[]> list, ArrayList<double[]> spawn){
 		
@@ -219,6 +221,28 @@ public class Hipervolume extends Indicador{
 			
 	}
 	
+	
+	public static void main(String[] args) {
+		 String dir = "/media/dados/Andre/Manyobjective/";		
+		  
+		  //int objetivo = 2;
+		  String problema  = "DTLZ2";
+		  String lider = "torneio";	  
+		  String[] algs = {"0.5_" +lider+ "_p-crowd"};
+		  String metodo = "smopso";
+		  int m = 2;
+		  int num_exec = 1;
+		  double[] l = {5,5};
+		  int objs[] = {2}; 
+		  Hipervolume hiper = new Hipervolume(m, dir, algs[0], l);
+		  hiper.objetivosMaxMin = new double[m];
+		  for (int i = 0; i < objs.length; i++) {
+			hiper.objetivosMaxMin[i] = -1;
+		}
+		  try{
+		  hiper.calcularIndicadorArquivo("/media/dados/Andre/Manyobjective/resultados/smopso/DTLZ2/2/0.5_torneio_p-crowd/smopso_DTLZ2_2_0.5_torneio_p-crowd_fronteira.txt");
+		  }catch(IOException ex){ex.printStackTrace();}
+	}
 	
 
 }

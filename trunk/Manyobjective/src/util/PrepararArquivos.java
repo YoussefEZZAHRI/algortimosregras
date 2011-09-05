@@ -571,10 +571,10 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 		String dir2 = "/home/andre/gemini/doutorado/experimentos/poda/";
 		//int objetivo = 2;
 		String problema  = "DTLZ2";
-		String poda = "p-sigma";
+		String lider = "torneio";
 		
-		String[] algs = {"0.5_ideal_" + poda, "0.5_oposto_" + poda, "0.5_sigma_" + poda};
-		//String[] algs = {"0.5_p-crowd","0.5_p-ar","0.5_p-br","0.5_p-ideal","0.5_p-prox_ideal","0.5_p-euclid","0.5_p-tcheb","0.5_p-sigma"};
+		//String[] algs = {"0.5_ideal_" + poda, "0.5_oposto_" + poda, "0.5_sigma_" + poda};
+		String[] algs = {"0.5_" +lider+ "_p-crowd","0.5_" +lider+ "_p-ar","0.5_" +lider+ "_p-br","0.5_" +lider+ "_p-ideal","0.5_" +lider+ "_p-ex_id","0.5_" +lider+ "_p-eucli","0.5_" +lider+ "_p-tcheb","0.5_" +lider+ "_p-sigma","0.5_" +lider+ "_p-rand"};
 		//String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
 		//String[] algs = {"0.5_ar", "0.5_bro", "0.5_mr", "0.5_nsga", "0.5_mr_bro", "0.5_ar_bro", "0.3_nsga", "0.35_nsga", "0.4_nsga" };
 		//String[] algs = {"0.5_br", "0.5_ar", "0.5_mr", "0.5_gb", "0.5_ar_br", "0.5_ar_gb", "0.5_br_gb", "0.5"};
@@ -588,11 +588,11 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			
 
 
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "gd", objs, algs,poda);
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "igd", objs, algs,poda);
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "spread", objs, algs,poda);
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "np", objs, algs,poda);
-			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "tempo", objs, algs,poda);
+			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "gd", objs, algs,lider);
+			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "igd", objs, algs,lider);
+			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "spread", objs, algs,lider);
+			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "np", objs, algs,lider);
+			pre.preparArquivosIndicadoresTodos(dir, dir2, problema, algs, exec, metodo, "tempo", objs, algs,lider);
 
 			
 

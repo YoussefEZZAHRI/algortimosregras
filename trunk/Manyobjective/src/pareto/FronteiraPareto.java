@@ -1,5 +1,6 @@
 package pareto;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -110,8 +111,8 @@ public class FronteiraPareto {
 		}
 		} else{
 			//novosObjetivosSolucao  = modificacaoDominanciaParetoEqualizar(solucao.objetivos, fator);
-			novosObjetivosSolucao  = modificacaoDominanciaParetoEpsilon(solucao.objetivos, eps);
-			//novosObjetivosSolucao  = solucao.objetivos;
+			//novosObjetivosSolucao  = modificacaoDominanciaParetoEpsilon(solucao.objetivos, eps);
+			novosObjetivosSolucao  = solucao.objetivos;
 			//System.out.println();
 		}
 		
@@ -127,8 +128,8 @@ public class FronteiraPareto {
 					novosObjetivosTemp[i] = modificacaoDominanciaParetoCDAS(temp.objetivos[i], r, S);
 				}
 			} else
-				//novosObjetivosTemp = temp.objetivos;
-				novosObjetivosTemp = modificacaoDominanciaParetoEpsilon(temp.objetivos, eps);
+				novosObjetivosTemp = temp.objetivos;
+				//novosObjetivosTemp = modificacaoDominanciaParetoEpsilon(temp.objetivos, eps);
 				//novosObjetivosTemp = modificacaoDominanciaParetoEqualizar(temp.objetivos, fator);
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
@@ -300,7 +301,10 @@ public class FronteiraPareto {
 			//Para cada solucao calcula sua distancia em relacao a solucao ideal
 			for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 				Solucao solucao = iterator.next();
-				solucao.menorDistancia = AlgoritmoAprendizado.distanciaEuclidiana(ideal.objetivos, solucao.objetivos);				
+				solucao.menorDistancia = AlgoritmoAprendizado.distanciaEuclidiana(ideal.objetivos, solucao.objetivos);
+				//Arredonda a distancia para 4 casas decimais para que a distancia de crowding seja utilizada para diferenciar as solucoes proximas a ideal
+				BigDecimal b = new BigDecimal(solucao.menorDistancia);		 
+				solucao.menorDistancia = (b.setScale(4, BigDecimal.ROUND_UP)).doubleValue();
 			}
 			
 			//Ordena as solucoes em relacao a distancia do idal

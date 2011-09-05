@@ -1,13 +1,20 @@
 package problema;
 
+import java.io.IOException;
+import java.io.PrintStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
 import kernel.AlgoritmoAprendizado;
 
 import pareto.FronteiraPareto;
+import rank.AverageRank;
+import rank.BalancedRank;
+import solucao.ComparetorDistancia;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -62,6 +69,8 @@ public class DTLZ2 extends Problema {
 			fxi *= (Math.sin(solucao.getVariavel(j)*pi_2));
 			//System.out.print("Sen " + j  + " ");
 			//System.out.println();
+			
+		
 			solucao.objetivos[i] = fxi;
 			
 		}
@@ -149,12 +158,17 @@ public class DTLZ2 extends Problema {
 		for (Iterator<SolucaoNumerica> iter = solucoes.iterator(); iter.hasNext();) {
 			SolucaoNumerica rep = iter.next();
 			
+		
 			for(int j = 0; j<m;j++){
+				
+				
 				if(rep.objetivos[j]<ideal.objetivos[j]){
 					ideal.objetivos[j] = rep.objetivos[j];
 					extremos[j] = rep;
 				}
 			}
+			
+			
 		}	
 		
 		double menor = Double.MAX_VALUE;
@@ -181,32 +195,48 @@ public class DTLZ2 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int m = 3;
-		//int numSol = 1000;
+		int m = 30;
+		int numSol = 10000;
 		int k = 10;
 		
 		 DTLZ2 dtlz2 = new DTLZ2(m);
 		 int n = m + k - 1;
 		 
-		 System.out.println(dtlz2.obterDiferencaLimites(n));
+		 //System.out.println(dtlz2.obterDiferencaLimites(n));
 		 
-		// ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
+		 ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
+		 
+		 ArrayList<Solucao> solucoes = new ArrayList<Solucao>();
+		 		 
+		 dtlz2.distanciaIdeal(f);
+		 
+		 solucoes.addAll(f);
+		 
+		 ComparetorDistancia comp = new ComparetorDistancia();
+		 
+		 Collections.sort(solucoes,comp);
+		 
+				 
+		 
+		 
+		 
 			
 		//dtlz2.obterSolucoesExtremas(n, s);
 				 
 				
-		/*try{
-			PrintStream ps = new PrintStream("fronteira_dtlz2" + m);
+		try{
+			PrintStream ps = new PrintStream("pareto/DTLZ2_" + m + "pareto.txt");
 			for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
 						.next();
 				for(int i = 0; i<m; i++){
-					ps.print(solucaoNumerica.objetivos[i] + " ");
+					ps.print(solucaoNumerica.objetivos[i] + "\t");
 				}
 				ps.println();
-				
+							
+
 			}
-		} catch (IOException ex){ex.printStackTrace();}*/
+		} catch (IOException ex){ex.printStackTrace();}
 		
 		
 		/*try{
@@ -229,6 +259,38 @@ public class DTLZ2 extends Problema {
 		System.out.println(pareto);
 		*/
 		
+		
+	}
+
+	public void distanciaIdeal(ArrayList<SolucaoNumerica> solucoes){
+		double[] ideal = new double[m];
+
+		for (int i = 0; i < ideal.length; i++) {
+			ideal[i] = Double.POSITIVE_INFINITY;	
+		}
+
+		//Obtem a solucoes no extremo e calcula a solucao ideal
+		for (Iterator<SolucaoNumerica> iter = solucoes.iterator(); iter.hasNext();) {
+			Solucao rep = iter.next();
+			double maiorValor = 0 ;
+			double menorValor = Double.MAX_VALUE;
+			for(int j = 0; j<m;j++){
+				if(rep.objetivos[j] > maiorValor)
+					maiorValor = rep.objetivos[j];
+				if(rep.objetivos[j]<menorValor)
+					menorValor = rep.objetivos[j];
+				if(rep.objetivos[j]<=ideal[j]){
+					if(rep.objetivos[j]<ideal[j])
+					ideal[j] = rep.objetivos[j];
+				}
+			}
+			rep.rank = maiorValor - menorValor;
+		}
+		
+		for (Iterator<SolucaoNumerica> iter = solucoes.iterator(); iter.hasNext();) {
+			Solucao rep = iter.next();
+			rep.menorDistancia = AlgoritmoAprendizado.distanciaEuclidiana(rep.objetivos, ideal);
+		}
 		
 	}
 

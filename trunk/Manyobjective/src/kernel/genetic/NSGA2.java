@@ -1,7 +1,5 @@
 package kernel.genetic;
 
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,8 +8,11 @@ import java.util.Iterator;
 import pareto.FronteiraPareto;
 import problema.Problema;
 
+import rank.RankDominancia;
 import solucao.ComparetorCrowdedOperator;
+import solucao.ComparetorDistancia;
 import solucao.ComparetorRank;
+import solucao.ComparetorRankDistancia;
 import solucao.SolucaoBinaria;
 import solucao.SolucaoNumerica;
 import solucao.Solucao;
@@ -25,21 +26,27 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	
 	private ComparetorRank compRank = new ComparetorRank();
 	private ComparetorCrowdedOperator compCrwd = new ComparetorCrowdedOperator();
+	private ComparetorRankDistancia compDist = new ComparetorRankDistancia();
+	
 	
 	public String tipoSolucao = null;
 	
 	private String[] maxmim = null;
 	
+	public String tipoPoda = "p-crowd";
 	
 	
-	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts, String[] maxmim, String tRank, double ocupacao, double fator){
+	
+	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts, String[] maxmim, String tRank, double ocupacao, double fator, String tPoda){
 		super(n,prob,g, a,t, tRank, 0);
-		
+		metodoRank = new RankDominancia(problema.m);
 		this.maxmim = maxmim;
 		pareto = new FronteiraPareto(s, maxmim,rank, ocupacao, fator);
 		metodoRank.setPareto(pareto);
 		problema = prob;
 		tipoSolucao = ts;
+		
+		tipoPoda = tPoda;
 
 	}
 
@@ -64,14 +71,16 @@ public class NSGA2 extends AlgoritmoAprendizado {
 			lacoEvolutivo(populacaoCombinada);
 		}
 		
-		for (Iterator<Solucao> iterator = populacao.iterator(); iterator
+		/*for (Iterator<Solucao> iterator = populacao.iterator(); iterator
 				.hasNext();) {
 			Solucao solucao = (Solucao) iterator.next();
 			pareto.add(solucao);
 			
 		}
 		
-		return pareto.getFronteira();
+		return pareto.getFronteira();*/
+		
+		return populacao;
 	}
 	
 	
@@ -109,27 +118,53 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		populacaoCombinada.addAll(populacao);
 		populacaoCombinada.addAll(offspring);
 		rankear(populacaoCombinada);
-		calcularCrowdingDistance(populacaoCombinada);
-		Collections.sort(populacaoCombinada, compCrwd);
+		
+		calcularCrowdingDistanceFront(populacaoCombinada);
+		
+		if(tipoPoda.equals("p-ideal")){
+			calcularDistanciaIdeal(populacaoCombinada);
+		    Collections.sort(populacaoCombinada, compDist);
+		}
+		else
+			Collections.sort(populacaoCombinada, compCrwd);
+
+		
 		populacao.clear();
 		for(int i = 0; i<tamanhoPopulacao; i++){
 			Solucao solucao = populacaoCombinada.get(i);
 			populacao.add(solucao);
 		}
-		calcularCrowdingDistance(populacao);
+	
+		calcularCrowdingDistanceFront(populacao);
 		gerarOffsping(populacao, compCrwd);
 		populacaoCombinada.clear();
-		try{
-		PrintStream psRank = new PrintStream("rank.txt");
-		for (Iterator<Solucao> iterator = populacao.iterator(); iterator
-				.hasNext();) {
+		
+	}
+	
+	/**
+	 * Metodo que calcula a crowding distance de cada front separadamente
+	 * @param populacao
+	 */
+	public void calcularCrowdingDistanceFront(ArrayList<Solucao> populacao){
+		
+		ComparetorRank comp = new ComparetorRank();
+		Collections.sort(populacao, comp);
+		int rank = 0;
+		ArrayList<Solucao> temp = new ArrayList<Solucao>();
+		for (Iterator<Solucao> iterator = populacao.iterator(); iterator.hasNext();) {
 			Solucao solucao = (Solucao) iterator.next();
-			for (int i = 0; i < solucao.objetivos.length; i++) {
-				psRank.print(solucao.objetivos[i] + "\t");
-			}
-			psRank.println(solucao.rank);
+			if(solucao.rank == rank)
+				temp.add(solucao);
+			else{				
+				calcularCrowdingDistance(temp);
+				temp.clear();
+				temp.add(solucao);
+				rank++;				
+			}			
 		}
-		}catch(IOException ex){ex.printStackTrace();}
+		
+		
+		 
 	}
 	
 	public void gerarOffsping(ArrayList<Solucao> solucoes, Comparator<Solucao> comp){

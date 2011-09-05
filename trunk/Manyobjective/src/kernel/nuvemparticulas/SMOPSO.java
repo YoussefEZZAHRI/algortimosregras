@@ -145,6 +145,7 @@ public class SMOPSO extends MOPSO{
 			particula.truncar();
 			//Avalia a particula
 			problema.calcularObjetivos(particula.solucao);
+			//particula.solucao.arredondar(4);
 			//Define o melhor local
 			particula.escolherLocalBest(pareto);
 		}		
@@ -162,7 +163,9 @@ public class SMOPSO extends MOPSO{
 		calcularCrowdingDistance(pareto.getFronteira());
 				
 		//System.out.print (pareto.getFronteira().size()  + " - ");
+		
 		efetuarPoda();
+		
 		
 		//populacaoNoRepositorio();
 		
