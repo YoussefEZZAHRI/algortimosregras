@@ -5,7 +5,7 @@ import java.io.PrintStream;
 
 public class GerarArquivosConfiguracao {
 	
-	public static int k = 10;
+	
 	
 	public static void gerarArquivos(int m, String ind) throws IOException{
 		
@@ -16,25 +16,22 @@ public class GerarArquivosConfiguracao {
 		//String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
 		String[] algs = {"0.5"};
 		String metodo = "smopso";
+		String objetivos = "-";
 		String exec = "30";
 		String g = "100";
 		String a = "-1";
 		String p = "250";
 		String r = "250";
 		String rank = "false";
-		String poda = "p-rand";
-		String maxobjhiper = "1";
+		String poda = "p-crowd";
+		int k = 10;
 		String lider = "torneio";
 		String  direxec = "/home/andre/doutorado/experimentos/poda/";
 		
 		int n = k+m-1;
 		
-		StringBuffer limitesObjetivos = new StringBuffer();
-		StringBuffer objetivos = new StringBuffer();
-		for(int i = 0; i<m; i++){
-			limitesObjetivos.append("8 ");
-			objetivos.append("- ");
-		}
+		
+		
 		
 		if(!ind.equals("")){
 			algs = new String[1];
@@ -45,19 +42,18 @@ public class GerarArquivosConfiguracao {
 			String s = algs[i];
 			String arquivo = "";
 			if(ind.equals(""))
-				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s + "_" +  lider + ind+ ".txt";
+				arquivo = "arquivos/principal_" + metodo + "_"+ problema.toUpperCase() + "_" + m + "_"+s + "_" +  lider +"_"+ ind+ ".txt";
 			else
-				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m +"_" + ind+ ".txt";
+				arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_" + ind+ ".txt";
 			if(!rank.equals("false"))
-				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s  + lider + "_" + rank + ".txt";
+				arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ s  + "_"+lider + "_" + rank + ".txt";
 			if(!poda.equals("false"))
-				arquivo = "arquivos/principal_" + metodo + problema.toUpperCase() + "_" + m + s  + "_" +  lider+ "_" + poda + ".txt";
+				arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ s  + "_" +  lider+ "_" + poda + ".txt";
 			PrintStream ps = new PrintStream(arquivo);
 			ps.println("algoritmo = " + metodo);
 			ps.println("problema = " + problema);
 			ps.println("m = " + m);
-			ps.println("n = " + n);
-			ps.println("limites_objetivos = " + limitesObjetivos);
+			ps.println("k = " + k);
 			ps.println("objetivos = " + objetivos);
 			ps.println("geracoes = " + g);
 			ps.println("numeroavaliacoes = " + a);
@@ -67,8 +63,7 @@ public class GerarArquivosConfiguracao {
 			ps.println("S = " + s);
 			ps.println("rank = " + rank);
 			ps.println("poda = " + poda);				
-			ps.println("lider = " + lider);
-			ps.println("maxobjhiper = " + maxobjhiper);			
+			ps.println("lider = " + lider);			
 			ps.println("direxec =  " + direxec);
 			
 			
@@ -79,7 +74,7 @@ public class GerarArquivosConfiguracao {
 	
 	public static void main(String[] args) {
 
-		int[] ms = {2, 3, 5, 10, 15, 20};
+		int[] ms = {2, 3, 5, 10};
 
 		String ind = "";
 
