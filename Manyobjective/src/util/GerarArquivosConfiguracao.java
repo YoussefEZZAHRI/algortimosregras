@@ -54,7 +54,7 @@ public class GerarArquivosConfiguracao {
 			ps.println("problema = " + problema);
 			ps.println("m = " + m);
 			ps.println("k = " + k);
-			ps.println("objetivos = " + objetivos);
+			ps.println("max_min = " + objetivos);
 			ps.println("geracoes = " + g);
 			ps.println("numeroavaliacoes = " + a);
 			ps.println("populacao = " + p);
