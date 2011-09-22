@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import pareto.AdaptiveGrid;
 import pareto.FronteiraPareto;
 import problema.DTLZ2;
 import problema.Problema;
@@ -36,15 +37,16 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	//Taxa de clonagem
 	public int taxaClonagem = 1;
-	//Numero de divisoes do grid da populacaos secundaria
-	public final int partesGrid;
-	//Probabilidade da mutacao nao uniforme
+
+	///Probabilidade da mutacao nao uniforme
 	public double non_uniform_prob;
 	public double decremento;
 	
 	private String[] maxmim = null;
 	
 	private boolean rank;
+	
+	public int tamanhoGrid;
 	
 	/**
 	 * 
@@ -56,7 +58,7 @@ public class MISA extends AlgoritmoAprendizado {
 	 * @param tc Taxa de clonagem
 	 * * @param pg N�mero de partes da divis�o do grid da popula��o secund�ria
 	 */
-	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg, String[] maxmim, String tRank, double ocupacao, double f){
+	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg, String[] maxmim, String tRank, double ocupacao, double f, int tamanhoGrid){
 		super(n,prob,g,a,t, tRank, ocupacao);
 		
 		taxaClonagem = tc;
@@ -73,6 +75,8 @@ public class MISA extends AlgoritmoAprendizado {
 		//Decremento da muta��o n�o uniforme, variando do incial at� 1/n
 		double diff = non_uniform_prob - PROB_MUT_COD;
 		decremento = diff/(double) t;
+		
+		this.tamanhoGrid = tamanhoGrid;
 		
 	}
 	
@@ -163,7 +167,7 @@ public class MISA extends AlgoritmoAprendizado {
 			problema.calcularObjetivos(s);
 		}
 		
-		populacaoSecundaria = new AdaptiveGrid(problema.m, partesGrid);
+		populacaoSecundaria = new AdaptiveGrid(problema.m, partesGrid,tamanhoGrid );
 		clones = null;
 		pareto = new FronteiraPareto(s, maxmim, rank, limite_ocupacao, fator);
 	}
@@ -410,7 +414,7 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		String[] mm = {"-","-","-"};
 		
-		MISA misa = new MISA(n, prob, g, a,t, 0.25, 7, 25,mm, "false", 0, 0);
+		MISA misa = new MISA(n, prob, g, a,t, 0.25, 7, 25,mm, "false", 0, 0,100);
 		
 		misa.executar();
 		

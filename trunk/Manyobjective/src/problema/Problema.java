@@ -258,6 +258,7 @@ public double g7(double[] xm){
 				//Obt�m a fronteira de pareto real para o problema
 				ArrayList<SolucaoNumerica> solucoes = obterFronteira(n, numSol);
 				
+				fronteiraReal = new ArrayList<PontoFronteira>();
 				for (Iterator<SolucaoNumerica> iterator = solucoes.iterator(); iterator
 						.hasNext();) {
 					SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator

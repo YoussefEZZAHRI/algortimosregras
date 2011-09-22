@@ -44,9 +44,10 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	
 	public int tamanhoRepositorio;
 	
+	
 	public EscolherLider escolherLider = null;
 	
-	public String tipoPoda = "";
+	public String filter = "";
 	
 		
 	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator, double smax, String tPoda, String el){
@@ -62,11 +63,13 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		
 		setMetodoEscolhaLider(el);
 		
-		tipoPoda = tPoda;
-		if(tipoPoda.equals("p-ar"))
+		filter = tPoda;
+		if(filter.equals("p-ar"))
 			metodoRank = new AverageRank(problema.m);
-		if(tipoPoda.equals("p-br"))
+		if(filter.equals("p-br"))
 			metodoRank = new BalancedRank(problema.m);
+		if(filter.equals("p-ag"))
+			partesGrid = 25;
 			
 		
 	}
@@ -156,64 +159,67 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 * rand = aleatorio
 	 * p-ideal = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao ideal
 	 *  p-pr_id = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao mais proxiama ideal
+	 *  p-ag = Poda que adiciona a soluções num grid adaptativo
 	 */
-	public void efetuarPoda(){
+	public void filter(){
 		if(rank)
 			pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 		else{
 			//Poda somente de  acordo com a distancia de Crowding 
-			if(tipoPoda.equals("p-crowd"))
+			if(filter.equals("p-crowd"))
 				pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 			//Calcula o ranking AR e poda de acordo com o AR, caso haja empate usa a distancia de crowding
-			if(tipoPoda.equals("p-ar")){				
+			if(filter.equals("p-ar")){				
 				rankear(pareto.getFronteira());
 				pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 			}
 			//Calcula o ranking BR e poda de acordo com o BR, caso haja empate usa a distancia de crowding
-			if(tipoPoda.equals("p-br")){
+			if(filter.equals("p-br")){
 				rankear(pareto.getFronteira());
 				pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 			}
 			
-			if(tipoPoda.equals("p-ideal")){
+			if(filter.equals("p-ideal")){
 				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), false).get(problema.m).get(0);
 				pareto.podarLideresIdeal(tamanhoRepositorio, ideal);
 			}
 			
-			if(tipoPoda.equals("p-pr_id")){
+			if(filter.equals("p-pr_id")){
 				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), true).get(problema.m).get(0);
 				pareto.podarLideresExtremosIdeal(tamanhoRepositorio, problema.m, ideal);
 			}
 
-			if(tipoPoda.equals("p-ex_id2")){
+			if(filter.equals("p-ex_id2")){
 				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), false).get(problema.m).get(0);
 				pareto.podarLideresExtremosIdeal(tamanhoRepositorio, problema.m, ideal);
 			}
 
-			if(tipoPoda.equals("p-ex_id")){
+			if(filter.equals("p-ex_id")){
 				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), true).get(problema.m).get(0);
 				pareto.podarLideresExtremosIdeal(tamanhoRepositorio, problema.m, ideal);
 			}
 			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
-			if(tipoPoda.equals("p-eucli")){
+			if(filter.equals("p-eucli")){
 				ArrayList<ArrayList<Solucao>> extremos = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
 				definirDistanciasSolucoesProximasIdeais(extremos, pareto.getFronteira(), "euclidiana");
 				pareto.podarLideresDistancia(tamanhoRepositorio);
 			}
 			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
-			if(tipoPoda.equals("p-sigma")){
+			if(filter.equals("p-sigma")){
 				ArrayList<ArrayList<Solucao>> extremos = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
 				definirDistanciasSolucoesProximasIdeais(extremos, pareto.getFronteira(), "sigma");
 				pareto.podarLideresDistancia(tamanhoRepositorio);
 			}
 			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
-			if(tipoPoda.equals("p-tcheb")){
+			if(filter.equals("p-tcheb")){
 				ArrayList<ArrayList<Solucao>> extremos = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
 				definirDistanciasSolucoesProximasIdeais(extremos, pareto.getFronteira(), "tcheb");
 				pareto.podarLideresDistancia(tamanhoRepositorio);
 			}
-			if(tipoPoda.equals("p-rand"))
+			if(filter.equals("p-rand"))
 				pareto.podarLideresAleatorio(tamanhoRepositorio);
+			if(filter.equals("p-ag"))
+				pareto.podarAdaptiveGrid(tamanhoRepositorio, problema.m, partesGrid);
 		}
 			
 		
@@ -369,6 +375,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			escolherLider = new EscolherIdeal(problema.m);
 		if(escolha.equals("oposto"))
 			escolherLider = new EscolherOposto();
+		
 		
 			
 	}

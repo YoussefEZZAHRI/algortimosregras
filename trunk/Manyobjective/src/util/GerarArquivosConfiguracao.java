@@ -27,11 +27,7 @@ public class GerarArquivosConfiguracao {
 		int k = 10;
 		String lider = "torneio";
 		String  direxec = "/home/andre/doutorado/experimentos/poda/";
-		
-		int n = k+m-1;
-		
-		
-		
+				
 		
 		if(!ind.equals("")){
 			algs = new String[1];

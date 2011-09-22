@@ -13,8 +13,10 @@ import java.util.Stack;
 /**
  * Calcula o hipervolume de um conjunto de pontos, somente para minimiza��o
  * @author Andre
+ * @deprecated Calculo errado
  *
  */
+
 public class Hipervolume extends Indicador{
 	
 	public double[] limites;
@@ -226,12 +228,12 @@ public class Hipervolume extends Indicador{
 		 String dir = "/media/dados/Andre/Manyobjective/";		
 		  
 		  //int objetivo = 2;
-		  String problema  = "DTLZ2";
+		  
 		  String lider = "torneio";	  
 		  String[] algs = {"0.5_" +lider+ "_p-crowd"};
-		  String metodo = "smopso";
+		  
 		  int m = 2;
-		  int num_exec = 1;
+		  
 		  double[] l = {5,5};
 		  int objs[] = {2}; 
 		  Hipervolume hiper = new Hipervolume(m, dir, algs[0], l);

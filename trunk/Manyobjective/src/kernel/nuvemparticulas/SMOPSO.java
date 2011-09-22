@@ -83,7 +83,7 @@ public class SMOPSO extends MOPSO{
 		//removerGranularRaio(pareto.getFronteira());
 		calcularCrowdingDistance(pareto.getFronteira());
 		
-		efetuarPoda();
+		filter();
 		
 		return pareto.getFronteira();
 		
@@ -122,7 +122,7 @@ public class SMOPSO extends MOPSO{
 
 		//removerGranularRaio(pareto.getFronteira());
 		calcularCrowdingDistance(pareto.getFronteira());
-		efetuarPoda();
+		filter();
 
 		return pareto.getFronteira();
 		
@@ -164,8 +164,15 @@ public class SMOPSO extends MOPSO{
 				
 		//System.out.print (pareto.getFronteira().size()  + " - ");
 		
-		efetuarPoda();
+		try{
+			imprimirFronteira(pareto.getFronteira(), 0, "ag");
+		}catch(IOException ex){ex.printStackTrace();}
 		
+		filter();
+		
+		try{
+			imprimirFronteira(pareto.getFronteira(), 0, "ag");
+		}catch(IOException ex){ex.printStackTrace();}
 		
 		//populacaoNoRepositorio();
 		

@@ -2,7 +2,6 @@ package principal;
 
 import indicadores.Dominance;
 import indicadores.GD;
-import indicadores.Hipervolume;
 import indicadores.IGD;
 import indicadores.Indicador;
 import indicadores.NumeroPontos;
@@ -112,7 +111,7 @@ public class Principal {
 					if(principal.alg.equals("smopso"))
 						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank, principal.ocupacao, principal.fator, principal.S_MAX, principal.tipoPoda, principal.escolhaLider);
 					if(principal.alg.equals("misa"))
-						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank, principal.ocupacao, principal.fator);
+						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank, principal.ocupacao, principal.fator, principal.repositorio);
 					if(principal.alg.equals("nsga2"))
 						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao, principal.maxmimObjetivos, principal.tipoRank, principal.ocupacao, principal.fator, principal.tipoPoda);
 					
@@ -527,7 +526,7 @@ public class Principal {
 				}
 
 				
-				if(tag.equals("objetivos")){
+				if(tag.equals("max_min")){
 					StringBuffer obj = new StringBuffer();
 					for(int i = 0;i<m; i++)
 						obj.append(" " + valor);

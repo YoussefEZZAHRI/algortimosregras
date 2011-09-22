@@ -10,7 +10,6 @@ import problema.Problema;
 
 import rank.RankDominancia;
 import solucao.ComparetorCrowdedOperator;
-import solucao.ComparetorDistancia;
 import solucao.ComparetorRank;
 import solucao.ComparetorRankDistancia;
 import solucao.SolucaoBinaria;

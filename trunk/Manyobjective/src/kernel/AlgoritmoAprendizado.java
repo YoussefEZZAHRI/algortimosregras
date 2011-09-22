@@ -47,10 +47,8 @@ public abstract class AlgoritmoAprendizado {
 	
 	public double limite_ocupacao;
 	
-	
-	
-	
-	
+	//Numero de divisoes do grid adaptativo
+	public int partesGrid;
 	
 	private final double MAX_MUT = 0.5;
 	//Flag que indica se algum metodo de rankeamento many-objetivo sera utilizado
