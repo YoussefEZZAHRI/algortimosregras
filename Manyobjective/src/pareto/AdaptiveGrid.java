@@ -1,4 +1,4 @@
-package kernel.misa;
+package pareto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,32 +10,32 @@ import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
 /**
- * Classe que representa um grid adaptativo proposto por Knowles e Corne utilizado como a população secundária no algoritmo MISA
+ * Classe que representa um grid adaptativo proposto por Knowles e Corne
  * @author Andre
  *
  */
 public class AdaptiveGrid {
 	
-	//Array de número reais que representa os pontos do grid
+	//Array de nï¿½mero reais que representa os pontos do grid
 	public double[][] grid = null;
-	//Tabela hash que contém as soluções de cada célula do grid
+	//Tabela hash que contï¿½m as soluï¿½ï¿½es de cada cï¿½lula do grid
 	public HashMap<Integer, ArrayList<Solucao>> solucoes = null;
-	//Tabela hash que contém qtas soluções existem em cada célula
+	//Tabela hash que contï¿½m qtas soluï¿½ï¿½es existem em cada cï¿½lula
 	public HashMap<Integer, Integer> lotacao = null;
-	//Número de intervalos do grid passado como parâmetro
+	//Nï¿½mero de intervalos do grid passado como parï¿½metro
 	public int numIntervalos;
-	//Array que contém os maiores valores encontrados até então para cada dimensão do grid
+	//Array que contï¿½m os maiores valores encontrados atï¿½ entï¿½o para cada dimensï¿½o do grid
 	public double[] maxValGrid = null;
-	//População máxima do grid
-	public final int MAX_POP = 100;
+	//Populacao maxima do grid
+	public int MAX_POP;
 	
 	
 	/**
 	 * Construtor da classe. 
-	 * @param m Número de objetivos do problema
-	 * @param p Número de partições do grid
+	 * @param m Nï¿½mero de objetivos do problema
+	 * @param p Nï¿½mero de partiï¿½ï¿½es do grid
 	 */
-	public AdaptiveGrid(int m, int p){
+	public AdaptiveGrid(int m, int p, int tamanho){
 		maxValGrid = new double[m];
 		grid = new double[m][p+1];
 		
@@ -43,11 +43,13 @@ public class AdaptiveGrid {
 		
 		solucoes = new HashMap<Integer, ArrayList<Solucao>>();
 		lotacao = new HashMap<Integer, Integer>();
+		
+		MAX_POP = tamanho;
 	}
 	
 	/**
-	 * Método que adapta o grid aos novos objetivos que serão inseridos
-	 * Reinsere os elementos no grid de acordo com as novas células
+	 * Metodo que adapta o grid aos novos objetivos que serao inseridos
+	 * Reinsere os elementos no grid de acordo com as novas celulas
 	 * @param objetivos
 	 */
 	public void construirGrid(double[] objetivos){
@@ -60,7 +62,7 @@ public class AdaptiveGrid {
 				maxValGrid[i] = objetivo;
 			}
 		}
-		//Caso sim, calcula as novas células do grid
+		//Caso sim, calcula as novas cï¿½lulas do grid
 		if(modificaoGrid){
 			for(int i = 0; i<objetivos.length; i++){
 				double intervalo = maxValGrid[i]/numIntervalos;
@@ -93,7 +95,7 @@ public class AdaptiveGrid {
 					lotacao.put(cel, contCelula);
 				}
 			}
-			/*for(int i = 0; i<objetivos.length; i++){
+			/*fo//r(int i = 0; i<objetivos.length; i++){
 				System.out.print(i + ": ");
 				for(int j = 0; j<=numIntervalos; j++)
 					System.out.print(grid[i][j] + " ");
@@ -104,13 +106,13 @@ public class AdaptiveGrid {
 	}
 	
 	/**
-	 * Obtém qual célula a solução será inserida. A célula é definda por um ponto no grid.
-	 * @param objetivos Valores dos objetivos da solução
-	 * @return O índice da célula 
+	 * Obtï¿½m qual cï¿½lula a soluï¿½ï¿½o serï¿½ inserida. A cï¿½lula ï¿½ definda por um ponto no grid.
+	 * @param objetivos Valores dos objetivos da soluï¿½ï¿½o
+	 * @return O ï¿½ndice da cï¿½lula 
 	 */
 	public int obterCelula(double[] objetivos){
 		int indices[] = new int[objetivos.length];
-		//Obtém qual ponto do grid os objetivos estão associados
+		//Obtï¿½m qual ponto do grid os objetivos estï¿½o associados
 		//Representado pelo indice do ponto na matriz grid
 		for (int i = 0; i < objetivos.length; i++) {
 			double objetivo = objetivos[i];
@@ -124,7 +126,7 @@ public class AdaptiveGrid {
 			}
 			indices[i] = indice;
 		}
-		//Obtém um identificador única para cada célula de acordo com o ponto do grid	
+		//Obtï¿½m um identificador ï¿½nica para cada cï¿½lula de acordo com o ponto do grid	
 		int quad = indices[0];
 		for (int k = 1; k < indices.length; k++) {
 			quad +=   indices[k]*(Math.pow(numIntervalos, k)); 
@@ -135,9 +137,9 @@ public class AdaptiveGrid {
 	}
 	
 	/**
-	 * Método que adiciona um elemento no grid de acordo com o algoritmo MISA
-	 * @param solucao Solução a ser adicionada
-	 * @return True caso sim, false caso não
+	 * Metodo que adiciona um elemento no grid
+	 * @param solucao Solucao a ser adicionada
+	 * @return True caso sim, false caso nao
 	 */
 	public boolean add(SolucaoNumerica solucao){
 		construirGrid(solucao.objetivos);
@@ -146,18 +148,18 @@ public class AdaptiveGrid {
 		if(solKey == null){
 			solKey = new ArrayList<Solucao>();
 		}
-		//Se a solução já existe no hash não a adiciona
+		//Se a solucao ja existe no hash nao a adiciona
 		if(solKey.contains(solucao))
 			return false;
 		
 		
-		//Se o grid estiver cheio retira um elemento da célula mais cheia
+		//Se o grid estiver cheio retira um elemento da celula mais cheia
 		if(isFull()){
 			Integer mostCrowded = obterMostCrowded();
-			//Se a solução pertence à célula mais cheia não a adiciona
+			//Se a solucao pertence a calula mais cheia nao a adiciona
 			if(cel.equals(mostCrowded))
 			   return false;
-			//Retira uma solução da célula mais cheia aleatoriamente
+			//Retira uma solucao da celula mais cheia aleatoriamente
 			ArrayList<Solucao> celulaCrowded = solucoes.get(mostCrowded);
 			int elementoEliminado = (int)((Math.random() * MAX_POP) % celulaCrowded.size());
 			celulaCrowded.remove(elementoEliminado);
@@ -169,7 +171,7 @@ public class AdaptiveGrid {
 		}
 		
 		
-		//Adiciona a solução no grid
+		//Adiciona a solucao no grid
 		solKey.add(solucao);
 		solucoes.put(cel, solKey);
 		
@@ -183,7 +185,7 @@ public class AdaptiveGrid {
 	}
 	
 	/**
-	 * Método que obtém qual célula está mais cheia no grid
+	 * Metodo que obtem qual celula esta mais cheia no grid
 	 * @return
 	 */
 	public Integer obterMostCrowded(){
@@ -209,8 +211,8 @@ public class AdaptiveGrid {
 	
 	
 	/**
-	 * Retorna a média de ocupação de cada célula do grid
-	 * @return Média
+	 * Retorna a media de ocupacao de cada celula do grid
+	 * @return Media
 	 */
 	public double obterMediaOcupacao(){
 		int soma = 0;
@@ -223,8 +225,8 @@ public class AdaptiveGrid {
 	}
 	
 	/**
-	 * Método que retorna todas as soluções dso grid em uma só lista	
-	 * @return Lista com todas as soluções do grid
+	 * Metodo que retorna todas as solucoes dso grid em uma so lista	
+	 * @return Lista com todas as solucoees do grid
 	 */
 	public ArrayList<Solucao> getAll(){
 		ArrayList<Solucao> retorno = new ArrayList<Solucao>();

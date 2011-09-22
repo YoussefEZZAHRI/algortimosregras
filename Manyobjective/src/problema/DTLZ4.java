@@ -1,6 +1,7 @@
 package problema;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -132,16 +133,28 @@ public class DTLZ4 extends Problema {
 		System.out.println(pareto);
 		*/
 		
-		int m = 2;
-		int numSol = 1000;
+		int m = 30;
+		int numSol = 10000;
 		int k = 10;
 		
 		int n = m + k - 1;
 		
 		DTLZ4 dtlz4 = new DTLZ4(m);
 		
+		ArrayList<SolucaoNumerica> f = dtlz4.obterFronteira(n, numSol);
+		
 		try{
-			dtlz4.imprimirFronteirar(n, m, numSol);
+			PrintStream ps = new PrintStream("pareto/DTLZ4_" + m + "pareto.txt");
+			for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
+						.next();
+				for(int i = 0; i<m; i++){
+					ps.print(solucaoNumerica.objetivos[i] + "\t");
+				}
+				ps.println();
+							
+
+			}
 		} catch (IOException ex){ex.printStackTrace();}
 		
 		

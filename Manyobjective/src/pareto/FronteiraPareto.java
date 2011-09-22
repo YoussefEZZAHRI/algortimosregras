@@ -28,6 +28,7 @@ public class FronteiraPareto {
 	
 	public String[] maxmim = null;
 	
+	public AdaptiveGrid grid = null;
 
 	public double fator;
 	
@@ -101,7 +102,7 @@ public class FronteiraPareto {
 		
 		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
 		
-		double eps = 0.01;
+		//double eps = 0.01;
 
 		double r = 0;
 		if(S!=0.5){
@@ -315,6 +316,18 @@ public class FronteiraPareto {
 				fronteira.remove(fronteira.remove(fronteira.size()-1));
 		}
 
+	}
+	
+	public void podarAdaptiveGrid(int tamanhoRepositorio, int m, int pg){
+		if(fronteira.size()> tamanhoRepositorio){
+			grid = new AdaptiveGrid(m, pg, tamanhoRepositorio);
+			for (Iterator<Solucao> iterator = fronteira.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+				grid.add(solucao);
+			}
+			fronteira.clear();
+			fronteira.addAll(grid.getAll());
+		}
 	}
 	
 	/**

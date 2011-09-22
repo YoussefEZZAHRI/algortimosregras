@@ -1,6 +1,7 @@
 package problema;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -301,18 +302,42 @@ public class DTLZ7 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int m = 2;
-		int numSol = 1000;
+		int[] ms = {2,3,5,10,15,20,25,30};
+		int numSol = 10000;
 		int k = 10;
-		int n = m + k - 1;
 		
-		//int decimalPlace = 5;
-		DTLZ7 dtlz7 = new DTLZ7(m);
 		
-		try{
-			dtlz7.imprimirFronteirar(n, m, numSol);
-		} catch (IOException ex){ex.printStackTrace();}
-		
+		for (int i = 0; i < ms.length; i++) {
+
+			int m = ms[i];
+			
+			System.out.println(m);
+
+			int n = m + k - 1;
+
+			//int decimalPlace = 5;
+			DTLZ7 dtlz7 = new DTLZ7(m);
+
+
+
+
+			ArrayList<SolucaoNumerica> f = dtlz7.obterFronteira(n, numSol);
+
+			try{
+				PrintStream ps = new PrintStream("pareto/DTLZ7_" + m + "_pareto.txt");
+				for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
+					SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
+					.next();
+					for(int j = 0; j<m; j++){
+						ps.print(solucaoNumerica.objetivos[j] + "\t");
+					}
+					ps.println();
+
+
+				}
+			} catch (IOException ex){ex.printStackTrace();}
+
+		}
 		/*dtlz7.inc = 0.01;
 		
 		//dtlz7.obterFronteira2(n, numSol);

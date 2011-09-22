@@ -138,7 +138,47 @@ public class DTLZ3 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int m = 3;
+		
+		int[] ms = {2,3,5,10,15,20,25,30};
+		int numSol = 10000;
+		int k = 10;
+		
+		System.out.println("DTLZ3");
+		for (int i = 0; i < ms.length; i++) {
+
+			int m = ms[i];
+			
+			System.out.println(m);
+
+			int n = m + k - 1;
+
+			//int decimalPlace = 5;
+			DTLZ3 dtlz3 = new DTLZ3(m);
+
+			
+
+
+			ArrayList<SolucaoNumerica> f = dtlz3.obterFronteira(n, numSol);
+
+			try{
+				PrintStream ps = new PrintStream("pareto/DTLZ3_" + m + "_pareto.txt");
+				for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
+					SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
+					.next();
+					for(int j = 0; j<m; j++){
+						ps.print(solucaoNumerica.objetivos[j] + "\t");
+					}
+					ps.println();
+
+
+				}
+			} catch (IOException ex){ex.printStackTrace();}
+
+		}
+		
+		
+		
+		/*int m = 3;
 
 		DTLZ3 dtlz3 = new DTLZ3(m);
 		ArrayList<SolucaoNumerica> f =  dtlz3.obterFronteira(12, 100);
@@ -196,7 +236,7 @@ public class DTLZ3 extends Problema {
 		System.out.println();
 		
 		
-		
+		*/
 	}
 
 }

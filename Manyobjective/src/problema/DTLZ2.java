@@ -2,7 +2,6 @@ package problema;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import java.util.Collections;
@@ -12,8 +11,6 @@ import java.util.Random;
 import kernel.AlgoritmoAprendizado;
 
 import pareto.FronteiraPareto;
-import rank.AverageRank;
-import rank.BalancedRank;
 import solucao.ComparetorDistancia;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
@@ -195,7 +192,7 @@ public class DTLZ2 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int m = 30;
+		int m = 25;
 		int numSol = 10000;
 		int k = 10;
 		
