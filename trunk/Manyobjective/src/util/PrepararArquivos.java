@@ -172,14 +172,15 @@ public class PrepararArquivos {
 			String arq = dir + "resultados/" + metodo + "/" + problema + "/" + objetivo + "/" +			
 			algoritmos[j] + "/" + metodo + "_" + problema + "_" + objetivo + "_" + algoritmos[j] + "_" + ind + ".txt";
 			
-			String arqComando2 = dir + "resultados/" + metodo + "/" + problema + "/" + objetivo + "/" +			
+			//trucamento dos valores para 8 casas decimais
+			/*String arqComando2 = dir + "resultados/" + metodo + "/" + problema + "/" + objetivo + "/" +			
 			algoritmos[j] + "/" + metodo + "_" + problema + "_" + objetivo + "_" + algoritmos[j] + "_" + ind + "_comando.txt";
 			
 			PrintStream psComando2 = new PrintStream(arqComando2);
 			
 			StringBuffer comando2 = new StringBuffer();
 			
-			comando2.append(metodo + "_" + problema + "_" + objetivo + "_" + algoritmos[j] + "_" + ind  +"<- c(");
+			comando2.append(metodo + "_" + problema + "_" + objetivo + "_" + algoritmos[j] + "_" + ind  +"<- c(");*/
 
 		
 
@@ -197,16 +198,16 @@ public class PrepararArquivos {
 					//try{
 					valores[j][tam++] = val;
 					
-					BigDecimal b = new BigDecimal(val);		 
+					/*BigDecimal b = new BigDecimal(val);		 
 					val = (b.setScale(8, BigDecimal.ROUND_UP)).doubleValue();
-					comando2.append(val + ",");
+					comando2.append(val + ",");*/
 					//} catch(ArrayIndexOutOfBoundsException x){x.printStackTrace();}
 				}
 			}
 			
-			comando2.deleteCharAt(comando2.length()-1);
+			/*comando2.deleteCharAt(comando2.length()-1);
 			comando2.append(")");
-			psComando2.println(comando2);
+			psComando2.println(comando2);*/
 		}  
 		
 		
