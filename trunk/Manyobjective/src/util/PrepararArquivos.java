@@ -541,7 +541,7 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			
 			
 			
-			String alg = metodo + problema + "_" + objetivo + algoritmos[j] + "_" + ind;
+			String alg = metodo + "_" + problema + "_" + objetivo + "_" + algoritmos[j] + "_" + ind;
 			
 			
 			comandos.append(alg + ",");
