@@ -50,11 +50,11 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	public String filter = "";
 	
 		
-	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator, double smax, String tPoda, String el){
+	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator, double smax, String tPoda, String el, double eps){
 		super(n,prob,g, a,t, tRank, ocupacao);
 		populacao = new ArrayList<Particula>();
 		//repositorio = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(s, maxmim,rank, ocupacao, fator);
+		pareto = new FronteiraPareto(s, maxmim,rank, ocupacao, fator, eps);
 		S_MAX = smax;
 		if(rank)
 			metodoRank.setPareto(pareto);
@@ -80,7 +80,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 */
 	public void reiniciarExecucao(){
 		populacao = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.limite_ocupacao, pareto.fator);
+		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.limite_ocupacao, pareto.fator, pareto.eps);
 		problema.avaliacoes =0; 
 	}
 	

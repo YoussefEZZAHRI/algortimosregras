@@ -383,7 +383,7 @@ public abstract class AlgoritmoAprendizado {
 	
 	
 	public ArrayList<Solucao> removerCDAS(ArrayList<Solucao> solucoes, double S){
-		FronteiraPareto pareto2 = new FronteiraPareto(S, pareto.maxmim, pareto.rank, 0.0, 0.0);
+		FronteiraPareto pareto2 = new FronteiraPareto(S, pareto.maxmim, pareto.rank, 0.0, 0.0, 0);
 		
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();

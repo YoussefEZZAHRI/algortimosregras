@@ -29,8 +29,8 @@ public class SMOPSO extends MOPSO{
 	//PrintStream psSol;
 	
 		
-	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double ocupacao, double fator, double smax, String tPoda, String el){
-		super(n,prob,g,a,t,s, maxmim, tRank, ocupacao, fator, smax, tPoda, el);
+	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double ocupacao, double fator, double smax, String tPoda, String el, double eps){
+		super(n,prob,g,a,t,s, maxmim, tRank, ocupacao, fator, smax, tPoda, el, eps);
 		tamanhoRepositorio = tamRep;	
 			
 		/*try{
@@ -145,7 +145,7 @@ public class SMOPSO extends MOPSO{
 			particula.truncar();
 			//Avalia a particula
 			problema.calcularObjetivos(particula.solucao);
-			//particula.solucao.arredondar(4);
+			particula.solucao.arredondar();
 			//Define o melhor local
 			particula.escolherLocalBest(pareto);
 		}		
