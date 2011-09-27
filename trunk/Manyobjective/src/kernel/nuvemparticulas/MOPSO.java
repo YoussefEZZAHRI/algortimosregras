@@ -20,6 +20,12 @@ import kernel.nuvemparticulas.lider.EscolherLider;
 import kernel.nuvemparticulas.lider.EscolherMetodoSigma;
 import kernel.nuvemparticulas.lider.EscolherOposto;
 import kernel.nuvemparticulas.lider.EscolherTorneioBinario;
+import kernel.nuvemparticulas.lider.EscolherAleatorio;
+import kernel.nuvemparticulas.lider.EscolherWSum;
+import kernel.nuvemparticulas.lider.EscolherNWSum;
+
+
+
 
 
 /**
@@ -367,14 +373,20 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	
 	public void setMetodoEscolhaLider(String escolha){
 		escolherLider = new EscolherTorneioBinario();
-		if(escolha.equals("torneio"))
+		if(escolha.equals("tb"))
 			escolherLider = new EscolherTorneioBinario();
 		if(escolha.equals("sigma"))
 			escolherLider = new EscolherMetodoSigma();
 		if(escolha.equals("ideal"))
 			escolherLider = new EscolherIdeal(problema.m);
-		if(escolha.equals("oposto"))
+		if(escolha.equals("op"))
 			escolherLider = new EscolherOposto();
+		if(escolha.equals("rdm"))
+			escolherLider = new EscolherAleatorio();
+		if(escolha.equals("WSum"))
+			escolherLider = new EscolherWSum();
+		if(escolha.equals("NWSum"))
+			escolherLider = new EscolherNWSum();
 		
 		
 			
