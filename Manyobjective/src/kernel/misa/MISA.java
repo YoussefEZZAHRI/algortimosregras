@@ -34,6 +34,7 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	public double s;
 	public double fator;
+	public double eps;
 	
 	//Taxa de clonagem
 	public int taxaClonagem = 1;
@@ -58,7 +59,7 @@ public class MISA extends AlgoritmoAprendizado {
 	 * @param tc Taxa de clonagem
 	 * * @param pg N�mero de partes da divis�o do grid da popula��o secund�ria
 	 */
-	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg, String[] maxmim, String tRank, double ocupacao, double f, int tamanhoGrid){
+	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg, String[] maxmim, String tRank, double ocupacao, double f, int tamanhoGrid, double e){
 		super(n,prob,g,a,t, tRank, ocupacao);
 		
 		taxaClonagem = tc;
@@ -67,6 +68,8 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		this.s = s;
 		this.fator = f;
+		
+		eps = e;
 		
 		this.maxmim = maxmim;
 		
@@ -141,7 +144,7 @@ public class MISA extends AlgoritmoAprendizado {
 		//Adiciona todos os clones na popula��o atual
 		populacao.addAll(clones);
 		//Obt�m os novos l�deres da popula��o
-		FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S, maxmim, rank, limite_ocupacao, pareto.fator);
+		FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S, maxmim, rank, limite_ocupacao, pareto.fator, pareto.eps);
 		encontrarSolucoesNaoDominadas(populacao, paretoTemp);
 		//Reduz a popula��o com o tamanho passado como parametro
 		reduzirPopulacao(populacao, paretoTemp);
@@ -169,7 +172,7 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		populacaoSecundaria = new AdaptiveGrid(problema.m, partesGrid,tamanhoGrid );
 		clones = null;
-		pareto = new FronteiraPareto(s, maxmim, rank, limite_ocupacao, fator);
+		pareto = new FronteiraPareto(s, maxmim, rank, limite_ocupacao, fator, eps);
 	}
 	
 
@@ -362,7 +365,7 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	public void mutacaoSolucoesNaoTaoBoas(ArrayList<Solucao> clones){
 		
-		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S, maxmim, rank, limite_ocupacao, fator);
+		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S, maxmim, rank, limite_ocupacao, fator, eps);
 		encontrarSolucoesNaoDominadas(clones, clonesNaoDominados);
 		ArrayList<Solucao> melhores = clonesNaoDominados.getFronteira();
 		
@@ -414,7 +417,7 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		String[] mm = {"-","-","-"};
 		
-		MISA misa = new MISA(n, prob, g, a,t, 0.25, 7, 25,mm, "false", 0, 0,100);
+		MISA misa = new MISA(n, prob, g, a,t, 0.25, 7, 25,mm, "false", 0, 0,100,0);
 		
 		misa.executar();
 		

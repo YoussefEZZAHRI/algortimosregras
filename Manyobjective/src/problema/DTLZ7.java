@@ -145,7 +145,7 @@ public class DTLZ7 extends Problema {
 		
 		double ocupacao = 0;
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao,0);
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao,0,0);
 		                         
 				
 		while(pareto.getFronteira().size()<numSol){
@@ -198,7 +198,7 @@ public class DTLZ7 extends Problema {
 		
 		double ocupacao = 0;
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao,0);
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao,0,0);
 		
 		SolucaoNumerica solucaoBase = new SolucaoNumerica(n, m);
 		

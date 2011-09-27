@@ -16,15 +16,15 @@ import solucao.SolucaoNumerica;
  */
 public class AdaptiveGrid {
 	
-	//Array de n�mero reais que representa os pontos do grid
+	//Array de numero reais que representa os pontos do grid
 	public double[][] grid = null;
-	//Tabela hash que cont�m as solu��es de cada c�lula do grid
+	//Tabela hash que cont�m as solucoes de cada c�lula do grid
 	public HashMap<Integer, ArrayList<Solucao>> solucoes = null;
-	//Tabela hash que cont�m qtas solu��es existem em cada c�lula
+	//Tabela hash que cont�m qtas solucoes existem em cada celula
 	public HashMap<Integer, Integer> lotacao = null;
-	//N�mero de intervalos do grid passado como par�metro
+	//N�mero de intervalos do grid passado como parametro
 	public int numIntervalos;
-	//Array que cont�m os maiores valores encontrados at� ent�o para cada dimens�o do grid
+	//Array que contem os maiores valores encontrados ate entao para cada dimensao do grid
 	public double[] maxValGrid = null;
 	//Populacao maxima do grid
 	public int MAX_POP;

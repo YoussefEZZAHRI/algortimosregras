@@ -1,9 +1,5 @@
 package solucao;
 
-import java.math.BigDecimal;
-
-
-
 
 /**
  * Classe que representa uma solu��o formada por um vetor de numeros reais
@@ -163,11 +159,11 @@ public abstract class Solucao {
 		
 	}
 	
-	public void arredondar(int casasDecimais){
+	public void arredondar(){
 		
 		for (int i = 0; i < objetivos.length; i++) {
-			BigDecimal b = new BigDecimal(objetivos[i]);		 
-			objetivos[i] = (b.setScale(casasDecimais, BigDecimal.ROUND_UP)).doubleValue();
+			if(objetivos[i]<0.01)
+				objetivos[i] = 0;
 		}
 		
 		

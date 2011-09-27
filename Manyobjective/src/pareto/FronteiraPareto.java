@@ -32,6 +32,8 @@ public class FronteiraPareto {
 
 	public double fator;
 	
+	public double eps;
+	
 	/*public FronteiraPareto(double s){
 		fronteira = new ArrayList<Solucao>();
 		fronteiraNuvem = new ArrayList<Particula>();
@@ -39,7 +41,7 @@ public class FronteiraPareto {
 		
 	}*/
 	
-	public FronteiraPareto(double s, String[] maxmim, boolean r, double ocupacao, double f){
+	public FronteiraPareto(double s, String[] maxmim, boolean r, double ocupacao, double f, double e){
 		fronteira = new ArrayList<Solucao>();
 		//fronteiraNuvem = new ArrayList<Particula>();
 		S = s;
@@ -47,6 +49,8 @@ public class FronteiraPareto {
 		limite_ocupacao = ocupacao;
 		fator = f;
 		this.maxmim = maxmim;
+		
+		eps = e;
 		
 		preencherObjetivosMaxMin(maxmim);
 	}
@@ -101,8 +105,6 @@ public class FronteiraPareto {
 		ArrayList<SolucaoNumerica> cloneFronteira = (ArrayList<SolucaoNumerica>)fronteira.clone();
 		
 		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
-		
-		//double eps = 0.01;
 
 		double r = 0;
 		if(S!=0.5){
@@ -112,8 +114,8 @@ public class FronteiraPareto {
 		}
 		} else{
 			//novosObjetivosSolucao  = modificacaoDominanciaParetoEqualizar(solucao.objetivos, fator);
-			//novosObjetivosSolucao  = modificacaoDominanciaParetoEpsilon(solucao.objetivos, eps);
-			novosObjetivosSolucao  = solucao.objetivos;
+			novosObjetivosSolucao  = modificacaoDominanciaParetoEpsilon(solucao.objetivos, eps);
+			//novosObjetivosSolucao  = solucao.objetivos;
 			//System.out.println();
 		}
 		
@@ -129,8 +131,8 @@ public class FronteiraPareto {
 					novosObjetivosTemp[i] = modificacaoDominanciaParetoCDAS(temp.objetivos[i], r, S);
 				}
 			} else
-				novosObjetivosTemp = temp.objetivos;
-				//novosObjetivosTemp = modificacaoDominanciaParetoEpsilon(temp.objetivos, eps);
+				//novosObjetivosTemp = temp.objetivos;
+				novosObjetivosTemp = modificacaoDominanciaParetoEpsilon(temp.objetivos, eps);
 				//novosObjetivosTemp = modificacaoDominanciaParetoEqualizar(temp.objetivos, fator);
 			
 			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
@@ -416,8 +418,8 @@ public class FronteiraPareto {
 			BigDecimal sol2Big = new BigDecimal(sol2[i]);
 			
 			
-			sol1Big = sol1Big.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);
-			sol2Big = sol2Big.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);
+			sol1Big = sol1Big.setScale(4,BigDecimal.ROUND_HALF_UP);
+			sol2Big = sol2Big.setScale(4,BigDecimal.ROUND_HALF_UP);
 			
 			
 						
@@ -426,6 +428,14 @@ public class FronteiraPareto {
 			
 			double sol1_i = sol1[i];
 			double sol2_i = sol2[i];
+			
+			
+			/*if((sol1_i - 0.001) <= 0)
+				sol1_i = 0;
+			
+			if((sol2_i - 0.001) <= 0)
+				sol2_i = 0;*/
+			
 			
 			if(sol1_i*objetivosMaxMin[i]>sol2_i*objetivosMaxMin[i]){
 				++cont;
@@ -537,7 +547,7 @@ public class FronteiraPareto {
 	
 		for (int i = 0; i < fx.length; i++) {
 			double d = fx[i];
-			double novo_valor = d-epsilon;
+			double novo_valor = d/(1+epsilon);
 			retorno[i] = Math.max(0, novo_valor);
 		}
 		
