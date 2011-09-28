@@ -160,12 +160,20 @@ public abstract class Solucao {
 	}
 	
 	public void arredondar(){
-		
+		double copia[] = new double[objetivos.length];
 		for (int i = 0; i < objetivos.length; i++) {
+			copia[i] = objetivos[i];
 			if(objetivos[i]<0.01)
 				objetivos[i] = 0;
 		}
+		int cont = 0;
+		for (int i = 0; i < objetivos.length; i++) {
+			if(objetivos[i]==0)
+				cont++;
+		}
 		
+		if(cont == objetivos.length)
+			System.out.println();
 		
 		
 	}

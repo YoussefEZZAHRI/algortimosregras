@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-import java.util.Collections;
+
 import java.util.Iterator;
 import java.util.Random;
 
 import kernel.AlgoritmoAprendizado;
 
 import pareto.FronteiraPareto;
-import solucao.ComparetorDistancia;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -80,6 +79,7 @@ public class DTLZ2 extends Problema {
 		}
 		return solucao.objetivos;
 	}
+	
 	
 	public ArrayList<SolucaoNumerica> obterFronteira(int n, int numSol){
 		ArrayList<SolucaoNumerica> melhores = new ArrayList<SolucaoNumerica>();
@@ -193,16 +193,51 @@ public class DTLZ2 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int m = 25;
+
+		int[] ms = {2,3,5,10,15,20,25,30};
 		int numSol = 10000;
 		int k = 10;
 		
-		 DTLZ2 dtlz2 = new DTLZ2(m);
-		 int n = m + k - 1;
+		System.out.println("DTLZ2");
+		for (int i = 0; i < ms.length; i++) {
+
+			int m = ms[i];
+			
+			System.out.println(m);
+
+			int n = m + k - 1;
+
+			//int decimalPlace = 5;
+			DTLZ2 dtlz2 = new DTLZ2(m);
+
+			
+
+
+			ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
+
+			try{
+				PrintStream ps = new PrintStream("pareto/DTLZ2_" + m + "_pareto.txt");
+				for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
+					SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
+					.next();
+					for(int j = 0; j<m; j++){
+						ps.print(solucaoNumerica.objetivos[j] + "\t");
+					}
+					ps.println();
+
+
+				}
+			} catch (IOException ex){ex.printStackTrace();}
+
+		}
+		
+		
+		
+		
 		 
 		 //System.out.println(dtlz2.obterDiferencaLimites(n));
 		 
-		 ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
+		/* ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
 		 
 		 ArrayList<Solucao> solucoes = new ArrayList<Solucao>();
 		 		 
@@ -214,7 +249,7 @@ public class DTLZ2 extends Problema {
 		 
 		 Collections.sort(solucoes,comp);
 		 
-				 
+				
 		 
 		 
 		 
@@ -236,7 +271,7 @@ public class DTLZ2 extends Problema {
 			}
 		} catch (IOException ex){ex.printStackTrace();}
 		
-		
+		*/
 		/*try{
 			dtlz2.imprimirFronteirar(n, m, numSol);
 		} catch (IOException ex){ex.printStackTrace();}*/

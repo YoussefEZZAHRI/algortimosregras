@@ -61,44 +61,6 @@ public class DTLZ3 extends Problema {
 		return solucao.objetivos;
 	}
 	
-	public double[] calcularObjetivosJmetal(Solucao sol) {
-		SolucaoNumerica solucao = (SolucaoNumerica) sol;
-		
-		for(int i = 0; i<m; i++)
-			solucao.objetivos[i] = 0;
-		int numberOfVariables_ = solucao.getVariaveis().length;
-		int numberOfObjectives_ = m;
-		double [] x = new double[numberOfVariables_];
-		double [] f = new double[numberOfObjectives_];
-		int k = numberOfVariables_ - numberOfObjectives_ + 1;
-
-		for (int i = 0; i < numberOfVariables_; i++)
-			x[i] = solucao.getVariavel(i);
-
-		double g = 0.0;
-		for (int i = numberOfVariables_ - k; i < numberOfVariables_; i++)
-			g += (x[i] - 0.5)*(x[i] - 0.5) - Math.cos(20.0 * Math.PI * (x[i] - 0.5));
-
-		g = 100.0 * (k + g);
-		for (int i = 0; i < numberOfObjectives_; i++)
-			f[i] = 1.0 + g;
-
-		for (int i = 0; i < numberOfObjectives_; i++){
-			for (int j = 0; j < numberOfObjectives_ - (i + 1); j++)            
-				f[i] *= java.lang.Math.cos(x[j]*0.5*java.lang.Math.PI);                
-			if (i != 0){
-				int aux = numberOfObjectives_ - (i + 1);
-				f[i] *= java.lang.Math.sin(x[aux]*0.5*java.lang.Math.PI);
-			} // if
-		} //for
-
-		for (int i = 0; i < numberOfObjectives_; i++)
-			solucao.objetivos[i] = f[i];
-		
-		return solucao.objetivos;
-		
-	}
-	
 	public  ArrayList<SolucaoNumerica> obterFronteira(int n, int numSol){
 		ArrayList<SolucaoNumerica> melhores = new ArrayList<SolucaoNumerica>();
 		
@@ -137,7 +99,6 @@ public class DTLZ3 extends Problema {
 
 	
 	public static void main(String[] args) {
-		
 		
 		int[] ms = {2,3,5,10,15,20,25,30};
 		int numSol = 10000;
