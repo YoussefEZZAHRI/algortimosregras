@@ -34,13 +34,13 @@ public class DTLZ6 extends Problema {
 	
 	public double[] calcularObjetivos(Solucao sol) {
 		SolucaoNumerica solucao = (SolucaoNumerica) sol;
-		int numberOfVariables_ = solucao.getVariaveis().length;
+		int numberOfVariables_ = solucao.n;
 		int numberOfObjectives_ = m;
 		
-		 double [] x = new double[numberOfVariables_];
-		    double [] f = new double[numberOfObjectives_];
-		    double [] theta = new double[numberOfObjectives_-1];
-		    int k = numberOfVariables_ - numberOfObjectives_ + 1;
+		double [] x = new double[numberOfVariables_];
+		double [] f = new double[numberOfObjectives_];
+		double [] theta = new double[numberOfObjectives_-1];
+		int k = numberOfVariables_ - numberOfObjectives_ + 1;
 		        
 		    for (int i = 0; i < numberOfVariables_; i++)
 		      x[i] = solucao.getVariavel(i);
@@ -73,15 +73,7 @@ public class DTLZ6 extends Problema {
 		    return solucao.objetivos;
 		
 	}
-	
-	
-	public double fi(double xi, double g){
-		double temp1 = Math.PI/(4*(1+g));
-		double temp2 = 1+(2*g*xi);
-		return temp1*temp2;
-		
-	}
-	
+
 	public  ArrayList<SolucaoNumerica> obterFronteira(int n, int numSol){
 		ArrayList<SolucaoNumerica> melhores = new ArrayList<SolucaoNumerica>();
 		
@@ -126,6 +118,7 @@ public class DTLZ6 extends Problema {
 	}
 	
 	public static void main(String[] args) {
+				
 		int[] ms = {2,3,5,10,15,20,25,30};
 		int numSol = 10000;
 		int k = 10;

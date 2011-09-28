@@ -189,6 +189,10 @@ public class SolucaoNumerica extends Solucao {
 		return variaveis;
 	}
 	
+	public void setVariaveis(double[] var){
+		variaveis = var;
+	}
+	
 	public  boolean  isNumerica(){
 		return true;
 	}

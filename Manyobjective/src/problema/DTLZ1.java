@@ -62,8 +62,6 @@ public class DTLZ1 extends Problema {
 		avaliacoes++;
 		return solucao.objetivos;
 	}
-	
-		
 		
 	public  ArrayList<SolucaoNumerica> obterFronteira(int n, int numSol){
 			
@@ -166,6 +164,7 @@ public class DTLZ1 extends Problema {
 	
 	
 	public static void main(String[] args) {
+		
 
 		int[] ms = {2,3,5,10,15,20,25,30};
 		int numSol = 10000;

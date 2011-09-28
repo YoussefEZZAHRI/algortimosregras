@@ -31,16 +31,14 @@ public class DTLZ4 extends Problema {
 		problema = "dtlz4";
 	}
 	
-	/**
-	 * Metodo que calcula os objetivos da solucao passada como parametro
-	 * Equacao 9 do artigo "Scalable Multi-Objective Optimization Test Problems"
-	 */
-	public double[] calcularObjetivos(Solucao sol) {
+	
+	/*public double[] calcularObjetivos(Solucao sol) {
 		SolucaoNumerica solucao = (SolucaoNumerica) sol;
 		if(solucao.objetivos == null)
 		   solucao.objetivos = new double[m];
 		
 		double g = g2(solucao.xm);
+		System.out.println(g);
 		double pi_2 = Math.PI/2.0;
 		//System.out.print("f(0): ");
 		double xiAlpha = Math.pow(solucao.getVariavel(0), alpha);
@@ -67,6 +65,48 @@ public class DTLZ4 extends Problema {
 			//System.out.println();
 			solucao.objetivos[i] = fxi;
 		}
+		avaliacoes++;
+		return solucao.objetivos;
+	}*/
+	
+	/**
+	 * Metodo que calcula os objetivos da solucao passada como parametro
+	 * Equacao 9 do artigo "Scalable Multi-Objective Optimization Test Problems"
+	 * Metodo do J-Metal
+	 */
+	public double[] calcularObjetivos(Solucao sol) {
+		SolucaoNumerica solucao = (SolucaoNumerica) sol;
+		int numberOfVariables_ = solucao.n;
+		int numberOfObjectives_ = m;
+		
+		double[] gen  = solucao.getVariaveis();
+		  
+	    double [] x = new double[numberOfVariables_];
+	    double [] f = new double[numberOfObjectives_];
+	    double alpha = 100.0;
+	    int k = numberOfVariables_ - numberOfObjectives_ + 1;
+	  
+	    for (int i = 0; i < numberOfVariables_; i++)
+	      x[i] = gen[i];
+
+	    double g = 0.0;
+	    for (int i = numberOfVariables_ - k; i < numberOfVariables_; i++)
+	      g += (x[i] - 0.5)*(x[i] - 0.5);                
+	      
+	    for (int i = 0; i < numberOfObjectives_; i++)
+	      f[i] = 1.0 + g;
+	        
+	    for (int i = 0; i < numberOfObjectives_; i++) {
+	      for (int j = 0; j < numberOfObjectives_ - (i + 1); j++)            
+	        f[i] *= java.lang.Math.cos(java.lang.Math.pow(x[j],alpha)*(java.lang.Math.PI/2.0));                
+	        if (i != 0){
+	          int aux = numberOfObjectives_ - (i + 1);
+	          f[i] *= java.lang.Math.sin(java.lang.Math.pow(x[aux],alpha)*(java.lang.Math.PI/2.0));
+	        } //if
+	    } // for
+	        
+	    for (int i = 0; i < numberOfObjectives_; i++)
+	      solucao.objetivos[i] = f[i];                
 		avaliacoes++;
 		return solucao.objetivos;
 	}
@@ -118,22 +158,42 @@ public class DTLZ4 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		/*int m = 2;
-		FronteiraPareto pareto = new FronteiraPareto(0.25);
+		int[] ms = {2,3,5,10,15,20,25,30};
+		int numSol = 10000;
+		int k = 10;
 		
-		DTLZ4 dtlz2 = new DTLZ4(m);
-		for(int i = 0; i<2; i++){
-			SolucaoNumerica sol = new SolucaoNumerica(5, m);
-			sol.iniciarSolucaoAleatoria();
-			dtlz2.calcularObjetivos(sol);
-			System.out.println(sol);
-			pareto.add(sol);
+		System.out.println("DTLZ4");
+		for (int i = 0; i < ms.length; i++) {
+
+			int m = ms[i];
+			
+			System.out.println(m);
+
+			int n = m + k - 1;
+
+			//int decimalPlace = 5;
+			DTLZ4 dtlz4 = new DTLZ4(m);
+			
+
+			ArrayList<SolucaoNumerica> f = dtlz4.obterFronteira(n, numSol);
+
+			try{
+				PrintStream ps = new PrintStream("pareto/DTLZ4_" + m + "_pareto.txt");
+				for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
+					SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
+					.next();
+					for(int j = 0; j<m; j++){
+						ps.print(solucaoNumerica.objetivos[j] + "\t");
+					}
+					ps.println();
+
+
+				}
+			} catch (IOException ex){ex.printStackTrace();}
+
 		}
-		System.out.println("Fronteira:");
-		System.out.println(pareto);
-		*/
 		
-		int m = 30;
+		/*int m = 30;
 		int numSol = 10000;
 		int k = 10;
 		
@@ -155,7 +215,7 @@ public class DTLZ4 extends Problema {
 							
 
 			}
-		} catch (IOException ex){ex.printStackTrace();}
+		} catch (IOException ex){ex.printStackTrace();}*/
 		
 		
 	}

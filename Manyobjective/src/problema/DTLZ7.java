@@ -55,27 +55,9 @@ public class DTLZ7 extends Problema {
 	/**
 	 * Metodo que calcula os objetivos da solucao passada como parametro
 	 * Equacao 9 do artigo "Scalable Multi-Objective Optimization Test Problems"
+	 * Código do J-Metal
 	 */
-	public double[] calcularObjetivos2(Solucao sol) {
-		SolucaoNumerica solucao = (SolucaoNumerica) sol;
-		if(solucao.objetivos == null)
-		   solucao.objetivos = new double[m];
-		
-		double g7 = g7(solucao.xm);
-		for(int i = 0; i<m-1; i++){
-			solucao.objetivos[i] = solucao.getVariavel(i);
-		}
-		
-		double h = h(solucao.objetivos, g7);
-		
-		solucao.objetivos[m-1] = (1+g7)*h;
-		
-		
-	   
-		
-		avaliacoes++;
-		return solucao.objetivos;
-	}
+
 	
 	public double[] calcularObjetivos(Solucao sol) {
 		SolucaoNumerica solucao = (SolucaoNumerica) sol;
