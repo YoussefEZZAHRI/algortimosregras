@@ -70,11 +70,11 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		setMetodoEscolhaLider(el);
 		
 		filter = tPoda;
-		if(filter.equals("p-ar"))
+		if(filter.equals("par"))
 			metodoRank = new AverageRank(problema.m);
-		if(filter.equals("p-br"))
+		if(filter.equals("pbr"))
 			metodoRank = new BalancedRank(problema.m);
-		if(filter.equals("p-ag"))
+		if(filter.equals("pag"))
 			partesGrid = 25;
 			
 		
@@ -172,59 +172,59 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 		else{
 			//Poda somente de  acordo com a distancia de Crowding 
-			if(filter.equals("p-crowd"))
+			if(filter.equals("pcrowd"))
 				pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 			//Calcula o ranking AR e poda de acordo com o AR, caso haja empate usa a distancia de crowding
-			if(filter.equals("p-ar")){				
+			if(filter.equals("par")){				
 				rankear(pareto.getFronteira());
 				pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 			}
 			//Calcula o ranking BR e poda de acordo com o BR, caso haja empate usa a distancia de crowding
-			if(filter.equals("p-br")){
+			if(filter.equals("pbr")){
 				rankear(pareto.getFronteira());
 				pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 			}
 			
-			if(filter.equals("p-ideal")){
+			if(filter.equals("pideal")){
 				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), false).get(problema.m).get(0);
 				pareto.podarLideresIdeal(tamanhoRepositorio, ideal);
 			}
 			
-			if(filter.equals("p-pr_id")){
+			if(filter.equals("ppr_id")){
 				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), true).get(problema.m).get(0);
 				pareto.podarLideresExtremosIdeal(tamanhoRepositorio, problema.m, ideal);
 			}
 
-			if(filter.equals("p-ex_id2")){
+			if(filter.equals("pex_id2")){
 				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), false).get(problema.m).get(0);
 				pareto.podarLideresExtremosIdeal(tamanhoRepositorio, problema.m, ideal);
 			}
 
-			if(filter.equals("p-ex_id")){
+			if(filter.equals("pex_id")){
 				Solucao ideal = obterSolucoesExtremasIdeais(pareto.getFronteira(), true).get(problema.m).get(0);
 				pareto.podarLideresExtremosIdeal(tamanhoRepositorio, problema.m, ideal);
 			}
 			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
-			if(filter.equals("p-eucli")){
+			if(filter.equals("peucli")){
 				ArrayList<ArrayList<Solucao>> extremos = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
 				definirDistanciasSolucoesProximasIdeais(extremos, pareto.getFronteira(), "euclidiana");
 				pareto.podarLideresDistancia(tamanhoRepositorio);
 			}
 			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
-			if(filter.equals("p-sigma")){
+			if(filter.equals("psigma")){
 				ArrayList<ArrayList<Solucao>> extremos = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
 				definirDistanciasSolucoesProximasIdeais(extremos, pareto.getFronteira(), "sigma");
 				pareto.podarLideresDistancia(tamanhoRepositorio);
 			}
 			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
-			if(filter.equals("p-tcheb")){
+			if(filter.equals("ptcheb")){
 				ArrayList<ArrayList<Solucao>> extremos = obterSolucoesExtremasIdeais(pareto.getFronteira(), true);
 				definirDistanciasSolucoesProximasIdeais(extremos, pareto.getFronteira(), "tcheb");
 				pareto.podarLideresDistancia(tamanhoRepositorio);
 			}
-			if(filter.equals("p-rand"))
+			if(filter.equals("prand"))
 				pareto.podarLideresAleatorio(tamanhoRepositorio);
-			if(filter.equals("p-ag"))
+			if(filter.equals("pag"))
 				pareto.podarAdaptiveGrid(tamanhoRepositorio, problema.m, partesGrid);
 		}
 			
