@@ -164,15 +164,15 @@ public class SMOPSO extends MOPSO{
 				
 		//System.out.print (pareto.getFronteira().size()  + " - ");
 		
-		try{
+		/*try{
 			imprimirFronteira(pareto.getFronteira(), 0, "ag");
-		}catch(IOException ex){ex.printStackTrace();}
+		}catch(IOException ex){ex.printStackTrace();}*/
 		
 		filter();
 		
-		try{
+		/*try{
 			imprimirFronteira(pareto.getFronteira(), 0, "ag");
-		}catch(IOException ex){ex.printStackTrace();}
+		}catch(IOException ex){ex.printStackTrace();}*/
 		
 		//populacaoNoRepositorio();
 		

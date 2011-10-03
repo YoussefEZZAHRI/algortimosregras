@@ -36,6 +36,9 @@ import problema.DTLZ6;
 import problema.DTLZ7;
 import problema.Problema;
 import problema.TestCaseSelection;
+import problema.ZDT1;
+import problema.ZDT2;
+import problema.ZDT3;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -94,6 +97,10 @@ public class Principal {
 	public double ocupacao = 0;
 	public double fator = 0;
 	public double eps = 0;
+	
+	public Principal() {
+		n = -1;
+	}
 	
 	 
 	public static void main(String[] args) {	
@@ -282,7 +289,7 @@ public class Principal {
 	private void executarDominance() throws IOException{
 		
 		if(alg1 == null || alg2 == null){
-			System.err.println("Algoritmos para a compara��o da dominancia n�o foram definido (Tags alg1 ou alg2)");
+			System.err.println("Algoritmos para a comparacaoo da dominancia nao foram definido (Tags alg1 ou alg2)");
 			System.exit(0);
 		}
 			
@@ -430,6 +437,21 @@ public class Principal {
 			problema = new DTLZ6(m);
 		if(prob.equals("DTLZ7"))
 			problema = new DTLZ7(m);
+		if(prob.equals("ZTD1")){
+			problema = new ZDT1();
+			n = 30;
+			m = 2;
+		}
+		if(prob.equals("ZTD2")){
+			problema = new ZDT2();
+			n = 30;
+			m = 2;
+		}
+		if(prob.equals("ZTD3")){
+			problema = new ZDT3();
+			n = 30;
+			m = 2;
+		}
 		}
 	}
 	
@@ -442,7 +464,7 @@ public class Principal {
 				String linha[] = linhaString.split("=");
 
 				if(linha.length!=2){
-					System.err.println("Erro no arquivo de configura��o. Linha: " + linhaString);
+					System.err.println("Erro no arquivo de configuracao. Linha: " + linhaString);
 					System.exit(0);
 				}
 				String tag = linha[0].trim().toLowerCase();
@@ -563,7 +585,8 @@ public class Principal {
 			}
 		}
 		
-		n = m + k - 1;
+		if(n == -1)
+			n = m + k - 1;
 		
 		
 	}
