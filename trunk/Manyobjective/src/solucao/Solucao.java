@@ -13,8 +13,11 @@ public abstract class Solucao {
 	
 	public double[] objetivos;
 	
-	//Conta por qts solu��es a solu��o � dominada
+	//Conta por qts solucoes a solucao e dominada
 	public double numDominacao;
+	
+	//Conta quantas solucoes ela domina
+	public double numDominadas;
 		
 	public double crowdDistance;
 	

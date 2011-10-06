@@ -20,8 +20,9 @@ public class DTLZ3 extends Problema {
 	 * Construtor da classe
 	 * @param m Numero de objetivos do problema
 	 */
-	public DTLZ3(int m){
+	public DTLZ3(int m, int k){
 		super(m);
+		n = m + k - 1;
 		problema = "dtlz3";
 	}
 	
@@ -114,7 +115,7 @@ public class DTLZ3 extends Problema {
 			int n = m + k - 1;
 
 			//int decimalPlace = 5;
-			DTLZ3 dtlz3 = new DTLZ3(m);
+			DTLZ3 dtlz3 = new DTLZ3(m, k);
 
 			
 

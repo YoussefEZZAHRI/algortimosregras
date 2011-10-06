@@ -19,31 +19,19 @@ import solucao.SolucaoNumerica;
 
 public class DTLZ7 extends Problema {
 	
-	/*private final double lim_inf1 = 0.26;
-	private final double lim_sup1 = 0.64;
-	private final double lim_inf2 = 0.86;
-	private final double lim_sup2 = 1;*/
 	
-	public double s;
-	
-	public String[] maxmim;
-	
-	public boolean r;
-	
-	
-	
-
 	/**
 	 * Construtor da classe
 	 * @param m Numero de objetivos do problema
 	 */
-	public DTLZ7(int m){
+	public DTLZ7(int m, int k){
 		super(m);
 		
 		this.s  = 0.5;
 		this.maxmim = new String[m];
-		for (int k = 0; k < maxmim.length; k++) {
-			maxmim[k] = "-";
+		n = m + k - 1;
+		for (int j = 0; j < maxmim.length; j++) {
+			maxmim[j] = "-";
 		}
 		this.r = false;
 		
@@ -125,9 +113,13 @@ public class DTLZ7 extends Problema {
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
-		double ocupacao = 0;
+		double eps = 0;
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao,0,0);
+		int tamanhoRepositorio = numSol;
+		
+		String poda = "";
+		
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio, poda);
 		                         
 				
 		while(pareto.getFronteira().size()<numSol){
@@ -167,78 +159,6 @@ public class DTLZ7 extends Problema {
 		
 		return saida;	
 	}
-	
-	public  ArrayList<SolucaoNumerica> obterFronteira2(int n, int numSol){
-		
-		Random rand = new Random();
-		rand.setSeed(1000);
-		
-		//Indicies que indicam que variaves serão geradas incrementalmente para a geracao da fronteira
-		//O padrao dos problemas DTLZ eh entre 0 e m-2
-		int inicio = 0;
-		int fim = m-2;
-		
-		double ocupacao = 0;
-		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao,0,0);
-		
-		SolucaoNumerica solucaoBase = new SolucaoNumerica(n, m);
-		
-		varVez = fim;
-		
-		for (int i = 0; i < solucaoBase.getVariaveis().length; i++) {
-			solucaoBase.setVariavel(i, 0);
-		}
-		
-		boolean haSolucao = true;
-		
-		while(haSolucao){
-			
-			/*for(int j = 0; j<solucaoBase.getVariaveis().length; j++){
-				System.out.print(solucaoBase.getVariavel(j) + " ");
-			}
-			System.out.println();*/
-			
-			SolucaoNumerica melhor = (SolucaoNumerica) solucaoBase.clone();
-			
-			for (int i = m-1; i <n; i++) {
-				melhor.setVariavel(i, 0);
-			}
-				
-			
-			
-			
-			calcularObjetivos(melhor);
-			
-
-			
-			if(!pareto.getFronteira().contains(melhor))
-				pareto.add(melhor);
-			
-			
-			
-			haSolucao = getProximaSolucao(solucaoBase, inicio, fim);
-							
-		}
-
-		/*ComparetorObjetivo comp = new ComparetorObjetivo(m-1);
-		
-		Collections.sort(melhores, comp);*/
-		
-		
-		
-		ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();
-		for (Iterator<Solucao> iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
-			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
-			saida.add(solucaoNumerica);
-		}
-		
-		return saida;	
-	}
-	
-	
-	
-
 	
 	/*public void temp(int n){
 		
@@ -298,7 +218,7 @@ public class DTLZ7 extends Problema {
 			int n = m + k - 1;
 
 			//int decimalPlace = 5;
-			DTLZ7 dtlz7 = new DTLZ7(m);
+			DTLZ7 dtlz7 = new DTLZ7(m, k);
 
 
 

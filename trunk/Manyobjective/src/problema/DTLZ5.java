@@ -20,8 +20,9 @@ public class DTLZ5 extends Problema {
 	 * Construtor da classe
 	 * @param m Numero de objetivos do problema
 	 */
-	public DTLZ5(int m){
+	public DTLZ5(int m, int k){
 		super(m);
+		n = m + k - 1;
 		problema = "dtlz5";
 	}
 	
@@ -167,7 +168,7 @@ public class DTLZ5 extends Problema {
 			int n = m + k - 1;
 
 			//int decimalPlace = 5;
-			DTLZ5 dtlz5 = new DTLZ5(m);
+			DTLZ5 dtlz5 = new DTLZ5(m,k);
 			
 
 			ArrayList<SolucaoNumerica> f = dtlz5.obterFronteira(n, numSol);
