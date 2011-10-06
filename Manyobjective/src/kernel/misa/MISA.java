@@ -6,7 +6,6 @@ import java.util.Iterator;
 
 import pareto.AdaptiveGrid;
 import pareto.FronteiraPareto;
-import problema.DTLZ2;
 import problema.Problema;
 
 import solucao.ComparetorDominacao;
@@ -34,8 +33,7 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	public double s;
 	public double fator;
-	public double eps;
-	
+
 	//Taxa de clonagem
 	public int taxaClonagem = 1;
 
@@ -44,8 +42,6 @@ public class MISA extends AlgoritmoAprendizado {
 	public double decremento;
 	
 	private String[] maxmim = null;
-	
-	private boolean rank;
 	
 	public int tamanhoGrid;
 	
@@ -59,15 +55,14 @@ public class MISA extends AlgoritmoAprendizado {
 	 * @param tc Taxa de clonagem
 	 * * @param pg N�mero de partes da divis�o do grid da popula��o secund�ria
 	 */
-	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg, String[] maxmim, String tRank, double ocupacao, double f, int tamanhoGrid, double e){
-		super(n,prob,g,a,t, tRank, ocupacao);
+	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg, String[] maxmim, String tRank, int tamanhoGrid, double e, String tPoda){
+		super(n,prob,g,a,t, tRank, e, tamanhoGrid, tPoda);
 		
 		taxaClonagem = tc;
 		totalClonagem = taxaClonagem * tamanhoPopulacao;
 		partesGrid = pg;
 		
 		this.s = s;
-		this.fator = f;
 		
 		eps = e;
 		
@@ -79,7 +74,7 @@ public class MISA extends AlgoritmoAprendizado {
 		double diff = non_uniform_prob - PROB_MUT_COD;
 		decremento = diff/(double) t;
 		
-		this.tamanhoGrid = tamanhoGrid;
+		this.tamanhoGrid = tamanhoGrid;;
 		
 	}
 	
@@ -144,7 +139,7 @@ public class MISA extends AlgoritmoAprendizado {
 		//Adiciona todos os clones na popula��o atual
 		populacao.addAll(clones);
 		//Obt�m os novos l�deres da popula��o
-		FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S, maxmim, rank, limite_ocupacao, pareto.fator, pareto.eps);
+		FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.tamanhoArquivo, pareto.filter);
 		encontrarSolucoesNaoDominadas(populacao, paretoTemp);
 		//Reduz a popula��o com o tamanho passado como parametro
 		reduzirPopulacao(populacao, paretoTemp);
@@ -172,7 +167,7 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		populacaoSecundaria = new AdaptiveGrid(problema.m, partesGrid,tamanhoGrid );
 		clones = null;
-		pareto = new FronteiraPareto(s, maxmim, rank, limite_ocupacao, fator, eps);
+		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.tamanhoArquivo, pareto.filter);
 	}
 	
 
@@ -365,7 +360,7 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	public void mutacaoSolucoesNaoTaoBoas(ArrayList<Solucao> clones){
 		
-		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S, maxmim, rank, limite_ocupacao, fator, eps);
+		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.tamanhoArquivo, pareto.filter);
 		encontrarSolucoesNaoDominadas(clones, clonesNaoDominados);
 		ArrayList<Solucao> melhores = clonesNaoDominados.getFronteira();
 		
@@ -406,21 +401,7 @@ public class MISA extends AlgoritmoAprendizado {
 
 	
 	public static void main(String[] args) {
-		int n = 10;
-		int m = 3;
-		Problema prob = new DTLZ2(m);
-		
-		int g = 50;
-		int t = 100;
-		
-		int a = -1;
-		
-		String[] mm = {"-","-","-"};
-		
-		MISA misa = new MISA(n, prob, g, a,t, 0.25, 7, 25,mm, "false", 0, 0,100,0);
-		
-		misa.executar();
-		
+
 		
 	}
 	

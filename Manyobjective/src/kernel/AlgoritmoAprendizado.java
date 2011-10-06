@@ -57,9 +57,26 @@ public abstract class AlgoritmoAprendizado {
 	
 	public Rank metodoRank = null;
 	
+	public int tamanhoRepositorio;
+	
+	public String filter = "";
+	
+	public double eps;
 	
 	
-	public AlgoritmoAprendizado(int n, Problema p, int g, int avaliacoes, int t, String tRank, double ocupacao){
+	/**
+	 * 
+	 * @param n - numero de variaveis
+	 * @param p - problema
+	 * @param g - numero geracoes
+	 * @param avaliacoes - numero de avaliacoes
+	 * @param t - tamanho da populacao
+	 * @param tRank - tipo do metodo de ranking
+	 * @param eps - valor do epsilon
+	 * @param tr - tamanho do repositorio
+	 * @param tPoda - tipo do metodo de poda
+	 */
+	public AlgoritmoAprendizado(int n, Problema p, int g, int avaliacoes, int t, String tRank, double eps, int tr, String tPoda){
 		this.n = n;
 		problema = p;
 		geracoes = g;
@@ -70,8 +87,11 @@ public abstract class AlgoritmoAprendizado {
 		tipoRank = tRank;
 		iniciarMetodoRank();
 		
-		limite_ocupacao = ocupacao;
+		tamanhoRepositorio = tr;
 		
+		filter = tPoda;
+		
+		this.eps = eps;;
 		
 		
 	}
@@ -99,14 +119,14 @@ public abstract class AlgoritmoAprendizado {
 		return distancia;
 	}
 	
-	public void calcularCrowdingDistance(ArrayList<Solucao> solucoes){
+	public static void calcularCrowdingDistance(ArrayList<Solucao> solucoes, int m){
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			Solucao solucao =  iterator.next();
 			solucao.crowdDistance = 0;
 		}
 		
-		for(int m = 0; m<problema.m; m++){
-			ComparetorObjetivo comp = new ComparetorObjetivo(m);
+		for(int k = 0; k<m; k++){
+			ComparetorObjetivo comp = new ComparetorObjetivo(k);
 			Collections.sort(solucoes, comp);
 			Solucao sol1 = solucoes.get(0);
 			Solucao solN = solucoes.get(solucoes.size()-1);
@@ -116,7 +136,7 @@ public abstract class AlgoritmoAprendizado {
 				Solucao sol = solucoes.get(i);
 				Solucao solProx = solucoes.get(i+1);
 				Solucao solAnt = solucoes.get(i-1);
-				sol.crowdDistance += solProx.objetivos[m] - solAnt.objetivos[m];
+				sol.crowdDistance += solProx.objetivos[k] - solAnt.objetivos[k];
 			}
 		}
 		
@@ -129,7 +149,7 @@ public abstract class AlgoritmoAprendizado {
 	@SuppressWarnings("unchecked")
 	public void removerGranular(ArrayList<Solucao> solucoes){
 		//Calcula a distancia de crowding e o limite de ocupacao das solucoes. Um dos estimadores sera utilizado para podar as solucoes
-		calcularCrowdingDistance(solucoes);
+		calcularCrowdingDistance(solucoes, problema.m);
 		//Conta para cada solucao, se existe alguma outra no mesmo raio de ocupacao
 		contarSolucoesLimitesCuboide(solucoes);	
 				
@@ -225,7 +245,7 @@ public abstract class AlgoritmoAprendizado {
 	@SuppressWarnings("unchecked")
 	public void removerGranularLimites(ArrayList<Solucao> solucoes){
 		//Calcula a distancia de crowding e o limite de ocupacao das solucoes. Um dos estimadores sera utilizado para podar as solucoes
-		calcularCrowdingDistance(solucoes);
+		calcularCrowdingDistance(solucoes, problema.m);
 		//Conta para cada solucao, se existe alguma outra no mesmo raio de ocupacao
 		contarSolucoesLimites(solucoes);	
 				
@@ -301,7 +321,7 @@ public abstract class AlgoritmoAprendizado {
 	@SuppressWarnings("unchecked")
 	public void removerGranularRaio(ArrayList<Solucao> solucoes){
 		//Calcula a distancia de crowding e o limite de ocupacao das solucoes. Um dos estimadores sera utilizado para podar as solucoes
-		calcularCrowdingDistance(solucoes);
+		calcularCrowdingDistance(solucoes, problema.m);
 		//Conta para cada solucao, se existe alguma outra no mesmo raio de ocupacao
 		contarSolucoesLimitesRaio(solucoes, limite_ocupacao);	
 				
@@ -343,7 +363,7 @@ public abstract class AlgoritmoAprendizado {
 	 */
 	public ArrayList<Solucao> removerGranularRaio2(ArrayList<Solucao> solucoes, double limite_ocupacao){
 		//Calcula a distancia de crowding e o limite de ocupacao das solucoes. Um dos estimadores sera utilizado para podar as solucoes
-		calcularCrowdingDistance(solucoes);
+		calcularCrowdingDistance(solucoes, problema.m);
 		//Conta para cada solucao, se existe alguma outra no mesmo raio de ocupacao
 		contarSolucoesLimitesRaio(solucoes, limite_ocupacao);	
 				
@@ -383,7 +403,7 @@ public abstract class AlgoritmoAprendizado {
 	
 	
 	public ArrayList<Solucao> removerCDAS(ArrayList<Solucao> solucoes, double S){
-		FronteiraPareto pareto2 = new FronteiraPareto(S, pareto.maxmim, pareto.rank, 0.0, 0.0, 0);
+		FronteiraPareto pareto2 = new FronteiraPareto(S, pareto.maxmim, pareto.rank, 0, problema, tamanhoRepositorio, filter);
 		
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
@@ -627,9 +647,10 @@ public abstract class AlgoritmoAprendizado {
 	 * Metodo que encontra as solucoes nos extremos dos objetivos e a solucao mais proxima a ideal
 	 * @param solucoes
 	 * @param prox_ideal flag que decide se vai ser escolhida a solucao ideal ou a solucao mais proxima a ideal
+	 * @param m Numero de objetivos
 	 * @return Array com as solucoes nos extremos e a ideal
 	 */
-	public ArrayList<ArrayList<Solucao>> obterSolucoesExtremasIdeais(ArrayList<Solucao> solucoes, boolean prox_ideal){
+	public static ArrayList<ArrayList<Solucao>> obterSolucoesExtremasIdeais(ArrayList<Solucao> solucoes, boolean prox_ideal, Problema problema){
 		
 		//double[][] retorno = new double[problema.m+1][problema.m];
 		
@@ -643,7 +664,7 @@ public abstract class AlgoritmoAprendizado {
 		//Solucao[] extremos = new Solucao[problema.m+1];
 	
 		
-		Solucao ideal = new SolucaoNumerica(n, problema.m);
+		Solucao ideal = new SolucaoNumerica(problema.n, problema.m);
 		
 		for (int i = 0; i < ideal.objetivos.length; i++) {
 			ideal.objetivos[i] = Double.POSITIVE_INFINITY;	
@@ -695,7 +716,7 @@ public abstract class AlgoritmoAprendizado {
 	 * @param define qual metodo de distancia sera utilizado, euclidiana ou Tchebycheff, e se usa o vetor objetivos ou vetor sigma
 	 * @param solucoes
 	 */
-	public void definirDistanciasSolucoesProximasIdeais(ArrayList<ArrayList<Solucao>> extremos2, ArrayList<Solucao> solucoes, String metodoDistancia){
+	public static void definirDistanciasSolucoesProximasIdeais(ArrayList<ArrayList<Solucao>> extremos2, ArrayList<Solucao> solucoes, String metodoDistancia, Problema problema){
 		
 		
 		double[] lambda = new double[problema.m];
@@ -766,7 +787,7 @@ public abstract class AlgoritmoAprendizado {
 	 * @param solucoes
 	 */
 	public void calcularDistanciaIdeal(ArrayList<Solucao> solucoes ){
-		Solucao ideal = obterSolucoesExtremasIdeais(solucoes, false).get(problema.m).get(0);
+		Solucao ideal = obterSolucoesExtremasIdeais(solucoes, false, problema).get(problema.m).get(0);
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			Solucao solucao = iterator.next();
 			solucao.menorDistancia = distanciaEuclidiana(ideal.objetivos, solucao.objetivos);
