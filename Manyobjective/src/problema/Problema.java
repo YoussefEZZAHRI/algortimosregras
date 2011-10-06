@@ -17,6 +17,9 @@ import solucao.SolucaoNumerica;
 public abstract class Problema {
 	
 	public int m;
+	public int n;
+	
+	
 	public int avaliacoes;
 	
 	public String problema;

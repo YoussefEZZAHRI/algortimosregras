@@ -30,6 +30,7 @@ public class ZDT1 extends Problema {
 		public ZDT1(){
 		super(2);
 		problema = "ztd1";
+		n = 30;
 	}
 	
 	/**
@@ -106,11 +107,13 @@ public class ZDT1 extends Problema {
 		  Random rand = new Random();
 		  rand.setSeed(1000);
 
-		  double ocupacao = 0;
-		  double fator = 0;
-		  double eps = 0;
-
-		  FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao, fator, eps);
+			double eps = 0;
+			
+			int tamanhoRepositorio = numSol;
+			
+			String poda = "";
+			
+			FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio, poda);
 		
 		  while(pareto.getFronteira().size()<numSol){
 			  SolucaoNumerica melhor = new SolucaoNumerica(n, m);

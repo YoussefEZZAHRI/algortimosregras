@@ -26,8 +26,9 @@ public class DTLZ4 extends Problema {
 	 * Construtor da classe
 	 * @param m Numero de objetivos do problema
 	 */
-	public DTLZ4(int m){
+	public DTLZ4(int m, int k){
 		super(m);
+		n = m + k - 1;
 		problema = "dtlz4";
 	}
 	
@@ -117,9 +118,13 @@ public class DTLZ4 extends Problema {
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
-		double ocupacao = 0;
+		double eps = 0;
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao,0,0);
+		int tamanhoRepositorio = numSol;
+		
+		String poda = "";
+		
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio, poda);
 		
 		while(melhores.size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
@@ -172,7 +177,7 @@ public class DTLZ4 extends Problema {
 			int n = m + k - 1;
 
 			//int decimalPlace = 5;
-			DTLZ4 dtlz4 = new DTLZ4(m);
+			DTLZ4 dtlz4 = new DTLZ4(m, k);
 			
 
 			ArrayList<SolucaoNumerica> f = dtlz4.obterFronteira(n, numSol);

@@ -29,8 +29,9 @@ public class DTLZ2 extends Problema {
 	 * Construtor da classe
 	 * @param m Numero de objetivos do problema
 	 */
-	public DTLZ2(int m){
+	public DTLZ2(int m, int k){
 		super(m);
+		n = m + k - 1;
 		problema = "dtlz2";
 	}
 	
@@ -87,11 +88,13 @@ public class DTLZ2 extends Problema {
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
-		double ocupacao = 0;
-		double fator = 0;
 		double eps = 0;
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r, ocupacao, fator, eps);
+		int tamanhoRepositorio = numSol;
+		
+		String poda = "";
+		
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio, poda);
 		
 		while(melhores.size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
@@ -208,7 +211,7 @@ public class DTLZ2 extends Problema {
 			int n = m + k - 1;
 
 			//int decimalPlace = 5;
-			DTLZ2 dtlz2 = new DTLZ2(m);
+			DTLZ2 dtlz2 = new DTLZ2(m, k);
 
 			
 
