@@ -43,24 +43,33 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	
 	private String[] maxmim = null;
 	
-	
-	Problema problema = null;
-	
 	public double S_MAX = 0.5;
-	
-	public int tamanhoRepositorio;
-	
 	
 	public EscolherLider escolherLider = null;
 	
-	public String filter = "";
 	
-		
-	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double ocupacao, double fator, double smax, String tPoda, String el, double eps){
-		super(n,prob,g, a,t, tRank, ocupacao);
+	
+	/**
+	 * 	
+	 * @param n - numero de variaveis
+	 * @param prob - problema
+	 * @param g - numero de geracoes
+	 * @param a - numero de avaliacoes
+	 * @param t - tamanho da populacao
+	 * @param s - valor do s do metodo do sato
+	 * @param maxmim - string q indica se cada objetivo eh de maximizacao ou minimizacao
+	 * @param tRank - 
+	 * @param smax
+	 * @param el
+	 * @param eps
+	 * @param tRepositorio
+	 * @param tPoda
+	 */
+	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double smax, String el, double eps, int tRepositorio, String tPoda){
+		super(n,prob,g, a,t, tRank, eps, tRepositorio, tPoda);
 		populacao = new ArrayList<Particula>();
 		//repositorio = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(s, maxmim,rank, ocupacao, fator, eps);
+		pareto = new FronteiraPareto(s, maxmim,rank, eps, problema, tamanhoRepositorio, filter);
 		S_MAX = smax;
 		if(rank)
 			metodoRank.setPareto(pareto);
@@ -69,13 +78,12 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		
 		setMetodoEscolhaLider(el);
 		
-		filter = tPoda;
 		if(filter.equals("par"))
 			metodoRank = new AverageRank(problema.m);
 		if(filter.equals("pbr"))
 			metodoRank = new BalancedRank(problema.m);
 		if(filter.equals("pag"))
-			partesGrid = 25;
+			pareto.partesGrid = 25;;
 			
 		
 	}
@@ -86,7 +94,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 */
 	public void reiniciarExecucao(){
 		populacao = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.limite_ocupacao, pareto.fator, pareto.eps);
+		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.tamanhoArquivo, pareto.filter);
 		problema.avaliacoes =0; 
 	}
 	
@@ -167,7 +175,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 *  p-pr_id = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao mais proxiama ideal
 	 *  p-ag = Poda que adiciona a soluções num grid adaptativo
 	 */
-	public void filter(){
+	/*public void filter(){
 		if(rank)
 			pareto.podarLideresCrowdedOperator(tamanhoRepositorio);
 		else{
@@ -229,7 +237,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		}
 			
 		
-	}
+	}*/
 	
 	/**
 	 * Metodo que define o parametro S do metodo CDAS automaticamente para cada solucao.

@@ -36,16 +36,16 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	
 	
 	
-	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts, String[] maxmim, String tRank, double ocupacao, double fator, String tPoda, double eps){
-		super(n,prob,g, a,t, tRank, 0);
+	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts, String[] maxmim, String tRank, String tPoda, double eps, int tamRep){
+		super(n,prob,g, a,t, tRank, eps, tamRep, tPoda );
 		metodoRank = new RankDominancia(problema.m);
 		this.maxmim = maxmim;
-		pareto = new FronteiraPareto(s, maxmim,rank, ocupacao, fator, eps);
+		pareto = new FronteiraPareto(s, maxmim,rank, this.eps, problema, tamanhoRepositorio, filter);
 		metodoRank.setPareto(pareto);
 		problema = prob;
 		tipoSolucao = ts;
 		
-		tipoPoda = tPoda;
+		tipoPoda = tPoda;;
 
 	}
 
@@ -53,7 +53,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	public ArrayList<Solucao> executar() {
 		
 		
-		pareto = new FronteiraPareto(pareto.S, maxmim, rank, limite_ocupacao, pareto.fator, pareto.eps);
+		pareto = new FronteiraPareto(pareto.S, maxmim, rank,  pareto.eps, problema, pareto.tamanhoArquivo, pareto.filter);
 		populacao = new ArrayList<Solucao>();
 		offspring = new ArrayList<Solucao>();
 		
@@ -155,7 +155,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 			if(solucao.rank == rank)
 				temp.add(solucao);
 			else{				
-				calcularCrowdingDistance(temp);
+				calcularCrowdingDistance(temp, problema.m);
 				temp.clear();
 				temp.add(solucao);
 				rank++;				
