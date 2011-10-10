@@ -572,7 +572,7 @@ public class Principal {
 					}
 				}
 				
-				if(tag.equals("arquivo")){
+				if(tag.equals("poda")){
 					tipoArquivo = valor;
 					String tipos = "ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp";
 					if(!tipos.contains(tipoArquivo)){
