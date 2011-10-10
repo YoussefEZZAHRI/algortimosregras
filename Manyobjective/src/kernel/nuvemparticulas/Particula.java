@@ -337,7 +337,7 @@ public class Particula {
 	public void escolherLocalBest(FronteiraPareto pareto){
 		double[] objetivos = solucao.objetivos;
 		//Compara os objetivos atuais com os valores guardados para o melhor local
-		int retorno = pareto.compararMedidas(objetivos,localBestObjetivos);
+		int retorno = pareto.compareObjectiveVector(objetivos,localBestObjetivos);
 		//Se o melhor local eh dominado, entao eh feita a atualizacao do lider
 		if(retorno == 1){
 			localBestObjetivos = objetivos;

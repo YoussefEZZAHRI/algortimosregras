@@ -23,7 +23,7 @@ public class FastNonDominatedSort extends Rank {
 			p.numDominacao = 0;
 			for (Iterator<Solucao> iterator2 = solucoes.iterator(); iterator2.hasNext();) {
 				Solucao q =  iterator2.next();
-				int comp = pareto.compararMedidas(p.objetivos, q.objetivos);
+				int comp = pareto.compareObjectiveVector(p.objetivos, q.objetivos);
 				if(comp == 1)
 					dominadas.add(q);
 				else

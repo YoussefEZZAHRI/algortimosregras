@@ -23,54 +23,82 @@ public class GerarArquivosConfiguracao {
 		String p = "250";
 		String r = "250";
 		String rank = "false";
-		String poda = "p-crowd";
+		String poda = "eapp";
+		String[] eps = {"0.1","0.05", "0.025", "0.01", "0.005", "0.0025", "0.001", "0.0005", "0.00025", "0.0001"  };
 		int k = 10;
-		String lider = "torneio";
+		String lider = "tb";
 		String  direxec = "/home/andre/doutorado/experimentos/poda/";
 				
 		
 		if(!ind.equals("")){
 			algs = new String[1];
-			algs[0] = "0.25";
+			algs[0] = "0.5";
 		}
 		
-		for (int i = 0; i < algs.length; i++) {
-			String s = algs[i];
-			String arquivo = "";
-			if(ind.equals(""))
-				arquivo = "arquivos/principal_" + metodo + "_"+ problema.toUpperCase() + "_" + m + "_"+s + "_" +  lider +"_"+ ind+ ".txt";
-			else
-				arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_" + ind+ ".txt";
-			if(!rank.equals("false"))
-				arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ s  + "_"+lider + "_" + rank + ".txt";
-			if(!poda.equals("false"))
-				arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ s  + "_" +  lider+ "_" + poda + ".txt";
-			PrintStream ps = new PrintStream(arquivo);
-			ps.println("algoritmo = " + metodo);
-			ps.println("problema = " + problema);
-			ps.println("m = " + m);
-			ps.println("k = " + k);
-			ps.println("max_min = " + objetivos);
-			ps.println("geracoes = " + g);
-			ps.println("numeroavaliacoes = " + a);
-			ps.println("populacao = " + p);
-			ps.println("repositorio = " + r);		
-			ps.println("numexec = " + exec);
-			ps.println("S = " + s);
-			ps.println("rank = " + rank);
-			ps.println("poda = " + poda);				
-			ps.println("lider = " + lider);			
-			ps.println("direxec =  " + direxec);
-			
-			
-		}
+		if(poda.equals("eaps") || poda.equals("eapp")){
+			for (int i = 0; i < eps.length; i++) {
+				String e = eps[i];
+				String arquivo = "";
+				if(ind.equals(""))
+					arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ e  + "_" +  lider+ "_" + poda + ".txt";
+				PrintStream ps = new PrintStream(arquivo);
+
+				ps.println("algoritmo = " + metodo);
+				ps.println("problema = " + problema);
+				ps.println("m = " + m);
+				ps.println("k = " + k);
+				ps.println("max_min = " + objetivos);
+				ps.println("geracoes = " + g);
+				ps.println("numeroavaliacoes = " + a);
+				ps.println("populacao = " + p);
+				ps.println("repositorio = " + r);		
+				ps.println("numexec = " + exec);
+				ps.println("S = 0.5");
+				ps.println("eps = " + e);
+				ps.println("rank = false");
+				ps.println("poda = " + poda);				
+				ps.println("lider = " + lider);			
+				ps.println("direxec =  " + direxec);
+			}
+		
+		} else
+
+			for (int i = 0; i < algs.length; i++) {
+				String s = algs[i];
+				String arquivo = "";
+				if(ind.equals(""))
+					arquivo = "arquivos/principal_" + metodo + "_"+ problema.toUpperCase() + "_" + m + "_"+s + "_" +  lider +"_"+ ind+ ".txt";
+				else
+					arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_" + ind+ ".txt";
+				if(!rank.equals("false"))
+					arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ s  + "_"+lider + "_" + rank + ".txt";
+				if(!poda.equals("false"))
+					arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ s  + "_" +  lider+ "_" + poda + ".txt";
+				PrintStream ps = new PrintStream(arquivo);
+
+				ps.println("algoritmo = " + metodo);
+				ps.println("problema = " + problema);
+				ps.println("m = " + m);
+				ps.println("k = " + k);
+				ps.println("max_min = " + objetivos);
+				ps.println("geracoes = " + g);
+				ps.println("numeroavaliacoes = " + a);
+				ps.println("populacao = " + p);
+				ps.println("repositorio = " + r);		
+				ps.println("numexec = " + exec);
+				ps.println("S = " + s);
+				ps.println("rank = " + rank);
+				ps.println("poda = " + poda);				
+				ps.println("lider = " + lider);			
+				ps.println("direxec =  " + direxec);
+			}
 
 		 
 	}
 	
 	public static void main(String[] args) {
 
-		int[] ms = {2, 3, 5, 10};
+		int[] ms = {2,3,5,10,15, 20};
 
 		String ind = "";
 

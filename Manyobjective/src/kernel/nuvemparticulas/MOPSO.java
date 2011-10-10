@@ -78,12 +78,20 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		
 		setMetodoEscolhaLider(el);
 		
-		if(filter.equals("par"))
+		if(filter.equals("ar"))
 			metodoRank = new AverageRank(problema.m);
-		if(filter.equals("pbr"))
+		if(filter.equals("br"))
 			metodoRank = new BalancedRank(problema.m);
-		if(filter.equals("pag"))
-			pareto.partesGrid = 25;;
+		if(filter.equals("ag"))
+			pareto.partesGrid = 25;
+		
+		if(filter.equals("eaps") || filter.equals("eapp")){
+			if(eps > 1 || eps <= 0){
+			System.err.println("Tipo de arquivo escolhido: " + filter);
+			System.err.println("Deve ser escolhido um valor de Epsilon entre 0 e 1");
+			System.exit(0);
+			}
+		}
 			
 		
 	}
@@ -94,7 +102,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 */
 	public void reiniciarExecucao(){
 		populacao = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.tamanhoArquivo, pareto.filter);
+		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize, pareto.filter);
 		problema.avaliacoes =0; 
 	}
 	

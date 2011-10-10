@@ -68,7 +68,7 @@ public class Principal {
 	
 	public boolean rank;
 	public String tipoRank;
-	public String tipoPoda;
+	public String tipoArquivo;
 	public String escolhaLider = "";
 	
 	
@@ -115,13 +115,13 @@ public class Principal {
 					principal.executarIndicador();
 				else{
 					if(principal.alg.equals("sigma"))
-						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank, principal.S_MAX, principal.tipoPoda, principal.eps);
+						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank, principal.S_MAX, principal.tipoArquivo, principal.eps);
 					if(principal.alg.equals("smopso"))
-						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank, principal.S_MAX, principal.tipoPoda, principal.escolhaLider,principal.eps);
+						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank, principal.S_MAX, principal.tipoArquivo, principal.escolhaLider,principal.eps);
 					if(principal.alg.equals("misa"))
-						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank, principal.repositorio,principal.eps, principal.tipoPoda);
+						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank, principal.repositorio,principal.eps, principal.tipoArquivo);
 					if(principal.alg.equals("nsga2"))
-						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao, principal.maxmimObjetivos, principal.tipoRank, principal.tipoPoda,principal.eps, principal.repositorio);
+						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao, principal.maxmimObjetivos, principal.tipoRank, principal.tipoArquivo,principal.eps, principal.repositorio);
 					
 					
 					principal.executar();
@@ -138,11 +138,14 @@ public class Principal {
 		System.out.println(this);
 		String id = alg + "_" + prob + "_" + m;
 		
+		if(tipoArquivo.equals("eapp") || tipoArquivo.equals("eaps"))
+			S = eps;
+		
 		if(!rank){
-			if(tipoPoda.equals(""))
+			if(tipoArquivo.equals(""))
 				id = id + "_" + S + "_" + escolhaLider;
 			else
-				id = id + "_" + S + "_" + escolhaLider+ "_" + tipoPoda;
+				id = id + "_" + S + "_" + escolhaLider+ "_" + tipoArquivo;
 		} else{
 			id = id+ "_" + S+ "_" + escolhaLider  + "_" + tipoRank;
 		}
@@ -150,10 +153,10 @@ public class Principal {
 		String caminhoDir = null;
 						
 		if(!rank){
-			if(tipoPoda.equals("")){
+			if(tipoArquivo.equals("")){
 				caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "_" + escolhaLider +"/" ;
 			} else{
-				caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "_" + escolhaLider + "_" + tipoPoda + "/" ;
+				caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "_" + escolhaLider + "_" + tipoArquivo + "/" ;
 			}
 		}else{
 			caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" +S  + "_" + escolhaLider + "_" + tipoRank +"/" ;
@@ -213,7 +216,6 @@ public class Principal {
 						maioresObjetivos[j] =Math.ceil(solucao.objetivos[j]);
 				}
 			}
-			
 			
 			fronteiras.add(fronteira);
 			
@@ -570,14 +572,17 @@ public class Principal {
 					}
 				}
 				
-				if(tag.equals("poda")){
-					if(valor.equals("false")){
-						tipoPoda = "";
+				if(tag.equals("arquivo")){
+					tipoArquivo = valor;
+					String tipos = "ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp";
+					if(!tipos.contains(tipoArquivo)){
+						System.err.println("Tipo de arquivamento especificado nao existe");
+						System.err.println("Tipos: ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp");
+						System.exit(0);
 					}
-					else{
-						tipoPoda = valor;
-					}
+
 				}
+			
 				
 				if(tag.equals("lider")){					
 					escolhaLider = valor;
@@ -604,7 +609,7 @@ public class Principal {
 		buff.append("Avaliacoes: " + numeroavaliacoes + "\n");
 		buff.append("Populacao: " + populacao + "\n");
 		buff.append("S: " + S + "\n");
-		buff.append("poda: " + tipoPoda + "\n");
+		buff.append("poda: " + tipoArquivo + "\n");
 		buff.append("lider: " + escolhaLider + "\n");
 		return buff.toString();
 	}

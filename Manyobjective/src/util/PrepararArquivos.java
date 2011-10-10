@@ -599,37 +599,37 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 		PrepararArquivos pre = new PrepararArquivos();
 
 		//String dir = "/home/andre/gemini/doutorado/experimentos/poda/";		
-		String dirEntrada = "/media/dados/Andre/Manyobjective/";
-		String dirSaida = "/media/dados/Andre/Manyobjective/";
+		String dirEntrada = "/home/andre/gemini/doutorado/experimentos/poda/";
+		String dirSaida = "/home/andre/gemini/doutorado/experimentos/poda/";
 		//String dir2 = "/home/andre/gemini/doutorado/experimentos/poda/";
 		//int objetivo = 2;
 		String problema  = "DTLZ2";
-		String lider = "torneio";
+		String lider = "tb";
 		
 		//String[] algs = {"0.5_ideal_" + poda, "0.5_oposto_" + poda, "0.5_sigma_" + poda};
-		//String[] algs = {"0.5_" +lider+ "_p-crowd","0.5_" +lider+ "_p-ar","0.5_" +lider+ "_p-br","0.5_" +lider+ "_p-ideal","0.5_" +lider+ "_p-ex_id","0.5_" +lider+ "_p-eucli","0.5_" +lider+ "_p-tcheb","0.5_" +lider+ "_p-sigma","0.5_" +lider+ "_p-rand"};
-		String[] algs = {"0.5_" +lider+ "_p-ideal"};
+		String[] algs = {"0.5_" +lider+ "_pag","0.5_" +lider+ "_par","0.5_" +lider+ "_pbr","0.5_" +lider+ "_pcrowd","0.5_" +lider+ "_pdom","0.5_" +lider+ "_peucli","0.5_" +lider+ "_pex_id","0.5_" +lider+ "_pideal","0.5_" +lider+ "_ppr_id","0.5_" +lider+ "_prand","0.5_" +lider+ "_ptcheb", "0.5_" +lider+ "_pub"};
+		//String[] algs = {"0.5_" +lider+ "_p-ideal"};
 		//String[] algs = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
 		//String[] algs = {"0.5_ar", "0.5_bro", "0.5_mr", "0.5_nsga", "0.5_mr_bro", "0.5_ar_bro", "0.3_nsga", "0.35_nsga", "0.4_nsga" };
 		//String[] algs = {"0.5_br", "0.5_ar", "0.5_mr", "0.5_gb", "0.5_ar_br", "0.5_ar_gb", "0.5_br_gb", "0.5"};
 		String metodo = "smopso";
 		
 		
-		int objs[] = {2,3,5};
-		int exec = 5;
+		int objs[] = {2,3,5,10,15,20};
+		int exec = 30;
 
 		try{
 			
 			
-			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "hipervolume", objs, algs,lider);
+			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "hipervolume", objs, algs,lider);
 
 			/*pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "gd", objs, algs,lider);
 			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "igd", objs, algs,lider);
 			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "spread", objs, algs,lider);
 			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "np", objs, algs,lider);
-			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "tempo", objs, algs,lider);
+			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "tempo", objs, algs,lider);*/
 			
-			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "tcheb", objs, algs,lider);*/
+			/*pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "tcheb", objs, algs,lider);*/
 
 			
 
@@ -654,10 +654,10 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			
 			for (int i = 0; i < objs.length; i++) {
 				System.out.println(objs[i]);
-				pre.gerarComando(dirEntrada, dirSaida, problema, objs[i], algs, exec, metodo, "hipervolume");
-				pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "hipervolume");
-				/*pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "igd");
-				pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "spread");*/
+				//pre.gerarComando(dirEntrada, dirSaida, problema, objs[i], algs, exec, metodo, "hipervolume");
+				pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "gd");
+				pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "igd");
+				pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "spread");
 			}
 			
 
