@@ -53,7 +53,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	public ArrayList<Solucao> executar() {
 		
 		
-		pareto = new FronteiraPareto(pareto.S, maxmim, rank,  pareto.eps, problema, pareto.tamanhoArquivo, pareto.filter);
+		pareto = new FronteiraPareto(pareto.S, maxmim, rank,  pareto.eps, problema, pareto.archiveSize, pareto.filter);
 		populacao = new ArrayList<Solucao>();
 		offspring = new ArrayList<Solucao>();
 		

@@ -819,8 +819,23 @@ public abstract class AlgoritmoAprendizado {
 		
 	}
 	
+	public static double log2(double num){
+		return Math.log10(num)/Math.log10(2);
+	}
 	
 	
+	public static boolean vector_equality(double[] vector1, double[] vector2){
+		if(vector1.length!=vector2.length)
+			return false;
+		else{
+			for (int i = 0; i < vector2.length; i++) {
+				if(vector1[i] != vector2[i])
+					return false;
+			}
+			return true;
+		}
+		
+	}
 	
 	
 	

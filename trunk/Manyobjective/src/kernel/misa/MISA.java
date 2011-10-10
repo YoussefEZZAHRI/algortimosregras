@@ -139,7 +139,7 @@ public class MISA extends AlgoritmoAprendizado {
 		//Adiciona todos os clones na popula��o atual
 		populacao.addAll(clones);
 		//Obt�m os novos l�deres da popula��o
-		FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.tamanhoArquivo, pareto.filter);
+		FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize, pareto.filter);
 		encontrarSolucoesNaoDominadas(populacao, paretoTemp);
 		//Reduz a popula��o com o tamanho passado como parametro
 		reduzirPopulacao(populacao, paretoTemp);
@@ -167,7 +167,7 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		populacaoSecundaria = new AdaptiveGrid(problema.m, partesGrid,tamanhoGrid );
 		clones = null;
-		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.tamanhoArquivo, pareto.filter);
+		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize, pareto.filter);
 	}
 	
 
@@ -360,7 +360,7 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	public void mutacaoSolucoesNaoTaoBoas(ArrayList<Solucao> clones){
 		
-		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.tamanhoArquivo, pareto.filter);
+		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize, pareto.filter);
 		encontrarSolucoesNaoDominadas(clones, clonesNaoDominados);
 		ArrayList<Solucao> melhores = clonesNaoDominados.getFronteira();
 		
