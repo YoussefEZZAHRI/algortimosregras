@@ -16,6 +16,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -138,8 +139,10 @@ public class Principal {
 		System.out.println(this);
 		String id = alg + "_" + prob + "_" + m;
 		
-		if(tipoArquivo.equals("eapp") || tipoArquivo.equals("eaps"))
+		if(tipoArquivo.equals("eapp") || tipoArquivo.equals("eaps")){
+			
 			S = eps;
+		}
 		
 		if(!rank){
 			if(tipoArquivo.equals(""))
