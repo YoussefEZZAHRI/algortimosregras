@@ -116,7 +116,7 @@ public class FronteiraPareto {
 			return solucao.numDominacao;
 		}
 
-		if(eps==0){
+		if(!filter.substring(0, 2).equals("ea")){
 
 			int comp;
 
@@ -287,7 +287,7 @@ public class FronteiraPareto {
 		double[] box = new double[solution.objetivos.length];
 		for (int i = 0; i < solution.objetivos.length; i++) {
 			double num = solution.objetivos[i];
-			box[i] = AlgoritmoAprendizado.log2(num)/(AlgoritmoAprendizado.log2(1+eps));
+			box[i] = Math.log(num)/Math.log(1+eps);
 		}
 		return box;
 	}
