@@ -104,7 +104,7 @@ public class Hipervolume extends Indicador{
 			double lebMeasure = 0;
 
 			ArrayList<double[]> spawnData = new ArrayList<double[]>();
-			int k = 0;
+			
 			//int tamAnterior = list.size();
 			//System.out.println(k + " - " + list.size());
 			while(list.size()>0){
@@ -112,7 +112,7 @@ public class Hipervolume extends Indicador{
 					tamAnterior = list.size();
 					System.out.println(k + " - " + list.size());
 				}*/
-				k++;
+		
 				double lopOffVol = 1;
 				double[] p1 = list.pop();
 				for(int i = 0; i<m; i++){

@@ -339,11 +339,11 @@ public class Particula {
 		//Compara os objetivos atuais com os valores guardados para o melhor local
 		int retorno = pareto.compareObjectiveVector(objetivos,localBestObjetivos);
 		//Se o melhor local eh dominado, entao eh feita a atualizacao do lider
-		if(retorno == 1){
+		if(retorno == FronteiraPareto.DOMINATES){
 			localBestObjetivos = objetivos;
 			localBest = posicao;
 		} else{
-			if(retorno == 0){
+			if(retorno == FronteiraPareto.EQUALS || retorno == FronteiraPareto.NON_DOMINATED){
 				//Se nao ha relacao de dominancia, o lider locao eh escolhido de forma aleatoria, entre os dois valoes
 				double rand = Math.random();
 				if(rand<0.5){

@@ -9,6 +9,7 @@ public class BalancedRank extends Rank {
 	public BalancedRank(int m){
 		super(m);
 		System.out.println("Rank: BR");
+		ID = "BR";
 	}
 
 	@Override

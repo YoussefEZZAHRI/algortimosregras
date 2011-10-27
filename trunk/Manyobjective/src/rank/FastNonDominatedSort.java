@@ -3,6 +3,8 @@ package rank;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import pareto.FronteiraPareto;
+
 
 import solucao.Solucao;
 
@@ -24,10 +26,10 @@ public class FastNonDominatedSort extends Rank {
 			for (Iterator<Solucao> iterator2 = solucoes.iterator(); iterator2.hasNext();) {
 				Solucao q =  iterator2.next();
 				int comp = pareto.compareObjectiveVector(p.objetivos, q.objetivos);
-				if(comp == 1)
+				if(comp == FronteiraPareto.DOMINATES)
 					dominadas.add(q);
 				else
-					if(comp == -1)
+					if(comp == FronteiraPareto.DOMINATED_BY)
 						p.numDominacao++;
 			}
 			if(p.numDominacao == 0){

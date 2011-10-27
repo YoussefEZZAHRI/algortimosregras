@@ -53,12 +53,12 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	public ArrayList<Solucao> executar() {
 		
 		
-		pareto = new FronteiraPareto(pareto.S, maxmim, rank,  pareto.eps, problema, pareto.archiveSize, pareto.filter);
+		pareto = new FronteiraPareto(pareto.S, maxmim, rank,  pareto.eps, problema, pareto.archiveSize, pareto.archiveType);
 		populacao = new ArrayList<Solucao>();
 		offspring = new ArrayList<Solucao>();
 		
 		iniciarPopulacao();
-		rankear(populacao);
+		metodoRank.rankear(populacao, -1);
 		
 		
 		gerarOffsping(populacao, compRank);
@@ -89,7 +89,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		offspring = new ArrayList<Solucao>();
 		
 		iniciarPopulacao();
-		rankear(populacao);
+		metodoRank.rankear(populacao, -1);
 		
 		problema.avaliacoes = 0;
 
@@ -116,7 +116,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	private void lacoEvolutivo(ArrayList<Solucao> populacaoCombinada) {
 		populacaoCombinada.addAll(populacao);
 		populacaoCombinada.addAll(offspring);
-		rankear(populacaoCombinada);
+		metodoRank.rankear(populacaoCombinada, -1);
 		
 		calcularCrowdingDistanceFront(populacaoCombinada);
 		

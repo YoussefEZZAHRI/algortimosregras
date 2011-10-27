@@ -82,8 +82,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			metodoRank = new AverageRank(problema.m);
 		if(filter.equals("br"))
 			metodoRank = new BalancedRank(problema.m);
-		if(filter.equals("ag"))
-			pareto.partesGrid = 25;
+		
 		
 		if(filter.equals("eaps") || filter.equals("eapp")){
 			if(eps > 1 || eps <= 0){
@@ -102,7 +101,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 */
 	public void reiniciarExecucao(){
 		populacao = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize, pareto.filter);
+		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize, pareto.archiveType);
 		problema.avaliacoes =0; 
 	}
 	
@@ -419,23 +418,6 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 		}
 		
 	}
-	public void populacaoNoRepositorio(){
-		int contador1 = 0;
-		int contador2 = 0;
-		int contador3 = 0;
-		
-		for (Iterator<Particula> iterator = populacao.iterator(); iterator.hasNext();) {
-			SolucaoNumerica solucao = (SolucaoNumerica)iterator.next().solucao;
-		
-		if(pareto.getFronteira().contains(solucao))
-				contador2++;
-		if(pareto.contemSolucaoVariacao(solucao, 0.001))
-			contador1++;
-		if(pareto.contemSolucaoVariacaoEspacobusca(solucao, 0.001))
-			contador3++;
-							
-		}
-		System.out.println(pareto.getFronteira().size() + " - " +  contador2 + " - " + contador1);
-	}
+	
 	
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Random;
 
 import kernel.nuvemparticulas.Particula;
 
@@ -23,6 +24,7 @@ import rank.Rank;
 import rank.RankDominancia;
 import rank.SumWeightedGlobalRatios;
 import rank.SumWeightedRatios;
+import solucao.ComparetorDistancia;
 import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoBinaria;
@@ -63,6 +65,8 @@ public abstract class AlgoritmoAprendizado {
 	
 	public double eps;
 	
+	public static Random random = new Random();
+	
 	
 	/**
 	 * 
@@ -91,8 +95,10 @@ public abstract class AlgoritmoAprendizado {
 		
 		filter = tPoda;
 		
-		this.eps = eps;;
+		this.eps = eps;
 		
+		
+		random.setSeed(System.currentTimeMillis());
 		
 	}
 	
@@ -140,6 +146,25 @@ public abstract class AlgoritmoAprendizado {
 			}
 		}
 		
+	}
+	
+	public static void calculateKNeareastNeighbour(ArrayList<Solucao> solucoes, int k){
+		for (int i = 0; i<solucoes.size();i++) {
+			Solucao solucao_i =  solucoes.get(i);
+			solucao_i.menorDistancia = Double.MAX_VALUE;
+			solucao_i.knn = 0;
+			for (int j = 0; j<solucoes.size();j++) {
+				if(i!=j){
+					Solucao solucao_j =  solucoes.get(j);
+					solucao_j.menorDistancia = distanciaEuclidiana(solucao_i.objetivos, solucao_j.objetivos);
+				}
+			}
+			ComparetorDistancia comp = new ComparetorDistancia();
+			Collections.sort(solucoes, comp);
+			for(int p = 0; p<k; p++){
+				solucao_i.knn+= solucoes.get(p).menorDistancia;
+			}
+		}
 	}
 	
 	/**
@@ -512,9 +537,7 @@ public abstract class AlgoritmoAprendizado {
 			Particula particula = (Particula) iterator.next();
 			solucoes.add(particula.solucao);
 		}
-		
-		
-		rankear(solucoes);
+		metodoRank.rankear(solucoes, -1);
 		solucoes.clear();
 		solucoes = null;
 	}
@@ -577,56 +600,9 @@ public abstract class AlgoritmoAprendizado {
 		}
 	}
 	
-	public void rankear(ArrayList<Solucao> solucoes){
-		if(metodoRank == null){
-			AverageRank rank = new AverageRank(problema.m);
-			//BalancedRank rank = new BalancedRank(problema.m);
-			//MaximumRank rank = new MaximumRank(problema.m);
-			metodoRank = rank;
-		}
+	/*public static void rankear(ArrayList<Solucao> solucoes, Rank metodoRank){
 		metodoRank.rankear(solucoes, -1);
-		
-		//if(tipoRank.equals("ar") ||tipoRank.equals("ar2"))
-		/*	averageRank(solucoes);
-			int i = 0;
-			System.out.print("AR: \t");
-			for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
-				Solucao solucao = (Solucao) iterator.next();
-				System.out.println(solucao.rank + "\t");
-				
-			}
-			System.out.println();
-			maximumAverageRank(solucoes);
-			i = 0;
-			System.out.print("MR: \t");
-			for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
-				Solucao solucao = (Solucao) iterator.next();
-				System.out.println(solucao.rank + "\t");
-				
-			}
-			System.out.println();
-			weightedAverageRank(solucoes);
-			i = 0;
-			System.out.print("WR: \t");
-			for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
-				Solucao solucao = (Solucao) iterator.next();
-				System.out.println(solucao.rank + "\t");
-				
-			}
-			System.out.println();
-			System.out.print("SR: \t");
-			sumWeightedRatios(solucoes);
-			i = 0;
-			for (Iterator iterator = solucoes.iterator(); iterator.hasNext();) {
-				Solucao solucao = (Solucao) iterator.next();
-				System.out.println(solucao.rank + "\t");
-				
-			}*/
-		/*if(tipoRank.equals("war") || tipoRank.equals("war2"))
-			weightedAverageRank(solucoes);
-		if(tipoRank.equals("mar") || tipoRank.equals("mar2"))
-			weightedAverageRank(solucoes);*/
-	}
+	}*/
 	
 
 
@@ -755,7 +731,7 @@ public abstract class AlgoritmoAprendizado {
 					Solucao solucao_extr_i = (Solucao) iterator2.next();
 
 					double distancia = 0 ;
-					if(metodoDistancia.equals("euclidiana"))
+					if(metodoDistancia.equals("eucli"))
 						distancia = distanciaEuclidiana(solucao_extr_i.objetivos, solucao.objetivos);
 					if(metodoDistancia.equals("tcheb"))
 						distancia = distanciaTchebycheff(solucao_extr_i.objetivos, solucao.objetivos, lambda);

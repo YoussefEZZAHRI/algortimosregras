@@ -44,7 +44,7 @@ public class DTLZ2 extends Problema {
 		if(solucao.objetivos == null)
 		   solucao.objetivos = new double[m];
 		
-		double g = g2(solucao.xm);
+		double g = g2(solucao.getVariaveis());
 		double pi_2 = Math.PI/2.0;
 		//System.out.print("f(0): ");
 		double f0 = (1+g)*Math.cos(solucao.getVariavel(0)*pi_2);
