@@ -22,26 +22,33 @@ public abstract class Solucao {
 	public double crowdDistance;
 	
 	public double rank = -1;
+	//Used on BalancedRank
 	public double balanceamentoRank = -1;
 	
 	public double[] combRank = null;
 	
+	//highest distance between each objective value
 	public double diff;
 	
 	public int ocupacao;
 
-	
 	//Valor da distancia sigma da solucao
 	public double[] sigmaVector = null;
 	
+	//Used on leader's choose Oposto
 	public double[] objetivosMedio;
 	
 	public double S;
 	
-	public int indice;
+	//public int indice;
 	
+	//Used on methods that calculate some distance between the solutions 
 	public double menorDistancia;
 	
+	//Used on KNN archiver (SPEA2)
+	public double knn;
+	
+	//Used on some archiving methods
 	public int guia;
 	
 	

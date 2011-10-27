@@ -10,6 +10,8 @@ public abstract class Rank {
 	
 	public int m;
 	
+	public String ID;
+	
 	protected FronteiraPareto pareto = null;
 	
 	public Rank(int m){

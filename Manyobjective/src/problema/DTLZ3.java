@@ -35,7 +35,7 @@ public class DTLZ3 extends Problema {
 		if(solucao.objetivos == null)
 		   solucao.objetivos = new double[m];
 		
-		double g = g1(solucao.xm);
+		double g = g1(solucao.getVariaveis());
 		double pi_2 = Math.PI/2.0;
 		//System.out.print("f(0): ");
 		double f0 = (1+g)*Math.cos(solucao.getVariavel(0)*pi_2);
@@ -90,7 +90,7 @@ public class DTLZ3 extends Problema {
 				melhores.add(melhor);
 			}*/
 			
-			if(g1(melhor.xm)==0)
+			if(g1(melhor.getVariaveis())==0)
 				melhores.add(melhor);
 		}
 		

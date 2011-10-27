@@ -4,11 +4,24 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Random;
+
+import archive.AdaptiveGridArchiver;
+import archive.CrowdingDistanceArchiver;
+import archive.DistanceReferencePointsArchiver;
+import archive.DistributedArchiver;
+import archive.DominatingArchive;
+import archive.IdealArchiver;
+import archive.MGAArchiver;
+import archive.PreciseArchiver;
+import archive.RandomArchiver;
+import archive.RankArchiver;
+import archive.SPEA2Archiver;
+import archive.UnboundArchive;
 
 import problema.Problema;
 import kernel.AlgoritmoAprendizado;
-import solucao.ComparetorCrowdedOperator;
+import rank.AverageRank;
+import rank.BalancedRank;
 import solucao.ComparetorDistancia;
 import solucao.ComparetorObjetivo;
 import solucao.Solucao;
@@ -30,19 +43,26 @@ public class FronteiraPareto {
 	
 	public String[] maxmim = null;
 	
-	public AdaptiveGrid grid = null;
+	
 
 	public double fator;
 	
 	public double eps;
 	
-	public String filter;
+	public String archiveType;
 	
 	public int archiveSize;
 	
 	public Problema problema;
 	
-	public int partesGrid;
+	public PreciseArchiver archiver = null;
+	
+	
+	
+	public static int DOMINATED_BY = -1;
+	public static int DOMINATES = 1;
+	public static int NON_DOMINATED = 0;
+	public static int EQUALS = 2;
 	
 	/*public FronteiraPareto(double s){
 		fronteira = new ArrayList<Solucao>();
@@ -51,7 +71,11 @@ public class FronteiraPareto {
 		
 	}*/
 	
-	public FronteiraPareto(double s, String[] maxmim, boolean r, double e, Problema prob, int tArquivo, String poda){
+	public FronteiraPareto(String[] maxmim){
+		preencherObjetivosMaxMin(maxmim);
+	}
+	
+	public FronteiraPareto(double s, String[] maxmim, boolean r, double e, Problema prob, int tArquivo, String archType){
 		front = new ArrayList<Solucao>();
 		//fronteiraNuvem = new ArrayList<Particula>();
 		S = s;
@@ -64,10 +88,81 @@ public class FronteiraPareto {
 		
 		archiveSize = tArquivo;
 		
-		filter = poda;
+		archiveType = archType;
 		
 		preencherObjetivosMaxMin(maxmim);
+		
+		setArchiver(archiveType);
 	}
+	
+	
+	
+	/**
+	 * Metodo que efetua a poda das solucoes do repositorio de acordo com o metodo definido pelo parametro tipoPoda:
+	 * crowd = poda pelo CrowdedOperator = distancia de crowding
+	 * AR = poda que calcula o ranking AR e poda pelo valor de AR
+	 * BR = poda que calcula o ranking AR e poda pelo valor de BR
+	 * pr_id = poda que seleciona as solucoes mais proximas dos extremos e da solucao ideal
+	 * ex_id = poda que seleciona as solucoes mais proximas dos extremos e da solucao mais proxima da ideal
+	 * eucli = poda que utiliza a menor distancia euclidiana de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
+	 * sigma = poda que utiliza a menor distancia euclidiana do vetor sigma de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
+	 * tcheb = poda que utiliza a menor distancia de tchebycheff de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
+	 * rand = aleatorio
+	 * p-ideal = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao ideal
+	 *  p-pr_id = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao mais proxiama ideal
+	 *  p-ag = Poda que adiciona a soluções num grid adaptativo
+	 *  pdom = a solucao nao dominada nao entra no arquivo, somente entram solucoes que dominem alguma outra
+	 *  pub = unbound, todas as solucoes entram
+	 */
+	public void setArchiver(String archiveType){
+		if(archiveType == null || archiveType.equals(""))
+			archiver = null;
+		else{
+			//Poda somente de  acordo com a distancia de Crowding ou AR+CD ou BR+CD 
+			if(archiveType.equals("crowd"))
+				archiver = new CrowdingDistanceArchiver(problema.m);
+			if(archiveType.equals("ar")){
+				AverageRank ar = new AverageRank(problema.m);
+				archiver = new RankArchiver(ar);
+			}
+			if(archiveType.equals("br")){
+				BalancedRank ar = new BalancedRank(problema.m);
+				archiver = new RankArchiver(ar);
+			}
+					
+			if(archiveType.equals("ideal")){
+				archiver = new IdealArchiver(problema);
+			}	
+			if(archiveType.equals("dist")){
+				archiver = new DistributedArchiver(problema, archiveSize);
+			}
+			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
+			if(archiveType.equals("eucli") || archiveType.equals("sigma") || archiveType.equals("tcheb")){
+				archiver = new DistanceReferencePointsArchiver(problema, archiveType);
+			}
+			
+			//Random selection
+			if(archiveType.equals("rand"))
+				archiver = new RandomArchiver();
+			//The solutions are selected through the Adpative Grid scheme
+			if(archiveType.equals("ag"))
+				archiver = new AdaptiveGridArchiver(problema, archiveSize);
+		
+			//Unbound, every non-dominated solutions enters
+			if(archiveType.equals("ub"))
+				archiver = new UnboundArchive();
+			//Only enter in the archive solutions that dominate any other
+			if(archiveType.equals("dom"))
+				archiver = new DominatingArchive();
+			if(archiveType.equals("spea2"))
+				archiver = new SPEA2Archiver();
+			if(archiveType.equals("mga") || archiveType.equals("mga2"))
+				archiver = new MGAArchiver(problema, archiveType);
+			
+		}
+		
+	}
+	
 	
 
 	/**
@@ -116,7 +211,7 @@ public class FronteiraPareto {
 			return solucao.numDominacao;
 		}
 
-		if(!filter.substring(0, 2).equals("ea")){
+		if(!archiveType.substring(0, 2).equals("ea")){
 
 			int comp;
 
@@ -147,11 +242,11 @@ public class FronteiraPareto {
 
 
 
-				if(comp == -1){
+				if(comp == DOMINATED_BY){
 					solucao.numDominacao++;
 					//	System.out.println("dominada por: " +temp.indice);
 				}
-				if(comp == 1){
+				if(comp == DOMINATES){
 					front.remove(temp);
 					solucao.numDominadas++;
 					//System.out.println("domina: " + temp.indice);
@@ -163,17 +258,17 @@ public class FronteiraPareto {
 					front.add(solucao);
 				else{
 					if(front.size()==archiveSize)
-						filter(solucao);
+						archiver.filter(front, solucao);
 					else
 						front.add(solucao);
 				}
 
 			}			
 		} else{
-			if(filter.equals("eapp"))
+			if(archiveType.equals("eapp"))
 				return adpativeEpsApprox(solucao);
 			else
-			if(filter.equals("eaps"))
+			if(archiveType.equals("eaps"))
 				return adpativeEpsParetoSet(solucao);
 		}
 		return solucao.numDominacao;
@@ -202,11 +297,11 @@ public class FronteiraPareto {
 			comp = compareObjectiveVector(solution.objetivos, newObjSolArchive);
 			comp2 = compareObjectiveVector(solution.objetivos, solution_archive.objetivos);
 
-			if(comp == -1){
+			if(comp == DOMINATED_BY){
 				solution.numDominacao++;
 				//	System.out.println("dominada por: " +temp.indice);
 			}
-			if(comp2 == 1){
+			if(comp2 == DOMINATES){
 				dominated.add(solution_archive);
 				solution.numDominadas++;
 				//System.out.println("domina: " + temp.indice);
@@ -235,9 +330,9 @@ public class FronteiraPareto {
 		double[] box = box(solution); 
 		for (Iterator<Solucao> iter = front.iterator(); iter.hasNext();) {
 			SolucaoNumerica solution_archive = (SolucaoNumerica) iter.next();
-			double box_archive[] = box(solution);
+			double box_archive[] = box(solution_archive);
 			comp = compareObjectiveVector(box, box_archive);
-			if(comp == 1){
+			if(comp == DOMINATES){
 				box_dominated.add(solution_archive);
 				solution.numDominadas++;
 			}
@@ -245,12 +340,12 @@ public class FronteiraPareto {
 			comp2 = compareObjectiveVector(solution.objetivos, solution_archive.objetivos);
 
 			//If box(f') == box(f) and f dominates f'
-			if(AlgoritmoAprendizado.vector_equality(box, box_archive) && comp2 == 1){
+			if(AlgoritmoAprendizado.vector_equality(box, box_archive) && comp2 == DOMINATES){
 				objective_dominated.add(solution_archive);
 			} 
 
 			//If box(f') == box(f) or box(f') dominates box(f)
-			if(AlgoritmoAprendizado.vector_equality(box, box_archive) || comp == -1){
+			if(AlgoritmoAprendizado.vector_equality(box, box_archive) || comp == DOMINATED_BY){
 				solution.numDominacao++;
 			}
 		}
@@ -287,150 +382,11 @@ public class FronteiraPareto {
 		double[] box = new double[solution.objetivos.length];
 		for (int i = 0; i < solution.objetivos.length; i++) {
 			double num = solution.objetivos[i];
-			box[i] = Math.log(num)/Math.log(1+eps);
+			box[i] = Math.floor(Math.log(num)/Math.log(1+eps));
+			//box[i] = Math.floor(num/eps);
 		}
 		return box;
 	}
-	
-	
-	
-	
-	/*
-	public double add2(Solucao solucao){
-		solucao.numDominacao = 0;
-		solucao.numDominadas = 0;
-		if(fronteira.size()==0){
-			fronteira.add(solucao);
-			return solucao.numDominacao;
-		}
-		
-		int comp;
-		
-		ArrayList<SolucaoNumerica> cloneFronteira = (ArrayList<SolucaoNumerica>)fronteira.clone();
-		
-		double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
-
-		if(S!=0.5){
-			novosObjetivosSolucao = modificacaoDominanciaParetoCDAS(solucao.objetivos, S);
-		} else{
-			//novosObjetivosSolucao  = modificacaoDominanciaParetoEqualizar(solucao.objetivos, fator);
-			novosObjetivosSolucao  = modificacaoDominanciaParetoEpsilon(solucao.objetivos, eps);
-			//novosObjetivosSolucao  = solucao.objetivos;
-			//System.out.println();
-		}
-		
-		int k = 0;
-		for (Iterator<SolucaoNumerica> iter = cloneFronteira.iterator(); iter.hasNext(); k++) {
-			SolucaoNumerica temp = (SolucaoNumerica) iter.next();
-			
-			double[] novosObjetivosTemp = new double[temp.objetivos.length];
-			
-			if(S!=0.5){
-				
-					novosObjetivosTemp = modificacaoDominanciaParetoCDAS(temp.objetivos, S);
-			} else
-				//novosObjetivosTemp = temp.objetivos;
-				novosObjetivosTemp = modificacaoDominanciaParetoEpsilon(temp.objetivos, eps);
-				//novosObjetivosTemp = modificacaoDominanciaParetoEqualizar(temp.objetivos, fator);
-			
-			comp = compararMedidas(novosObjetivosSolucao, novosObjetivosTemp);
-			
-			
-			
-			if(comp == -1){
-				solucao.numDominacao++;
-			//	System.out.println("dominada por: " +temp.indice);
-			}
-			if(comp == 1){
-				fronteira.remove(temp);
-				solucao.numDominadas++;
-				//System.out.println("domina: " + temp.indice);
-			}
-			
-		}
-		if(solucao.numDominacao == 0)
-			fronteira.add(solucao);
-							
-		return solucao.numDominacao;
-		
-	}*/
-	
-	/**
-	 * Metodo que efetua a poda das solucoes do repositorio de acordo com o metodo definido pelo parametro tipoPoda:
-	 * crowd = poda pelo CrowdedOperator = distancia de crowding
-	 * AR = poda que calcula o ranking AR e poda pelo valor de AR
-	 * BR = poda que calcula o ranking AR e poda pelo valor de BR
-	 * pr_id = poda que seleciona as solucoes mais proximas dos extremos e da solucao ideal
-	 * ex_id = poda que seleciona as solucoes mais proximas dos extremos e da solucao mais proxima da ideal
-	 * eucli = poda que utiliza a menor distancia euclidiana de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
-	 * sigma = poda que utiliza a menor distancia euclidiana do vetor sigma de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
-	 * tcheb = poda que utiliza a menor distancia de tchebycheff de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
-	 * rand = aleatorio
-	 * p-ideal = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao ideal
-	 *  p-pr_id = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao mais proxiama ideal
-	 *  p-ag = Poda que adiciona a soluções num grid adaptativo
-	 *  pdom = a solucao nao dominada nao entra no arquivo, somente entram solucoes que dominem alguma outra
-	 *  pub = unbound, todas as solucoes entram
-	 */
-	public void filter(Solucao nova_solucao){
-		if(rank)
-			podarLideresCrowdedOperator(nova_solucao);
-		else{
-			//Poda somente de  acordo com a distancia de Crowding ou AR+CD ou BR+CD 
-			if(filter.equals("crowd") || filter.equals("ar") || filter.equals("br"))
-				podarLideresCrowdedOperator(nova_solucao);
-			//Calcula o ranking AR e poda de acordo com o AR, caso haja empate usa a distancia de crowding
-			
-			
-			if(filter.equals("ideal")){
-				Solucao ideal = AlgoritmoAprendizado.obterSolucoesExtremasIdeais(getFronteira(), false, problema).get(problema.m).get(0);
-				podarLideresIdeal(nova_solucao, ideal);
-			}
-			
-			if(filter.equals("pr_id")){
-				Solucao ideal = AlgoritmoAprendizado.obterSolucoesExtremasIdeais(getFronteira(), true, problema).get(problema.m).get(0);
-				podarLideresExtremosIdeal(nova_solucao, ideal,  problema.m, archiveSize);
-			}
-
-			if(filter.equals("ex_id")){
-				Solucao ideal = AlgoritmoAprendizado.obterSolucoesExtremasIdeais(getFronteira(), false, problema).get(problema.m).get(0);
-				podarLideresExtremosIdeal(nova_solucao, ideal,  problema.m, archiveSize);
-				
-			}
-
-			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
-			if(filter.equals("eucli")){
-				ArrayList<ArrayList<Solucao>> extremos =AlgoritmoAprendizado. obterSolucoesExtremasIdeais(getFronteira(), true, problema);
-				AlgoritmoAprendizado.definirDistanciasSolucoesProximasIdeais(extremos, getFronteira(), "euclidiana", problema);
-				podarLideresDistancia(nova_solucao);
-			}
-			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
-			if(filter.equals("sigma")){
-				ArrayList<ArrayList<Solucao>> extremos =AlgoritmoAprendizado. obterSolucoesExtremasIdeais(getFronteira(), true, problema);
-				AlgoritmoAprendizado.definirDistanciasSolucoesProximasIdeais(extremos, getFronteira(), "sigma", problema);
-				podarLideresDistancia(nova_solucao);
-			}
-			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
-			if(filter.equals("tcheb")){
-				ArrayList<ArrayList<Solucao>> extremos =AlgoritmoAprendizado. obterSolucoesExtremasIdeais(getFronteira(), true, problema);
-				AlgoritmoAprendizado.definirDistanciasSolucoesProximasIdeais(extremos, getFronteira(), "tcheb", problema);
-				podarLideresDistancia(nova_solucao);
-			}
-			//Random selection
-			if(filter.equals("rand"))
-				podarLideresAleatorio(nova_solucao);
-			//The solutions are selected through the Adpative Grid scheme
-			if(filter.equals("ag"))
-				podarAdaptiveGrid(nova_solucao);
-			//Unbound, every non-dominated solutions enters
-			if(filter.equals("ub"))
-				front.add(nova_solucao);
-			//Only enter in the archive solutions that dominate any other
-			if(filter.equals("dom"))
-				;
-		}
-	}
-	
 
 	public void addRank(Solucao solucao){
 		if(front.size()==0){
@@ -445,28 +401,57 @@ public class FronteiraPareto {
 			}
 		}
 		
+		if(front.size() > archiveSize)
+			podarLideresCrowdedOperator();
+		
 	}
 
 	
-	public void podarLideresCrowdedOperator(Solucao nova_solucao){
-		
-		
-		front.add(nova_solucao);
-		
+	public void podarLideresCrowdedOperator(){
+			
 		AlgoritmoAprendizado.calcularCrowdingDistance(front, problema.m);
 		
-		ComparetorCrowdedOperator comp = new ComparetorCrowdedOperator();
-		Collections.sort(front, comp);
-		front.remove(front.remove(front.size()-1));
+		double highCDValue = 0;
+		int index = -1;
+		for (int i = 0; i<front.size(); i++) {
+			Solucao solucao = front.get(i);
+			if(solucao.crowdDistance > highCDValue){
+				highCDValue = solucao.crowdDistance;
+				index = i;
+			}
+		}
 		
+		front.remove(index);
+		
+	}
+	
+	public void archivingSPEA2(Solucao nova_solucao){
+		
+
+		front.add(nova_solucao);
+		
+		int k = 1;
+		
+		AlgoritmoAprendizado.calculateKNeareastNeighbour(front, k);
+
+		double highKNNValue = 0;
+		int index = -1;
+		for (int i = 0; i<front.size(); i++) {
+			Solucao solucao = front.get(i);
+			if(solucao.knn > highKNNValue){
+				highKNNValue = solucao.knn;
+				index = i;
+			}
+		}
+		
+		front.remove(index);
+
 	}
 	
 	public void podarLideresAleatorio(Solucao nova_solucao){
 		
 		front.add(nova_solucao);
-		Random rand = new Random();
-		rand.setSeed(System.currentTimeMillis());
-		double num = rand.nextDouble();
+		double num = AlgoritmoAprendizado.random.nextDouble();
 		int indice = (int) (Math.round(num*front.size())) % front.size();
 		
 		front.remove(indice);
@@ -481,9 +466,18 @@ public class FronteiraPareto {
 	 */
 	public void podarLideresDistancia(Solucao nova_solucao){
 		front.add(nova_solucao);
-		ComparetorDistancia comp = new ComparetorDistancia();
-		Collections.sort(front, comp);
-		front.remove(front.remove(front.size()-1));
+			
+		double highDistanceValue = 0;
+		int index = -1;
+		for (int i = 0; i<front.size(); i++) {
+			Solucao solucao = front.get(i);
+			if(solucao.menorDistancia > highDistanceValue){
+				highDistanceValue = solucao.menorDistancia;
+				index = i;
+			}
+		}
+		
+		front.remove(index);
 	}
 
 	
@@ -514,18 +508,7 @@ public class FronteiraPareto {
 
 	}
 	
-	public void podarAdaptiveGrid(Solucao nova_solucao){	
-		grid = new AdaptiveGrid(problema.m, partesGrid, archiveSize);
-		front.add(nova_solucao);
-		for (Iterator<Solucao> iterator = front.iterator(); iterator.hasNext();) {
-			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
-			grid.add(solucao);
-		}
-
-		front.clear();
-		front.addAll(grid.getAll());
-
-	}
+	
 	
 	/**
 	 * Seleciona as solucoes mais proximas ao extremo e mais proximas a solucao ideal, em partes iguais
@@ -608,28 +591,8 @@ public class FronteiraPareto {
 		int cont2 = sol1.length;
 		for (int i = 0; i < sol1.length; i++) {
 			
-			/*BigDecimal sol1Big = new BigDecimal(sol1[i]);
-			BigDecimal sol2Big = new BigDecimal(sol2[i]);
-			
-			
-			sol1Big = sol1Big.setScale(4,BigDecimal.ROUND_HALF_UP);
-			sol2Big = sol2Big.setScale(4,BigDecimal.ROUND_HALF_UP);
-			
-			
-						
-			double sol1_i = new Double(sol1Big.toString());
-			double sol2_i = new Double(sol2Big.toString());*/
-			
 			double sol1_i = sol1[i];
 			double sol2_i = sol2[i];
-			
-			
-			/*if((sol1_i - 0.001) <= 0)
-				sol1_i = 0;
-			
-			if((sol2_i - 0.001) <= 0)
-				sol2_i = 0;*/
-			
 			
 			if(sol1_i*objetivosMaxMin[i]>sol2_i*objetivosMaxMin[i]){
 				++cont;
@@ -641,14 +604,14 @@ public class FronteiraPareto {
 		}
 		if(cont == 0){	
 			if(cont2 == 0)
-				return 0;
+				return EQUALS;
 			else
-				return -1;
+				return DOMINATED_BY;
 		}
 		else{
 			if(cont>0 && cont<cont2)
-				return 0;
-			else return 1;
+				return NON_DOMINATED;
+			else return DOMINATES;
 		}
 	}
 	
@@ -793,7 +756,7 @@ public class FronteiraPareto {
 			double[] novosObjetivosTemp = modificacaoDominanciaParetoCDAS(temp.objetivos, S);
 			
 			comp = compareObjectiveVector(novosObjetivosSolucao, novosObjetivosTemp);
-			if(comp == -1)
+			if(comp == DOMINATED_BY)
 				numDominacao++;
 		}
 		
@@ -811,7 +774,7 @@ public class FronteiraPareto {
 			Solucao temp = iter.next();
 			
 			comp = compareObjectiveVector(solucao.combRank, temp.combRank);
-			if(comp == -1)
+			if(comp == DOMINATED_BY)
 				numDominacao++;
 		}
 		

@@ -1,14 +1,10 @@
 package kernel.nuvemparticulas;
 
-
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
 import problema.Problema;
-import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -221,59 +217,6 @@ public class SMOPSO extends MOPSO{
 			rankParticula(populacao);
 	}
 	
-	public void iniciarPopulacaoTeste2(){
-		
-		
-		ArrayList<SolucaoNumerica> solucoes =  problema.obterFronteira(tamanhoRepositorio, 250);
-		ComparetorObjetivo comp = new ComparetorObjetivo(0);
-		Collections.sort(solucoes, comp);
-		
-		
-		
-		for (Iterator<SolucaoNumerica> iterator = solucoes.iterator(); iterator.hasNext();) {
-			Particula particula = new Particula();
-			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
-			particula.iniciarParticulaAleatoriamente(problema, solucaoNumerica);
-			problema.calcularObjetivos(solucaoNumerica);
-			particula.localBestObjetivos = particula.solucao.objetivos;
-			populacao.add(particula);
-				
-		}
-		
-	}
 	
-	public void teste(){
-		
-		iniciarPopulacaoTeste2();
-		
-		
-		
-		definirSExtremos(populacao);
-		System.out.println();
-		
-		
-		int k = 0;
-		for (Iterator<Particula> iterator = populacao.iterator(); iterator.hasNext(); k++) {
-			Solucao solucao = iterator.next().solucao; 
-			solucao.indice = k;
-		}
-		
-		for (Iterator<Particula> iterator = populacao.iterator(); iterator.hasNext();) {
-			Solucao solucao = iterator.next().solucao;
-			System.out.println("Solucao: " + solucao.indice);
-			double dom  = pareto.add(solucao);
-			if(dom ==0)
-				System.out.print("");
-				
-		}
-		try{
-			imprimirFronteira(pareto.getFronteira(), 0, "temp");
-			} catch(IOException ex){ex.printStackTrace();}
-	}
-	
-
-	
-		
-		
 
 }

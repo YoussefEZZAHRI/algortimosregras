@@ -45,8 +45,8 @@ public abstract class Problema {
 		
 		this.s  = 0.5;
 		this.maxmim = new String[m];
-		for (int k = 0; k < maxmim.length; k++) {
-			maxmim[k] = "-";
+		for (int i = 0; i < maxmim.length; i++) {
+			maxmim[i] = "-";
 		}
 		this.r = false;
 		
@@ -120,21 +120,17 @@ public abstract class Problema {
 	/**
 	 * Equacao 8 do artigo "Scalable Multi-Objective Optimization Test Problems"
 	 */
-	public double g1(double[] xm){
+	public double g1(double[] x){
 		
-		double soma = 0;
-		for (int i = 0; i < xm.length; i++) {
-			double xi = xm[i];
-			
-			
-			double temp1 = Math.pow((xi-0.5),2);
-			double temp2 = Math.cos(20*Math.PI*(xi-0.5));
-			double temp3 = temp1 - temp2;
-			soma+=temp3;
+		int k = n - m + 1;
+		double g = 0.0;
+		for (int i = n - k; i < n; i++){
+			g += (x[i] - 0.5)*(x[i] - 0.5) - Math.cos(20.0 * Math.PI * ( x[i] - 0.5));
 		}
-		
-		int moduloXm = xm.length;
-		return 100*(moduloXm + soma);
+
+		g = 100 * (k + g);       
+
+		return g;
 	}
 	
 	/*public double g12(Solucao sol){
@@ -153,38 +149,17 @@ public abstract class Problema {
 	/**
 	 * Equacao 9 do artigo "Scalable Multi-Objective Optimization Test Problems"
 	 */
-	public double g2(double[] xm){
-		double soma = 0;
-		for(int i = 0; i<xm.length; i++){
-			soma += (xm[i] - 0.5)*(xm[i] - 0.5);
-		}
-		return soma;
+	public double g2(double[] x){
+		
+		int k = n - m + 1;
+		double g = 0.0;
+		  for (int i = n - k; i < n; i++)
+		      g += (x[i] - 0.5)*(x[i] - 0.5);
+		
+		
+		return g;
 	}
 	
-	/**
-	 * 
-	 * Equacao 6.24 do artigo "Scalable Test Problems for Evolutionary Multiobjective Optimization"
-	 */
-	public double g5(double[] xm){
-		double soma = 0;
-		for (int i = 0; i < xm.length; i++) {
-			soma+= Math.pow(xm[i], 0.1);
-			
-		}
-		
-		return soma;
-	}
-	
-public double g7(double[] xm){
-		
-		double soma = 0;
-		for (int i = 0; i < xm.length; i++) {
-			soma+= xm[i];
-		}
-		double fator = 9.0/xm.length;
-		
-		return 1 + fator*soma;
-	}
 	
 	public void imprimirVetoresScilab(ArrayList<SolucaoNumerica> melhores){
 		StringBuffer comandoX = new StringBuffer();

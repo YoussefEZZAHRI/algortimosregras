@@ -45,7 +45,7 @@ public class DTLZ1 extends Problema {
 		if(solucao.objetivos == null)
 		   solucao.objetivos = new double[m];
 		
-		double g = g1(solucao.xm);
+		double g = g1(solucao.getVariaveis());
 		//System.out.println(g);
 
 		for(int i = 0; i<m; i++){

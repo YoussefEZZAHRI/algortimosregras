@@ -10,6 +10,7 @@ public class MaximumRank extends Rank {
 	public MaximumRank(int m){
 		super(m);
 		System.out.println("Rank: MR");
+		ID = "MR";
 	}
 
 	@Override

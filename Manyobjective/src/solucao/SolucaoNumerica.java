@@ -1,7 +1,6 @@
 package solucao;
 
 
-
 /**
  * Classe que representa uma solu��o formada por um vetor de numeros reais
  * @author andre
@@ -13,7 +12,7 @@ public class SolucaoNumerica extends Solucao {
 	private double[] variaveis;
 	
 	//Variaveis utilizadas para o c�lculo dos objetivos dos problemas DTLZ
-	public double[] xm;
+	//public double[] xm;
 	public int k;
 	
 	
@@ -39,7 +38,6 @@ public class SolucaoNumerica extends Solucao {
 		//Calcula o valor k, que eh o numero de variaveis nao utilizadas nas funcoes objetivos
 		k = n - m +1;
 		//Array que contem o resto das variaveis nao utilizadas nas funcoes objetivos
-		xm = new double[k];
 		
 		limitesPosicaoInferior = new double[variaveis.length];
 		limitesPosicaoSuperior = new double[variaveis.length];
@@ -68,10 +66,6 @@ public class SolucaoNumerica extends Solucao {
 			//double xi = rand.nextDouble();
 			double xi = Math.random();
 			variaveis[i] = xi;
-		}
-		
-		for(int i = 0; i<k; i++){
-			xm[i] = variaveis[m+i-1]; 
 		}
 	}
 	
@@ -110,20 +104,23 @@ public class SolucaoNumerica extends Solucao {
 			novaSolucao.variaveis[i] = variaveis[i];
 		}
 		
-		for(int i = 0; i<k; i++){
-			novaSolucao.xm[i] = xm[i]; 
-		}
+		
 		for(int i = 0; i<m; i++){
 			novaSolucao.objetivos[i] = objetivos[i];
 		}
 		
 		novaSolucao.aceita = aceita;
 		novaSolucao.rank = rank;
+		novaSolucao.balanceamentoRank = balanceamentoRank;
 		novaSolucao.crowdDistance = crowdDistance;
 		novaSolucao.numDominacao = numDominacao;
+		novaSolucao.numDominadas = numDominadas;
+		novaSolucao.diff = diff;
 		novaSolucao.ocupacao = ocupacao;
 		novaSolucao.S = S;
-		novaSolucao.indice = indice;
+		novaSolucao.menorDistancia = menorDistancia;
+		novaSolucao.guia = guia;
+		novaSolucao.knn = knn;
 				
 		novaSolucao.limitesPosicaoInferior = new double[limitesPosicaoInferior.length];
 		novaSolucao.limitesPosicaoSuperior = new double[limitesPosicaoSuperior.length];
@@ -134,6 +131,23 @@ public class SolucaoNumerica extends Solucao {
 			
 		}
 		
+		if(sigmaVector !=null ){
+			novaSolucao.sigmaVector = new double[sigmaVector.length];
+
+			for (int i = 0; i < sigmaVector.length; i++) {
+				novaSolucao.sigmaVector[i] = sigmaVector[i];
+
+			}
+		}
+
+
+		if(objetivosMedio!=null){
+			novaSolucao.objetivosMedio = new double[objetivosMedio.length];
+			for (int i = 0; i < objetivosMedio.length; i++) {
+				novaSolucao.objetivosMedio[i] = objetivosMedio[i];
+
+			}
+		}
 			
 		return novaSolucao;
 	}
@@ -153,7 +167,6 @@ public class SolucaoNumerica extends Solucao {
 	public boolean truncar() {
 		
 		boolean over_limits = false;
-		int k = 0;
 		//Checa se algum valor da posicao excedeu o limites(numero negativo)
 		for (int i = 0; i < variaveis.length; i++) {
 			if(variaveis[i]<limitesPosicaoInferior[i]){
@@ -166,19 +179,12 @@ public class SolucaoNumerica extends Solucao {
 				over_limits = true;
 			}
 			
-			if(i>=(m-1))
-				xm[k++] = variaveis[i];
 		}
 		return over_limits;
 	}
 	
 	public void setVariavel(int i, double valor){
-		
-		
-	
 		variaveis[i] = valor;
-		if(i>=(m-1))
-			xm[i-(m-1)] = variaveis[i];
 	}
 	
 	public double getVariavel(int i){

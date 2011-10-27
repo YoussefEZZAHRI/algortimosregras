@@ -16,7 +16,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -577,10 +576,10 @@ public class Principal {
 				
 				if(tag.equals("poda")){
 					tipoArquivo = valor;
-					String tipos = "ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp";
+					String tipos = "ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2";
 					if(!tipos.contains(tipoArquivo)){
 						System.err.println("Tipo de arquivamento especificado nao existe");
-						System.err.println("Tipos: ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp");
+						System.err.println("Tipos: ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2");
 						System.exit(0);
 					}
 

@@ -10,6 +10,7 @@ public class AverageRank extends Rank {
 	public AverageRank(int m){
 		super(m);
 		System.out.println("Rank: AR");
+		ID = "AR";
 	}
 
 	@Override
