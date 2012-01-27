@@ -23,7 +23,7 @@ public class GerarArquivosConfiguracao {
 		String p = "250";
 		String r = "250";
 		String rank = "false";
-		String poda = "mga2";
+		String poda = "spea2";
 		String[] eps = {"0.1","0.05", "0.025", "0.01", "0.005", "0.0025", "0.001", "0.0005", "0.00025", "0.0001"  };
 		int k = 10;
 		String lider = "tb";
