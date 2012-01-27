@@ -92,7 +92,7 @@ public class DTLZ2 extends Problema {
 		
 		int tamanhoRepositorio = numSol;
 		
-		String poda = "";
+		String poda = "null";
 		
 		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio, poda);
 		
@@ -197,7 +197,7 @@ public class DTLZ2 extends Problema {
 	public static void main(String[] args) {
 		
 
-		int[] ms = {2,3,5,10,15,20,25,30};
+		int[] ms = {8};
 		int numSol = 10000;
 		int k = 10;
 		

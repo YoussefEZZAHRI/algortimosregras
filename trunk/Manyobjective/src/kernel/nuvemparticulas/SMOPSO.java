@@ -1,9 +1,15 @@
 package kernel.nuvemparticulas;
 
+import indicadores.GD;
+import indicadores.PontoFronteira;
+import indicadores.SD;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import principal.Principal;
 import problema.Problema;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
@@ -52,9 +58,11 @@ public class SMOPSO extends MOPSO{
 		
 		//double exploiting = geracoes -  Math.round(geracoes/10);
 		
+		ArrayList<ArrayList<PontoFronteira>> pfs =  new ArrayList<ArrayList<PontoFronteira>>();
 		
 		escolherParticulasMutacao();
 		//Inicia o laco evolutivo
+		
 		for(int i = 0; i<geracoes; i++){
 			if(i%10 == 0)
 				System.out.print(i + " ");
@@ -63,7 +71,40 @@ public class SMOPSO extends MOPSO{
 			//if(i>exploiting && !escolherLider.id.equals("exploiting"))
 				//escolherLider = new EscolherExploiting(problema.m);
 			lacoEvolutivo(i);
+			
+			/*Calculo do GD para cada iteracao
+			 * ArrayList<PontoFronteira> pf_i = new ArrayList<PontoFronteira>();
+			for (Iterator iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
+				Solucao solucao = (Solucao) iterator
+						.next();
+				PontoFronteira pf = new PontoFronteira(solucao.objetivos);
+				pf_i.add(pf);
+			}
+			
+			pfs.add(pf_i);*/
 		}
+		
+		/*
+		 * Calculo do GD para cada iteracao
+		 * try{
+			ArrayList<PontoFronteira> pftrue= Principal.carregarFronteiraPareto(System.getProperty("user.dir"), problema.problema.toUpperCase(), problema.m);
+			
+			String dir = System.getProperty("user.dir") + "/medidas/";
+			GD ind = new GD(problema.m, dir, "gd_" + problema.m, pftrue);
+			SD ind2 = new SD(problema.m, dir, "sd_" + problema.m, pftrue);
+			
+			String[] maxmimObjetivos = new String[problema.m];
+			for (int i = 0; i < maxmimObjetivos.length; i++) {
+				maxmimObjetivos[i] = "-";
+			}
+			
+			ind.preencherObjetivosMaxMin(maxmimObjetivos);
+			ind2.preencherObjetivosMaxMin(maxmimObjetivos);
+
+			ind.calcularIndicadorArray(pfs);
+			ind2.calcularIndicadorArray(pfs);
+		} catch(IOException ex){ex.printStackTrace();}
+		 */
 		
 		//removerGranularRaio(pareto.getFronteira());		
 		
@@ -153,6 +194,7 @@ public class SMOPSO extends MOPSO{
 		escolherLider.escolherLideres(populacao, pareto.getFronteira());
 		
 		escolherParticulasMutacao();
+		
 	}
 	
 	/**

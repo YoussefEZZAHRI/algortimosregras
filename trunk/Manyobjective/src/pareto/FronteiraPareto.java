@@ -115,7 +115,7 @@ public class FronteiraPareto {
 	 *  pub = unbound, todas as solucoes entram
 	 */
 	public void setArchiver(String archiveType){
-		if(archiveType == null || archiveType.equals(""))
+		if(archiveType == null || archiveType.equals("") || archiveType.equals("null"))
 			archiver = null;
 		else{
 			//Poda somente de  acordo com a distancia de Crowding ou AR+CD ou BR+CD 

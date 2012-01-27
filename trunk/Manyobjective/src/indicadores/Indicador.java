@@ -122,7 +122,10 @@ public abstract class Indicador {
 				double[] ponto = new double[m];
 				
 				for (int i = 0; i < m; i++) {
-					ponto[i] = new Double(valores[i].replace(',', '.'));
+					if(valores[i].contains(","))
+						ponto[i] = new Double(valores[i].replace(',', '.'));
+					else
+						ponto[i] = new Double(valores[i]);
 				}
 				PontoFronteira pf = new PontoFronteira(ponto);
 				fronteira.add(pf);

@@ -40,7 +40,6 @@ import problema.ZDT1;
 import problema.ZDT2;
 import problema.ZDT3;
 import solucao.Solucao;
-import solucao.SolucaoNumerica;
 
 public class Principal {
 	
@@ -112,7 +111,7 @@ public class Principal {
 				principal.executarDominance();
 			} else {
 				if(!principal.indicador.equals(""))
-					principal.executarIndicador();
+					principal.executarIndicador2();
 				else{
 					if(principal.alg.equals("sigma"))
 						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank, principal.S_MAX, principal.tipoArquivo, principal.eps);
@@ -314,7 +313,7 @@ public class Principal {
 		
 	}
 	
-	private void executarIndicador() throws IOException{
+	public void executarIndicador() throws IOException{
 		
 		if(alg1 == null){
 			System.err.println("Algoritmo para a execucao do indicador n�o foi definido (Tags alg1)");
@@ -328,22 +327,12 @@ public class Principal {
 			configuracoes[0] = alg1;
 		}
 		
-		ArrayList<SolucaoNumerica> fronteira = null;
 		ArrayList<PontoFronteira> pftrue= null;
 		double[] j = null;
 		double[] l = null;
 		if(indicador.equals("gd") || indicador.equals("igd") || indicador.equals("tcheb") || indicador.equals("pnf")){
-			System.out.println("Obtendo Fronteira: " + problema.problema + " " + m);
-			if(num_sol_fronteira == 0)
-				num_sol_fronteira = populacao;
-			fronteira =  problema.obterFronteira(n, num_sol_fronteira);
-			pftrue= new ArrayList<PontoFronteira>();
-
-			for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
-				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
-				PontoFronteira temp = new PontoFronteira(solucao.objetivos);
-				pftrue.add(temp);
-			}
+			
+			pftrue= carregarFronteiraPareto(System.getProperty("user.dir"), prob, m);
 			
 			j =  problema.getJoelho(n, pftrue);
 			l = problema.getLambda(n, pftrue);
@@ -393,7 +382,63 @@ public class Principal {
 		}
 	}
 	
-	public ArrayList<PontoFronteira> carregarFronteiraPareto(String dir, String problema, int objetivo){
+	public void executarIndicador2() throws IOException{
+		
+		ArrayList<PontoFronteira> pftrue= null;
+		double[] j = null;
+		double[] l = null;
+		if(indicador.equals("gd") || indicador.equals("igd") || indicador.equals("tcheb") || indicador.equals("pnf")){
+
+			pftrue= carregarFronteiraPareto(System.getProperty("user.dir"), prob, m);
+			
+			if(indicador.equals("tcheb")){
+				j =  problema.getJoelho(n, pftrue);
+				l = problema.getLambda(n, pftrue);
+			}
+
+		}
+
+		String diretorio = dirExec;
+		if(diretorio.equals(""))
+			diretorio = System.getProperty("user.dir");
+
+		String caminhoDir = diretorio;
+		File dir = new File(caminhoDir);
+		dir.mkdirs();
+
+		String idExec = alg;
+		Indicador ind = null;
+		if(indicador.equals("gd")){
+			ind = new GD(m, caminhoDir, idExec, pftrue);
+		}
+		if(indicador.equals("igd")){
+			ind = new IGD(m, caminhoDir, idExec, pftrue);
+		}
+
+		if(indicador.equals("tcheb"))
+			ind = new Tchebycheff(m, caminhoDir, idExec, j , l);
+
+
+		if(indicador.equals("spread"))
+			ind = new Spread(m, caminhoDir, idExec);
+
+
+		if(indicador.equals("pnf"))
+			ind = new PontosNaFronteira(m, caminhoDir, idExec, pftrue);
+
+		if(indicador.equals("np"))
+			ind = new NumeroPontos(m, caminhoDir, idExec);
+
+		if(ind!=null){
+			ind.preencherObjetivosMaxMin(maxmimObjetivos);
+			String arquivo1 = caminhoDir + "/" + idExec  + "_fronteira.txt";
+			System.out.println("Indicador: " + ind.indicador);
+			System.out.println("Algorihtm = " + idExec);
+			ind.calcularIndicadorArquivo(arquivo1);
+		}
+	}
+
+	public static ArrayList<PontoFronteira> carregarFronteiraPareto(String dir, String problema, int objetivo){
 		ArrayList<PontoFronteira> pftrue = new ArrayList<PontoFronteira>();
 		try{
 			String arquivo = dir + "/pareto/" + problema + "_" + objetivo + "_pareto.txt";
