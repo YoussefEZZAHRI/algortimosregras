@@ -1,32 +1,34 @@
-package kernel.nuvemparticulas;
+package kernel.mopso;
 
-import indicadores.GD;
-import indicadores.PontoFronteira;
-import indicadores.SD;
 
-import java.io.IOException;
+
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import principal.Principal;
+
+import pareto.FronteiraPareto;
 import problema.Problema;
 import solucao.Solucao;
-import solucao.SolucaoNumerica;
 
 
 /**
- * Classe que implementa o algoritmo da Otimiza��o por nuvem de part�culas multi-objetivo.
+ * Classe que implementa o algoritmo SMPSO.
  * @author Andr� B. de Carvalho
  *
  */
-public class SMOPSO extends MOPSO{
+public class SMPSO extends MOPSO{
 
 	
 	public final double INDICE_MUTACAO = 0.15;
 			
-	public SMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, int tamRep, String tRank, double smax, String tPoda, String el, double eps){
-		super(n,prob,g,a,t,s, maxmim, tRank, smax, el, eps, tamRep, tPoda);			
+	public SMPSO(int n, Problema prob, int g, int a, int t, String s, String[] maxmim, int tamRep, String tRank, double smax, String tPoda, String el, double eps, boolean eval_analysis){
+		super(n,prob,g,a,t,s, maxmim, tRank, smax, el, eps, tamRep, tPoda, eval_analysis);			
+	}
+	
+	public SMPSO(int n, Problema prob, int g, int a, int t, String s, String[] maxmim, int tamRep, String tRank, double smax, String tPoda, String el, double eps, FronteiraPareto pareto, boolean eval_analysis){
+		super(n,prob,g,a,t,s, maxmim, tRank, smax, el, eps, tamRep, tPoda, pareto, eval_analysis);			
 	}
 		
 	/**
@@ -58,7 +60,6 @@ public class SMOPSO extends MOPSO{
 		
 		//double exploiting = geracoes -  Math.round(geracoes/10);
 		
-		ArrayList<ArrayList<PontoFronteira>> pfs =  new ArrayList<ArrayList<PontoFronteira>>();
 		
 		escolherParticulasMutacao();
 		//Inicia o laco evolutivo
@@ -70,7 +71,7 @@ public class SMOPSO extends MOPSO{
 				System.out.println();
 			//if(i>exploiting && !escolherLider.id.equals("exploiting"))
 				//escolherLider = new EscolherExploiting(problema.m);
-			lacoEvolutivo(i);
+			lacoEvolutivo();
 			
 			/*Calculo do GD para cada iteracao
 			 * ArrayList<PontoFronteira> pf_i = new ArrayList<PontoFronteira>();
@@ -106,7 +107,10 @@ public class SMOPSO extends MOPSO{
 		} catch(IOException ex){ex.printStackTrace();}
 		 */
 		
-		//removerGranularRaio(pareto.getFronteira());		
+		//removerGranularRaio(pareto.getFronteira());
+		
+		if(eval_analysis)
+			evaluationAnalysis(pareto.getFronteira());
 		
 		return pareto.getFronteira();
 		
@@ -139,18 +143,23 @@ public class SMOPSO extends MOPSO{
 			
 		//	if(problema.avaliacoes>exploiting && !escolherLider.id.equals("exploiting"))
 		//		escolherLider = new EscolherExploiting(problema.m);
-			lacoEvolutivo(problema.avaliacoes);
+			lacoEvolutivo();
 			
 		}
 
 		//removerGranularRaio(pareto.getFronteira());
+		
+		if(eval_analysis)
+			evaluationAnalysis(pareto.getFronteira());
 	
 		return pareto.getFronteira();
 		
 	}
 
-	private void lacoEvolutivo(int i) {
+	protected void lacoEvolutivo() {
 		
+		if(eval_analysis)
+			evaluationAnalysis(pareto.getFronteira());
 		//Itera sobre todas as particulas da populacao
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = (Particula) iter.next();
@@ -171,7 +180,7 @@ public class SMOPSO extends MOPSO{
 			particula.escolherLocalBest(pareto);
 		}		
 		
-		if(rank || filter.equals("par") || filter.equals("pbr"))
+		if(rank || archiver.ID.equals("par") || archiver.ID.equals("pbr"))
 			rankParticula(populacao);
 		//Obtem as melhores particulas da populacao
 		atualizarRepositorio();
@@ -217,7 +226,7 @@ public class SMOPSO extends MOPSO{
 	public void iniciarRepositorioRank(){
 		ComparetorRankParticula comp = new ComparetorRankParticula();
 		Collections.sort(populacao, comp);
-		for(int i = 0; i<(tamanhoRepositorio); i++){
+		for(int i = 0; i<(archiveSize); i++){
 			Particula particula = populacao.get(i);
 			pareto.getFronteira().add((Solucao)particula.solucao.clone());
 		}
@@ -225,7 +234,7 @@ public class SMOPSO extends MOPSO{
 		
 	}
 	
-	public void iniciarPopulacaoTeste(){
+	/*public void iniciarPopulacaoTeste(){
 		int sl = 2;
 		ArrayList<SolucaoNumerica> temp =  problema.obterSolucoesExtremas(n, sl);
 		
@@ -257,7 +266,7 @@ public class SMOPSO extends MOPSO{
 		
 		if(rank)
 			rankParticula(populacao);
-	}
+	}*/
 	
 	
 

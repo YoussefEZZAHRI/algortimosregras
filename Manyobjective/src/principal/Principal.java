@@ -2,8 +2,10 @@ package principal;
 
 import indicadores.Dominance;
 import indicadores.GD;
+import indicadores.HistogramDTLZ2;
 import indicadores.IGD;
 import indicadores.Indicador;
+import indicadores.LargestDistance;
 import indicadores.NumeroPontos;
 import indicadores.PontoFronteira;
 import indicadores.PontosNaFronteira;
@@ -24,8 +26,10 @@ import java.util.Iterator;
 import kernel.AlgoritmoAprendizado;
 import kernel.genetic.NSGA2;
 import kernel.misa.MISA;
-import kernel.nuvemparticulas.SMOPSO;
-import kernel.nuvemparticulas.SigmaMOPSO;
+import kernel.mopso.SMPSO;
+import kernel.mopso.SigmaMOPSO;
+import kernel.mopso.multi.IteratedMultiSwarm;
+import kernel.mopso.multi.MultiSwarm;
 
 import problema.DTLZ1;
 import problema.DTLZ2;
@@ -62,7 +66,7 @@ public class Principal {
 	public int numeroavaliacoes=-1;
 	
 	
-	public double S;
+	public String S;
 	public double S_MAX;
 	
 	public boolean rank;
@@ -97,6 +101,21 @@ public class Principal {
 	public double fator = 0;
 	public double eps = 0;
 	
+	public int swarms = 1;
+	public boolean shared = false;
+	
+	public int pop_swarm = 10;
+	public int rep_swarm = 200;
+	public int split_iterations = 10;
+	
+	public int update = 1;
+	
+	public String front = "";
+	
+	public double box_range = 0.1;
+	
+	public boolean eval_analysis = false;
+	
 	public Principal() {
 		n = -1;
 	}
@@ -107,21 +126,26 @@ public class Principal {
 		try{			
 			principal.carregarArquivoConf(args[0]);
 			principal.setProblema();
+			System.out.println(principal);
 			if(principal.dominance){
 				principal.executarDominance();
 			} else {
 				if(!principal.indicador.equals(""))
-					principal.executarIndicador2();
+					principal.executarIndicador();
 				else{
 					if(principal.alg.equals("sigma"))
-						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank, principal.S_MAX, principal.tipoArquivo, principal.eps);
+						principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank, principal.S_MAX, principal.tipoArquivo, principal.eps, principal.eval_analysis);
 					if(principal.alg.equals("smopso"))
-						principal.algoritmo = new SMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank, principal.S_MAX, principal.tipoArquivo, principal.escolhaLider,principal.eps);
+						principal.algoritmo = new SMPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank, principal.S_MAX, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.eval_analysis);
 					if(principal.alg.equals("misa"))
-						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank, principal.repositorio,principal.eps, principal.tipoArquivo);
+						principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank, principal.repositorio,principal.eps, principal.tipoArquivo, principal.eval_analysis);
 					if(principal.alg.equals("nsga2"))
-						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao, principal.maxmimObjetivos, principal.tipoRank, principal.tipoArquivo,principal.eps, principal.repositorio);
-					
+						principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao, principal.maxmimObjetivos, principal.tipoRank, principal.tipoArquivo,principal.eps, principal.repositorio, principal.eval_analysis);
+					if(principal.alg.equals("multi"))
+						principal.algoritmo = new MultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.shared, principal.update, principal.eval_analysis);
+					if(principal.alg.equals("imulti"))
+						principal.algoritmo = new IteratedMultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.update, principal.box_range, principal.pop_swarm, principal.rep_swarm, principal.split_iterations, principal.eval_analysis);
+
 					
 					principal.executar();
 				
@@ -134,12 +158,19 @@ public class Principal {
 
 	private  void executar()
 			throws IOException {
-		System.out.println(this);
+		
+		if(alg.equals("multi") || alg.equals("imulti")){
+			S = "0.5";
+			String temp[] = escolhaLider.split(";");
+			escolhaLider = temp[0];
+			tipoArquivo = tipoArquivo.split(";")[0];
+		}
+
 		String id = alg + "_" + prob + "_" + m;
 		
 		if(tipoArquivo.equals("eapp") || tipoArquivo.equals("eaps")){
 			
-			S = eps;
+			S = eps+"";
 		}
 		
 		if(!rank){
@@ -255,12 +286,21 @@ public class Principal {
 		IGD igd = new IGD(m, caminhoDir, id, pftrue);
 		igd.preencherObjetivosMaxMin(maxmimObjetivos);
 		igd.calcularIndicadorArray(fronteiras);
+		
+		LargestDistance ld = new LargestDistance(m, caminhoDir, id, pftrue);
+		ld.preencherObjetivosMaxMin(maxmimObjetivos);
+		ld.calcularIndicadorArray(fronteiras);
 
 		double[] j =  problema.getJoelho(n, pftrue);
 		double[] l = problema.getLambda(n, pftrue);
+		
 		Tchebycheff tcheb = new Tchebycheff(m, caminhoDir, id, j , l);
 		tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
 		tcheb.calcularTchebycheff(fronteiras);
+		
+		HistogramDTLZ2 hist = new HistogramDTLZ2(m, caminhoDir, id);
+		hist.preencherObjetivosMaxMin(maxmimObjetivos);
+		hist.generateHistogram(fronteiras);
 
 		/*PontosNaFronteira pnf = new PontosNaFronteira(m, caminhoDir, idInd, pftrue);
 			pnf.preencherObjetivosMaxMin(maxmimObjetivos);
@@ -314,6 +354,74 @@ public class Principal {
 	}
 	
 	public void executarIndicador() throws IOException{
+
+
+		ArrayList<PontoFronteira> pftrue= null;
+		double[] j = null;
+		double[] l = null;
+		if(indicador.equals("gd") || indicador.equals("igd") || indicador.equals("tcheb") || indicador.equals("pnf") || indicador.equals("all") ){
+
+			pftrue= carregarFronteiraPareto(System.getProperty("user.dir"), prob, m);
+			
+			j =  problema.getJoelho(n, pftrue);
+			l = problema.getLambda(n, pftrue);
+
+		}
+		
+		String indicators[] = {"gd", "igd", "spread"};
+		if(!indicador.equals("all")){
+			indicators = new String[1];
+			indicators[0] = indicador;
+		}
+			
+		
+		String caminhoDir = dirExec;
+		
+		
+		if(caminhoDir.lastIndexOf("\\" ) != caminhoDir.length()-1 ){
+			if(caminhoDir.lastIndexOf("/" ) != caminhoDir.length()-1)
+				caminhoDir+="/";
+		}
+		
+		
+
+		String idExec = front;
+
+		for (int i = 0; i < indicators.length; i++) {
+			String indicador = indicators[i];
+
+			Indicador ind = null;
+			if(indicador.equals("gd")){
+				ind = new GD(m, caminhoDir, idExec, pftrue);
+			}
+			if(indicador.equals("igd")){
+				ind = new IGD(m, caminhoDir, idExec, pftrue);
+			}
+
+			if(indicador.equals("tcheb"))
+				ind = new Tchebycheff(m, caminhoDir, idExec, j , l);
+
+
+			if(indicador.equals("spread"))
+				ind = new Spread(m, caminhoDir, idExec);
+
+
+			if(indicador.equals("pnf"))
+				ind = new PontosNaFronteira(m, caminhoDir, idExec, pftrue);
+
+			if(indicador.equals("np"))
+				ind = new NumeroPontos(m, caminhoDir, idExec);
+
+			if(ind!=null){
+				ind.preencherObjetivosMaxMin(maxmimObjetivos);
+				String frontFile = caminhoDir + "/" + front + ".txt";
+				System.out.println("Indicador: " + ind.indicador);
+				ind.calcularIndicadorArquivo(frontFile);
+			}
+		}
+	}
+
+	public void executarIndicador3() throws IOException{
 		
 		if(alg1 == null){
 			System.err.println("Algoritmo para a execucao do indicador n�o foi definido (Tags alg1)");
@@ -529,6 +637,9 @@ public class Principal {
 
 				if(tag.equals("funcoesobjetivo"))
 					funcoesobjetivo = valor;
+				
+				if(tag.equals("front"))
+					front = valor;
 
 				if(tag.equals("numerocasosteste"))
 					numeroCasosTeste = new Integer(valor).intValue();
@@ -551,6 +662,12 @@ public class Principal {
 				if(tag.equals("fator"))
 					fator = new Double(valor).doubleValue();
 				
+				if(tag.equals("box_range"))
+					box_range = new Double(valor).doubleValue();
+				
+				if(tag.equals("swarms"))
+					swarms = new Integer(valor).intValue();
+				
 				if(tag.equals("eps"))
 					eps = new Double(valor).doubleValue();
 
@@ -566,7 +683,15 @@ public class Principal {
 
 				if(tag.equals("numeroavaliacoes"))
 					numeroavaliacoes = new Integer(valor).intValue();
+				
+				if(tag.equals("pop_swarm"))
+					pop_swarm = new Integer(valor).intValue();
 
+				if(tag.equals("rep_swarm"))
+					rep_swarm = new Integer(valor).intValue();
+				
+				if(tag.equals("split_iterations"))
+					split_iterations = new Integer(valor).intValue();
 
 				if(tag.equals("problema")){
 					prob = valor;
@@ -577,6 +702,20 @@ public class Principal {
 						dominance = true;
 					else
 						dominance = false;
+				}
+				
+				if(tag.equals("eval_analysis")){
+					if(valor.equals("true"))
+						eval_analysis = true;
+					else
+						eval_analysis = false;
+				}
+				
+				if(tag.equals("shared")){
+					if(valor.equals("true"))
+						shared = true;
+					else
+						shared = false;
 				}
 
 				if(tag.equals("indicador"))
@@ -593,11 +732,15 @@ public class Principal {
 				}
 
 				if(tag.equals("s"))
-					S = new Double(valor).doubleValue();
+					S = valor;
 				if(tag.equals("s_max"))
 					S_MAX = new Double(valor).doubleValue();
 				if(tag.equals("partesgrid")){
 					partesgrid = new Integer(valor).intValue();
+				}
+				
+				if(tag.equals("update")){
+					update = new Integer(valor).intValue();
 				}
 
 				
@@ -622,7 +765,7 @@ public class Principal {
 				if(tag.equals("poda")){
 					tipoArquivo = valor;
 					String tipos = "ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2";
-					if(!tipos.contains(tipoArquivo)){
+					if(!tipos.contains(tipoArquivo) && !valor.contains(";")){
 						System.err.println("Tipo de arquivamento especificado nao existe");
 						System.err.println("Tipos: ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2");
 						System.exit(0);

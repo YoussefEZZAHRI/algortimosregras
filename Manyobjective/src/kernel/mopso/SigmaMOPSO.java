@@ -1,10 +1,10 @@
-package kernel.nuvemparticulas;
+package kernel.mopso;
 
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import kernel.nuvemparticulas.lider.EscolherMetodoSigma;
+import kernel.mopso.lider.EscolherMetodoSigma;
 
 
 import problema.DTLZ2;
@@ -22,8 +22,8 @@ public class SigmaMOPSO extends MOPSO{
 
 
 	
-	public SigmaMOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double smax, String tPoda, double eps){
-		super(n,prob,g, a,t, s, maxmim,tRank, smax, "", eps, Integer.MAX_VALUE,"");
+	public SigmaMOPSO(int n, Problema prob, int g, int a, int t, String s, String[] maxmim, String tRank, double smax, String tPoda, double eps, boolean eval_analysis){
+		super(n,prob,g, a,t, s, maxmim,tRank, smax, "", eps, Integer.MAX_VALUE,"", eval_analysis);
 		
 		escolherLider = new EscolherMetodoSigma();
 
@@ -108,7 +108,7 @@ public class SigmaMOPSO extends MOPSO{
 		int a = -1;
 		String[] mm = {"-","-","-"};
 		for(int i = 0; i<5; i++){
-			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, 0.25, mm, "false", 0.25, "",0);
+			SigmaMOPSO nuvem = new SigmaMOPSO(n, prob, g, a, t, "0.25", mm, "false", 0.25, "",0, false);
 			nuvem.executar();
 			for (Iterator<Solucao> iterator = nuvem.pareto.getFronteira().iterator(); iterator.hasNext();) {
 				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();

@@ -1,4 +1,4 @@
-package kernel.nuvemparticulas;
+package kernel.mopso;
 
 
 import java.io.IOException;
@@ -15,14 +15,14 @@ import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 import kernel.AlgoritmoAprendizado;
-import kernel.nuvemparticulas.lider.EscolherIdeal;
-import kernel.nuvemparticulas.lider.EscolherLider;
-import kernel.nuvemparticulas.lider.EscolherMetodoSigma;
-import kernel.nuvemparticulas.lider.EscolherOposto;
-import kernel.nuvemparticulas.lider.EscolherTorneioBinario;
-import kernel.nuvemparticulas.lider.EscolherAleatorio;
-import kernel.nuvemparticulas.lider.EscolherWSum;
-import kernel.nuvemparticulas.lider.EscolherNWSum;
+import kernel.mopso.lider.EscolherAleatorio;
+import kernel.mopso.lider.EscolherIdeal;
+import kernel.mopso.lider.EscolherLider;
+import kernel.mopso.lider.EscolherMetodoSigma;
+import kernel.mopso.lider.EscolherNWSum;
+import kernel.mopso.lider.EscolherOposto;
+import kernel.mopso.lider.EscolherTorneioBinario;
+import kernel.mopso.lider.EscolherWSum;
 
 
 
@@ -41,7 +41,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	//Arraylist que representa o reposit�rio com as solu��es n�o dominadas
 	//public ArrayList<Particula> repositorio = null;
 	
-	private String[] maxmim = null;
+	//private String[] maxmim = null;
 	
 	public double S_MAX = 0.5;
 	
@@ -65,28 +65,75 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 * @param tRepositorio
 	 * @param tPoda
 	 */
-	public MOPSO(int n, Problema prob, int g, int a, int t, double s, String[] maxmim, String tRank, double smax, String el, double eps, int tRepositorio, String tPoda){
-		super(n,prob,g, a,t, tRank, eps, tRepositorio, tPoda);
+	public MOPSO(int n, Problema prob, int g, int a, int t, String s, String[] maxmim, String tRank, double smax, String el, double eps, int tRepositorio, String tPoda, boolean eval_analysis){
+		super(n,prob,g, a,t, maxmim,tRank, eps, tRepositorio, tPoda, eval_analysis);
 		populacao = new ArrayList<Particula>();
 		//repositorio = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(s, maxmim,rank, eps, problema, tamanhoRepositorio, filter);
+		pareto = new FronteiraPareto(new Double(s).doubleValue(), maxmim,rank, eps, problema, archiveSize);
 		S_MAX = smax;
 		if(rank)
 			metodoRank.setPareto(pareto);
-		this.maxmim = maxmim;
+		
 		problema = prob;
 		
 		setMetodoEscolhaLider(el);
 		
-		if(filter.equals("ar"))
+		if(archiver.ID.equals("ar"))
 			metodoRank = new AverageRank(problema.m);
-		if(filter.equals("br"))
+		if(archiver.ID.equals("br"))
 			metodoRank = new BalancedRank(problema.m);
 		
 		
-		if(filter.equals("eaps") || filter.equals("eapp")){
+		if(archiver.ID.equals("eaps") || archiver.ID.equals("eapp")){
 			if(eps > 1 || eps <= 0){
-			System.err.println("Tipo de arquivo escolhido: " + filter);
+			System.err.println("Tipo de arquivo escolhido: " + archiver.ID);
+			System.err.println("Deve ser escolhido um valor de Epsilon entre 0 e 1");
+			System.exit(0);
+			}
+		}
+			
+		
+	}
+	
+	/**
+	 * MOPSO with shared pareto front - used in multiswarm
+	 * @param n
+	 * @param prob
+	 * @param g
+	 * @param a
+	 * @param t
+	 * @param s
+	 * @param maxmim
+	 * @param tRank
+	 * @param smax
+	 * @param el
+	 * @param eps
+	 * @param tRepositorio
+	 * @param tPoda
+	 * @param pareto
+	 */
+	public MOPSO(int n, Problema prob, int g, int a, int t, String s, String[] maxmim, String tRank, double smax, String el, double eps, int tRepositorio, String tPoda, FronteiraPareto pareto, boolean eval_analysis){
+		super(n,prob,g, a,t, maxmim,tRank, eps, tRepositorio, tPoda, eval_analysis);
+		populacao = new ArrayList<Particula>();
+		//repositorio = new ArrayList<Particula>();
+		this.pareto = pareto;
+		S_MAX = smax;
+		if(rank)
+			metodoRank.setPareto(pareto);
+		
+		problema = prob;
+		
+		setMetodoEscolhaLider(el);
+		
+		if(archiver.ID.equals("ar"))
+			metodoRank = new AverageRank(problema.m);
+		if(archiver.ID.equals("br"))
+			metodoRank = new BalancedRank(problema.m);
+		
+		
+		if(archiver.ID.equals("eaps") || archiver.ID.equals("eapp")){
+			if(eps > 1 || eps <= 0){
+			System.err.println("Tipo de arquivo escolhido: " + archiver.ID);
 			System.err.println("Deve ser escolhido um valor de Epsilon entre 0 e 1");
 			System.exit(0);
 			}
@@ -101,7 +148,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 */
 	public void reiniciarExecucao(){
 		populacao = new ArrayList<Particula>();
-		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize, pareto.archiveType);
+		pareto = new FronteiraPareto(pareto.S, pareto.maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize);
 		problema.avaliacoes =0; 
 	}
 	
@@ -116,7 +163,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	
 	
 	/**
-	 * M�todo que inicia a popula��o de part�culas. 
+	 * Initializes the population randomly
 	 */
 	public void inicializarPopulacao(){
 		
@@ -127,6 +174,32 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			do{
 				SolucaoNumerica s = new SolucaoNumerica(n, problema.m);
 				s.iniciarSolucaoAleatoria();
+				s.truncar();
+				particula.iniciarParticulaAleatoriamente(problema, s);
+				problema.calcularObjetivos(s);
+				cont++;
+			}while(populacao.contains(particula) && (cont<20));
+			//Avaliando os objetivos da particula;
+			particula.localBestObjetivos = particula.solucao.objetivos;
+			populacao.add(particula);	
+		}
+		if(rank)
+			rankParticula(populacao);
+	}
+	
+	/**
+	 * Initializes the population randomly
+	 */
+	public void inicializarPopulacao(double[][] limit_search_space){
+		
+		for(int i = populacao.size(); i<tamanhoPopulacao; i++){
+			Particula particula = new Particula();
+			//Contador utilizada para a cria��o da regra n�o ficar presa no la�o
+			int cont = 0;
+			do{
+				SolucaoNumerica s = new SolucaoNumerica(n, problema.m, limit_search_space);
+				s.iniciarSolucaoAleatoria();
+				s.truncar();
 				particula.iniciarParticulaAleatoriamente(problema, s);
 				problema.calcularObjetivos(s);
 				cont++;
@@ -154,7 +227,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			Particula particula =  iter.next();
 			if(!pareto.getFronteira().contains(particula.solucao)){
 				if(!rank){
-					particula.solucao.numDominacao = pareto.add((Solucao)particula.solucao.clone());	
+					particula.solucao.numDominacao = pareto.add((Solucao)particula.solucao.clone(), archiver);	
 				}
 				else
 					pareto.addRank((Solucao)particula.solucao.clone());
@@ -417,6 +490,16 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			ps.println();
 		}
 		
+	}
+	
+	public void escolherParticulasMutacao(){
+		SMPSO smpso = (SMPSO) this;
+		smpso.escolherParticulasMutacao();
+	}
+	
+	public void evolutionaryLoop(){
+		SMPSO smpso = (SMPSO) this;
+		smpso.lacoEvolutivo();
 	}
 	
 	

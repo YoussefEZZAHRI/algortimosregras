@@ -2,6 +2,13 @@ package kernel;
 
 
 
+import indicadores.Convergence;
+import indicadores.GD;
+import indicadores.IGD;
+import indicadores.LargestDistance;
+import indicadores.PontoFronteira;
+
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -10,9 +17,25 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
-import kernel.nuvemparticulas.Particula;
+import archive.AdaptiveGridArchiver;
+import archive.CrowdingDistanceArchiver;
+import archive.DistanceReferencePointsArchiver;
+import archive.DistributedArchiver;
+import archive.DominatingArchive;
+import archive.EpsAPP;
+import archive.EpsAPS;
+import archive.IdealArchiver;
+import archive.MGAArchiver;
+import archive.PreciseArchiver;
+import archive.RandomArchiver;
+import archive.RankArchiver;
+import archive.SPEA2Archiver;
+import archive.UnboundArchive;
+
+import kernel.mopso.Particula;
 
 import pareto.FronteiraPareto;
+import principal.Principal;
 import problema.Problema;
 import rank.AverageRank;
 import rank.BalancedDominationRank;
@@ -29,16 +52,19 @@ import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoBinaria;
 import solucao.SolucaoNumerica;
+import weka.clusterers.SimpleKMeans;
+import weka.core.Instances;
+
 
 public abstract class AlgoritmoAprendizado {
 	
-	//N�mero de vari�veis da solu��o
+	//Number of decision variables
 	public int n;
 	public Problema problema = null;
 	
-	//N�mero de execu��es do mopso-n
+	//Number of iterations
 	public int geracoes;
-	//Tamanho inicial da popula��o
+	//Population size
 	public int tamanhoPopulacao;
 	
 	public int numeroavalicoes;
@@ -59,14 +85,30 @@ public abstract class AlgoritmoAprendizado {
 	
 	public Rank metodoRank = null;
 	
-	public int tamanhoRepositorio;
-	
-	public String filter = "";
-	
+	public int archiveSize;
+
 	public double eps;
 	
 	public static Random random = new Random();
 	
+	public PreciseArchiver archiver = null;
+	
+	public final static int PARAMETER_SPACE = 0;
+	public final static int OBJECTIVE_SPACE = 1;
+	
+	public GD gd;
+	public IGD igd;
+	public LargestDistance ld;
+	public Convergence con;
+	
+	public PrintStream psGD;
+	public PrintStream psIGD;
+	public PrintStream psLD;
+	public PrintStream psCon;
+	
+	public boolean eval_analysis = false;
+	
+	public static int  eval_id = 0;
 	
 	/**
 	 * 
@@ -80,7 +122,7 @@ public abstract class AlgoritmoAprendizado {
 	 * @param tr - tamanho do repositorio
 	 * @param tPoda - tipo do metodo de poda
 	 */
-	public AlgoritmoAprendizado(int n, Problema p, int g, int avaliacoes, int t, String tRank, double eps, int tr, String tPoda){
+	public AlgoritmoAprendizado(int n, Problema p, int g, int avaliacoes, int t, String[] maxmim,String tRank, double eps, int as, String archiveType, boolean eval_analysis){
 		this.n = n;
 		problema = p;
 		geracoes = g;
@@ -91,15 +133,18 @@ public abstract class AlgoritmoAprendizado {
 		tipoRank = tRank;
 		iniciarMetodoRank();
 		
-		tamanhoRepositorio = tr;
-		
-		filter = tPoda;
+		archiveSize = as;
 		
 		this.eps = eps;
 		
-		
 		random.setSeed(System.currentTimeMillis());
 		
+		setArchiver(archiveType);
+		
+		this.eval_analysis = eval_analysis;
+		
+		if(eval_analysis)
+			initializeEvalAnalysis(maxmim, eval_id++ + "");
 	}
 	
 	public abstract ArrayList<Solucao> executar();
@@ -428,12 +473,12 @@ public abstract class AlgoritmoAprendizado {
 	
 	
 	public ArrayList<Solucao> removerCDAS(ArrayList<Solucao> solucoes, double S){
-		FronteiraPareto pareto2 = new FronteiraPareto(S, pareto.maxmim, pareto.rank, 0, problema, tamanhoRepositorio, filter);
+		FronteiraPareto pareto2 = new FronteiraPareto(S, pareto.maxmim, pareto.rank, 0, problema, archiveSize);
 		
 		for (Iterator<Solucao> iterator = solucoes.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
 			if(!pareto2.getFronteira().contains(solucao))
-				pareto2.add((Solucao)solucao.clone());
+				pareto2.add((Solucao)solucao.clone(), archiver);
 		}
 		
 		return pareto2.getFronteira();
@@ -614,7 +659,7 @@ public abstract class AlgoritmoAprendizado {
 	public void encontrarSolucoesNaoDominadas(ArrayList<Solucao> solucoes, FronteiraPareto pareto){
 		for (Iterator<Solucao> iter = solucoes.iterator(); iter.hasNext();) {
 			Solucao solucao =  iter.next();
-			pareto.add(solucao);
+			pareto.add(solucao, archiver);
 		}
 	}
 	
@@ -813,7 +858,305 @@ public abstract class AlgoritmoAprendizado {
 		
 	}
 	
+	/**
+	 * Metodo que efetua a poda das solucoes do repositorio de acordo com o metodo definido pelo parametro tipoPoda:
+	 * crowd = poda pelo CrowdedOperator = distancia de crowding
+	 * AR = poda que calcula o ranking AR e poda pelo valor de AR
+	 * BR = poda que calcula o ranking AR e poda pelo valor de BR
+	 * pr_id = poda que seleciona as solucoes mais proximas dos extremos e da solucao ideal
+	 * ex_id = poda que seleciona as solucoes mais proximas dos extremos e da solucao mais proxima da ideal
+	 * eucli = poda que utiliza a menor distancia euclidiana de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
+	 * sigma = poda que utiliza a menor distancia euclidiana do vetor sigma de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
+	 * tcheb = poda que utiliza a menor distancia de tchebycheff de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
+	 * rand = aleatorio
+	 * p-ideal = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao ideal
+	 *  p-pr_id = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao mais proxiama ideal
+	 *  p-ag = Poda que adiciona a soluções num grid adaptativo
+	 *  pdom = a solucao nao dominada nao entra no arquivo, somente entram solucoes que dominem alguma outra
+	 *  pub = unbound, todas as solucoes entram
+	 */
+	public void setArchiver(String archiveType){
+		if(archiveType == null || archiveType.equals("") || archiveType.equals("null"))
+			archiver = null;
+		else{
+			//Poda somente de  acordo com a distancia de Crowding ou AR+CD ou BR+CD 
+			if(archiveType.equals("crowd"))
+				archiver = new CrowdingDistanceArchiver(problema.m);
+			if(archiveType.equals("ar")){
+				AverageRank ar = new AverageRank(problema.m);
+				archiver = new RankArchiver(ar);
+			}
+			if(archiveType.equals("br")){
+				BalancedRank ar = new BalancedRank(problema.m);
+				archiver = new RankArchiver(ar);
+			}
+					
+			if(archiveType.equals("ideal")){
+				archiver = new IdealArchiver(problema);
+			}	
+			if(archiveType.equals("dist")){
+				archiver = new DistributedArchiver(problema, archiveSize);
+			}
+			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
+			if(archiveType.equals("eucli") || archiveType.equals("sigma") || archiveType.equals("tcheb")){
+				archiver = new DistanceReferencePointsArchiver(problema, archiveType);
+			}
+			
+			//Random selection
+			if(archiveType.equals("rand"))
+				archiver = new RandomArchiver();
+			//The solutions are selected through the Adpative Grid scheme
+			if(archiveType.equals("ag"))
+				archiver = new AdaptiveGridArchiver(problema, archiveSize);
+		
+			//Unbound, every non-dominated solutions enters
+			if(archiveType.equals("ub"))
+				archiver = new UnboundArchive();
+			//Only enter in the archive solutions that dominate any other
+			if(archiveType.equals("dom"))
+				archiver = new DominatingArchive();
+			if(archiveType.equals("spea2"))
+				archiver = new SPEA2Archiver();
+			if(archiveType.equals("mga") || archiveType.equals("mga2"))
+				archiver = new MGAArchiver(problema, archiveType);
+			if(archiveType.equals("eapp"))
+				archiver = new EpsAPP();
+			if(archiveType.equals("eaps"))
+				archiver = new EpsAPS();
+		}
+		
+	}
 	
+	/**
+	 * Clusteing method k-Means. Returns only the centroids of each cluster
+	 * @param vectors The vectors that will be clustered.
+	 * @return Index of the centroids of each cluster
+	 */
+	public int[] KMeans(double[][] vectors, int k){
+		
+		int num_vectors = vectors.length;
+		int dimension = vectors[0].length;
+		double[][] centroids = new double[k][dimension];
+		int[] centroids_index = new int[num_vectors];
+		//Indicates the group of each vector
+		int[] groups = new int[num_vectors];
+		
+		for(int g = 0; g< num_vectors; g++)
+			groups[g] = -1;
+		
+		//Define initial seeds
+		for (int i = 0; i < centroids_index.length; i++) {
+			centroids_index[i] = -1;
+		}
+		
+		int num_centroids = 0;
+		
+		while(num_centroids!=k){
+			int index = (int) Math.random() * num_vectors;
+			if(centroids_index[index] == -1 ){
+				centroids_index[index] = 1;
+				centroids[num_centroids] = new double[dimension];
+				for(int i = 0; i<dimension; i++)
+					centroids[num_centroids][i] = vectors[index][i];
+				num_centroids++;
+			}
+		}
+		
+		//Controls if there is a change between the groups
+		boolean changes = true;
+		
+		while(changes){
+			changes = false;
+			for(int i = 0; i<vectors.length; i++){
+				double[] vector = vectors[i];
+				double smallerDist = Double.MAX_VALUE;
+				//Finds the centroid which the vector is closer
+				for(int j = 0; j<k; j++){
+					double[] centroid_j = centroids[j];
+					//Calculates the distance between the vector and the centroid of the group i
+					double dist = distanciaEuclidiana(vector, centroid_j);
+					if(dist < smallerDist){
+						//If the new centroid is different than the previous one, changes the vector from group
+						if(groups[i]!=j){
+							groups[i] = j; 
+							changes = true;
+						}
+						smallerDist = dist;
+					}
+				}
+			}
+
+			//Re-calculates the centroids
+			for(int i = 0; i<k; i++){
+				double[] new_centroid_i = new double[dimension];
+				int num_vectors_centroid_i = 0;
+				for(int j = 0; j<vectors.length; j++){
+					double[] vector = vectors[j];
+					if(groups[j] == i){
+						num_vectors_centroid_i++;
+						for(int d = 0; d<dimension; d++){
+							new_centroid_i[d] += vector[d]; 
+						}
+					}
+				}
+
+				for(int d = 0; d<dimension; d++){
+					new_centroid_i[d] /= num_vectors_centroid_i; 
+				}
+
+				centroids[i] = new_centroid_i;
+			}
+		}
+		
+		//Define for each group, which solution is close to the final centroid
+		int[] center_vectors = new int[k];
+		for(int i = 0; i<k; i++){
+			double centroid_i[] = centroids[i];
+			double smallerDist = Double.MAX_VALUE;
+			for(int j = 0; j< vectors.length; j++){
+				if(groups[j] == i){
+					double[] vector = vectors[j];
+					double dist = distanciaEuclidiana(centroid_i, vector);
+					if(dist<smallerDist){
+						smallerDist = dist;
+						center_vectors[i] = j;
+					}
+				}
+			}
+		}
+		
+		return center_vectors;
+	}
+	
+	/**
+	 * Clusters the solutions into k cluster
+	 * @param front Solutions to be clustered
+	 * @param clusteringSpace Defines the space of the cluser: objective space or parameter space
+	 * @param k Number of clusters
+	 * @return The centroids of each cluster
+	 */
+	public ArrayList<double[]> clustering(ArrayList<Solucao> front, int clusteringSpace, int k, int[] groups){
+		try{
+			PrintStream front_weka_file = new PrintStream("temp.arff");
+			front_weka_file.println("@RELATION front");
+			front_weka_file.println();
+			if(clusteringSpace == PARAMETER_SPACE){
+				for(int i = 0; i < problema.n; i++){
+					front_weka_file.println("@ATTRIBUTE A" + i + " REAL");
+
+				}
+			} else{
+				for(int i = 0; i < problema.m; i++){
+					front_weka_file.println("@ATTRIBUTE A" + i + " REAL");
+
+				}
+			}
+
+			front_weka_file.println("\n@DATA");
+			for (Iterator<Solucao> iterator = front.iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+				StringBuffer data = new StringBuffer();
+				if(clusteringSpace == PARAMETER_SPACE){
+					for(int i = 0; i<solucao.n; i++)
+						data.append(solucao.getVariavel(i) + ",");
+				} else{
+					for(int i = 0; i<solucao.objetivos.length; i++)
+						data.append(solucao.objetivos[i] + ",");
+				}
+
+				data.deleteCharAt(data.length()-1);
+				front_weka_file.println(data);
+			}
+			front_weka_file.flush();
+			front_weka_file.close();
+			
+			
+			FileReader file_front = new FileReader("temp.arff");
+			Instances front_weka = new Instances(file_front);
+			//System.out.println();
+			
+			SimpleKMeans kmeans = new SimpleKMeans();
+			kmeans.setNumClusters(k);
+			
+			kmeans.buildClusterer(front_weka);
+			
+			//System.out.println(kmeans);
+			
+			for(int i = 0; i<front_weka.numInstances(); i++){
+				groups[i] = kmeans.clusterInstance(front_weka.instance(i));
+			}
+			
+			Instances centroids = kmeans.getClusterCentroids();
+			
+			ArrayList<double[]> front_centroids = new ArrayList<double[]>();
+			
+			for(int i = 0; i< centroids.numInstances(); i++){
+				double[] centroid_i = centroids.instance(i).toDoubleArray();
+				front_centroids.add(centroid_i);
+			}
+			
+			return front_centroids;
+		} catch(Exception ex){ex.printStackTrace(); return null;}
+		
+		
+	}
+	
+	
+	public void initializeEvalAnalysis(String[] maxmim, String ID){
+		
+		String caminhoDir = "evaluations/";
+		String temp = "temp";
+		ArrayList<PontoFronteira> pftrue= Principal.carregarFronteiraPareto(System.getProperty("user.dir"), problema.problema, problema.m);
+		
+		gd = new GD(problema.m, caminhoDir, temp, pftrue);
+		gd.preencherObjetivosMaxMin(maxmim);
+		
+		igd = new IGD(problema.m, caminhoDir, temp, pftrue);
+		igd.preencherObjetivosMaxMin(maxmim);
+		
+		ld = new LargestDistance(problema.m, caminhoDir, temp, pftrue);
+		ld.preencherObjetivosMaxMin(maxmim);
+		
+		con = new Convergence(problema.m, caminhoDir, temp, pftrue);
+		con.preencherObjetivosMaxMin(maxmim);
+		try{
+			psGD = new PrintStream(caminhoDir + ID + "_gd.txt");
+			psIGD = new PrintStream(caminhoDir + ID + "_igd.txt");
+			psLD = new PrintStream(caminhoDir + ID + "_ld.txt");
+			psCon = new PrintStream(caminhoDir + ID + "_convergence.txt");
+		} catch(IOException ex){ex.printStackTrace();}
+
+		
+	}
+	
+	public void evaluationAnalysis(ArrayList<Solucao> solutions){
+		
+		System.out.print(".");
+		ArrayList<PontoFronteira> solutions_pf = new ArrayList<PontoFronteira>();
+		
+		for (Iterator<Solucao> iterator = solutions.iterator(); iterator.hasNext();) {
+			Solucao solution = (Solucao) iterator.next();
+			double objectives_temp[] = new double[solution.objetivos.length];
+			for(int i = 0; i < solution.objetivos.length; i++)
+				objectives_temp[i] = solution.objetivos[i];
+			
+			PontoFronteira pf = new PontoFronteira(objectives_temp);
+			solutions_pf.add(pf);
+		}
+		
+		gd.fronteira = igd.fronteira = ld.fronteira = con.fronteira = solutions_pf;
+		
+		double gd_value = gd.calcular();
+		double igd_value = igd.calcular();
+		double ld_value = ld.calcular();
+		double con_value = con.calcular();
+		
+		psGD.println(problema.avaliacoes + "\t" + gd_value);
+		psIGD.println(problema.avaliacoes + "\t" + igd_value);
+		psLD.println(problema.avaliacoes + "\t" + ld_value);
+		psCon.println(problema.avaliacoes + "\t" + con_value);
+		
+	}
 	
 
 	

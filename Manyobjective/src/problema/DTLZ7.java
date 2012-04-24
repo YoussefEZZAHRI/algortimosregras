@@ -117,9 +117,8 @@ public class DTLZ7 extends Problema {
 		
 		int tamanhoRepositorio = numSol;
 		
-		String poda = "";
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio, poda);
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio);
 		                         
 				
 		while(pareto.getFronteira().size()<numSol){
@@ -137,7 +136,7 @@ public class DTLZ7 extends Problema {
 			calcularObjetivos(melhor);
 					
 			if(!pareto.getFronteira().contains(melhor))
-				pareto.add(melhor);
+				pareto.add(melhor, archiver);
 			
 			
 			

@@ -46,6 +46,20 @@ public class SolucaoNumerica extends Solucao {
 		
 	}
 	
+	public SolucaoNumerica(int n, int m, double[][] limit_search_space){
+		super(n,m);
+		variaveis = new double[n];
+		//Calcula o valor k, que eh o numero de variaveis nao utilizadas nas funcoes objetivos
+		k = n - m +1;
+		//Array que contem o resto das variaveis nao utilizadas nas funcoes objetivos
+		
+		limitesPosicaoInferior = new double[variaveis.length];
+		limitesPosicaoSuperior = new double[variaveis.length];
+		
+		setLimites(limit_search_space);
+		
+	}
+	
 	/**
 	 * M�todo que seta of limites superiores e inferiores para cada posicao do vetor velocidade
 	 */
@@ -56,6 +70,14 @@ public class SolucaoNumerica extends Solucao {
 			limitesPosicaoSuperior[i] = 1;
 		}
 	}
+	
+	public void setLimites(double[][] limit_search_space){
+		for (int i = 0; i < n; i++) {
+			limitesPosicaoInferior[i] =  limit_search_space[0][i];
+			limitesPosicaoSuperior[i] = limit_search_space[1][i];
+		}
+	}
+	
 	
 	
 	//Metodo que gera uma solucao aleatorio
@@ -168,14 +190,26 @@ public class SolucaoNumerica extends Solucao {
 		
 		boolean over_limits = false;
 		//Checa se algum valor da posicao excedeu o limites(numero negativo)
+
 		for (int i = 0; i < variaveis.length; i++) {
-			if(variaveis[i]<limitesPosicaoInferior[i]){
-				double x = limitesPosicaoSuperior[i] + variaveis[i];
-				variaveis[i] = Math.max(limitesPosicaoInferior[i], x);
+			double var_i = variaveis[i];
+			double limit_inf_i = limitesPosicaoInferior[i];
+			double limit_sup_i = limitesPosicaoSuperior[i];
+			if(var_i<limit_inf_i){
+				double part1 = limit_sup_i - limit_inf_i;
+				double part2 = Math.abs(limit_inf_i - var_i);
+				double part3 = part2 % part1;
+				//double part3 = Math.min(limitesPosicaoSuperior[i], part2);
+				double part4 =  limit_sup_i - part3;
+				variaveis[i] = part4;
 				over_limits = true;
 			}
-			if(variaveis[i]>limitesPosicaoSuperior[i]){
-				variaveis[i] = variaveis[i] % limitesPosicaoSuperior[i];
+			if(var_i>limit_sup_i){
+				double part1 = limit_sup_i - limit_inf_i;
+				double part2 = Math.abs(var_i - limit_sup_i);
+				double part3 = part2 % part1;
+				double part4 =  part3 + limit_inf_i;
+				variaveis[i] = part4;
 				over_limits = true;
 			}
 			

@@ -73,9 +73,8 @@ public class DTLZ1 extends Problema {
 		
 		int tamanhoRepositorio = numSol;
 		
-		String poda = "";
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio, poda);
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio);
 		
 		while(pareto.getFronteira().size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
@@ -97,7 +96,7 @@ public class DTLZ1 extends Problema {
 			}
 			if(somaParcial==0.5){
 				if(!pareto.getFronteira().contains(melhor))
-					pareto.add(melhor);	
+					pareto.add(melhor, archiver);	
 			}
 			
 		}

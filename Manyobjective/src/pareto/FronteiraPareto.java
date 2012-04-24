@@ -5,23 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import archive.AdaptiveGridArchiver;
-import archive.CrowdingDistanceArchiver;
-import archive.DistanceReferencePointsArchiver;
-import archive.DistributedArchiver;
-import archive.DominatingArchive;
-import archive.IdealArchiver;
-import archive.MGAArchiver;
 import archive.PreciseArchiver;
-import archive.RandomArchiver;
-import archive.RankArchiver;
-import archive.SPEA2Archiver;
-import archive.UnboundArchive;
 
 import problema.Problema;
 import kernel.AlgoritmoAprendizado;
-import rank.AverageRank;
-import rank.BalancedRank;
+
 import solucao.ComparetorDistancia;
 import solucao.ComparetorObjetivo;
 import solucao.Solucao;
@@ -49,13 +37,11 @@ public class FronteiraPareto {
 	
 	public double eps;
 	
-	public String archiveType;
 	
-	public int archiveSize;
 	
 	public Problema problema;
 	
-	public PreciseArchiver archiver = null;
+	public int archiveSize;
 	
 	
 	
@@ -75,7 +61,7 @@ public class FronteiraPareto {
 		preencherObjetivosMaxMin(maxmim);
 	}
 	
-	public FronteiraPareto(double s, String[] maxmim, boolean r, double e, Problema prob, int tArquivo, String archType){
+	public FronteiraPareto(double s, String[] maxmim, boolean r, double e, Problema prob, int as){
 		front = new ArrayList<Solucao>();
 		//fronteiraNuvem = new ArrayList<Particula>();
 		S = s;
@@ -86,82 +72,14 @@ public class FronteiraPareto {
 		
 		problema = prob;
 		
-		archiveSize = tArquivo;
-		
-		archiveType = archType;
-		
 		preencherObjetivosMaxMin(maxmim);
 		
-		setArchiver(archiveType);
+		archiveSize = as;
 	}
 	
 	
 	
-	/**
-	 * Metodo que efetua a poda das solucoes do repositorio de acordo com o metodo definido pelo parametro tipoPoda:
-	 * crowd = poda pelo CrowdedOperator = distancia de crowding
-	 * AR = poda que calcula o ranking AR e poda pelo valor de AR
-	 * BR = poda que calcula o ranking AR e poda pelo valor de BR
-	 * pr_id = poda que seleciona as solucoes mais proximas dos extremos e da solucao ideal
-	 * ex_id = poda que seleciona as solucoes mais proximas dos extremos e da solucao mais proxima da ideal
-	 * eucli = poda que utiliza a menor distancia euclidiana de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
-	 * sigma = poda que utiliza a menor distancia euclidiana do vetor sigma de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
-	 * tcheb = poda que utiliza a menor distancia de tchebycheff de cada solucao em relacao aos extremos ou da solucoa mais proxiama ideal
-	 * rand = aleatorio
-	 * p-ideal = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao ideal
-	 *  p-pr_id = oda que utiliza a menor distancia euclidiana de cada solucao em relacao a solucao mais proxiama ideal
-	 *  p-ag = Poda que adiciona a soluções num grid adaptativo
-	 *  pdom = a solucao nao dominada nao entra no arquivo, somente entram solucoes que dominem alguma outra
-	 *  pub = unbound, todas as solucoes entram
-	 */
-	public void setArchiver(String archiveType){
-		if(archiveType == null || archiveType.equals("") || archiveType.equals("null"))
-			archiver = null;
-		else{
-			//Poda somente de  acordo com a distancia de Crowding ou AR+CD ou BR+CD 
-			if(archiveType.equals("crowd"))
-				archiver = new CrowdingDistanceArchiver(problema.m);
-			if(archiveType.equals("ar")){
-				AverageRank ar = new AverageRank(problema.m);
-				archiver = new RankArchiver(ar);
-			}
-			if(archiveType.equals("br")){
-				BalancedRank ar = new BalancedRank(problema.m);
-				archiver = new RankArchiver(ar);
-			}
-					
-			if(archiveType.equals("ideal")){
-				archiver = new IdealArchiver(problema);
-			}	
-			if(archiveType.equals("dist")){
-				archiver = new DistributedArchiver(problema, archiveSize);
-			}
-			//Usa a menor distancia em relacao aos extremos e a solucao mais proxima do ideal
-			if(archiveType.equals("eucli") || archiveType.equals("sigma") || archiveType.equals("tcheb")){
-				archiver = new DistanceReferencePointsArchiver(problema, archiveType);
-			}
-			
-			//Random selection
-			if(archiveType.equals("rand"))
-				archiver = new RandomArchiver();
-			//The solutions are selected through the Adpative Grid scheme
-			if(archiveType.equals("ag"))
-				archiver = new AdaptiveGridArchiver(problema, archiveSize);
-		
-			//Unbound, every non-dominated solutions enters
-			if(archiveType.equals("ub"))
-				archiver = new UnboundArchive();
-			//Only enter in the archive solutions that dominate any other
-			if(archiveType.equals("dom"))
-				archiver = new DominatingArchive();
-			if(archiveType.equals("spea2"))
-				archiver = new SPEA2Archiver();
-			if(archiveType.equals("mga") || archiveType.equals("mga2"))
-				archiver = new MGAArchiver(problema, archiveType);
-			
-		}
-		
-	}
+	
 	
 	
 
@@ -203,7 +121,7 @@ public class FronteiraPareto {
 	 * @return Valor double que indica por quantas solucoes o elemento eh dominado 
 	 */
 	@SuppressWarnings("unchecked")
-	public double add(Solucao solucao){
+	public double add(Solucao solucao, PreciseArchiver archiver){
 		solucao.numDominacao = 0;
 		solucao.numDominadas = 0;
 		if(front.size()==0){
@@ -211,7 +129,7 @@ public class FronteiraPareto {
 			return solucao.numDominacao;
 		}
 
-		if(!archiveType.substring(0, 2).equals("ea")){
+		if(!archiver.ID.equals("eapp") && !archiver.ID.equals("eaps")){
 
 			int comp;
 
@@ -265,10 +183,10 @@ public class FronteiraPareto {
 
 			}			
 		} else{
-			if(archiveType.equals("eapp"))
+			if(archiver.ID.equals("eapp"))
 				return adpativeEpsApprox(solucao);
 			else
-			if(archiveType.equals("eaps"))
+			if(archiver.ID.equals("eaps"))
 				return adpativeEpsParetoSet(solucao);
 		}
 		return solucao.numDominacao;
@@ -484,7 +402,7 @@ public class FronteiraPareto {
 	
 	/**
 	 * Seleciona as solucoes mais proximas ao extremo e mais proximas a solucao ideal, em partes iguais
-	 * @param tamanhoRepositorio
+	 * @param archiveSize
 	 * @param m
 	 * @param ideal
 	 */

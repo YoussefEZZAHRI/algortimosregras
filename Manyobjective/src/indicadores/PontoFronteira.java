@@ -7,6 +7,9 @@ public class PontoFronteira{
 	public double soma;
 	public int objetivosAcimaMedia;
 	
+	//Used in some sorting methods
+	public double rank;
+	
 	public PontoFronteira(double[] o){
 		objetivos = new double[o.length];
 		objetivosAcimaMedia = 0;

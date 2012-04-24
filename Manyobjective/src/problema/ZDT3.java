@@ -114,10 +114,8 @@ public class ZDT3 extends Problema {
 			double eps = 0;
 			
 			int tamanhoRepositorio = numSol;
-			
-			String poda = "";
-			
-			FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio, poda);
+		
+			FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio);
 		
 		  while(pareto.getFronteira().size()<numSol){
 			  SolucaoNumerica melhor = new SolucaoNumerica(n, m);
@@ -133,7 +131,7 @@ public class ZDT3 extends Problema {
 			  calcularObjetivos(melhor);
 
 			  if(!pareto.getFronteira().contains(melhor))
-				  pareto.add(melhor);			
+				  pareto.add(melhor, archiver);			
 		  }
 
 		  ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();

@@ -1,4 +1,4 @@
-package kernel.nuvemparticulas;
+package kernel.mopso;
 
 import pareto.FronteiraPareto;
 import problema.Problema;
