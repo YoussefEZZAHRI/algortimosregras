@@ -234,7 +234,12 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 				else
 					pareto.addRank((Solucao)particula.solucao.clone());
 			}
-		}	
+		}
+		if(pareto.S < 0.1){
+			System.out.print(pareto.getFronteira().size() + " - ");
+			pareto.scdas(pareto.S);
+			System.out.println(pareto.getFronteira().size());
+		}
 		
 		
 		/*try{
