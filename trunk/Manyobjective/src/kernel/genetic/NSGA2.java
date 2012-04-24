@@ -36,11 +36,11 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	
 	
 	
-	public NSGA2(int n, Problema prob, int g, int a, int t, double s, String ts, String[] maxmim, String tRank, String tPoda, double eps, int tamRep){
-		super(n,prob,g, a,t, tRank, eps, tamRep, tPoda );
+	public NSGA2(int n, Problema prob, int g, int a, int t, String s, String ts, String[] maxmim, String tRank, String tPoda, double eps, int tamRep, boolean eval_analysis){
+		super(n,prob,g, a,t,  maxmim,tRank, eps, tamRep, tPoda, eval_analysis );
 		metodoRank = new RankDominancia(problema.m);
 		this.maxmim = maxmim;
-		pareto = new FronteiraPareto(s, maxmim,rank, this.eps, problema, tamanhoRepositorio, filter);
+		pareto = new FronteiraPareto(new Double(s).doubleValue(), maxmim,rank, this.eps, problema, archiveSize);
 		metodoRank.setPareto(pareto);
 		problema = prob;
 		tipoSolucao = ts;
@@ -53,7 +53,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	public ArrayList<Solucao> executar() {
 		
 		
-		pareto = new FronteiraPareto(pareto.S, maxmim, rank,  pareto.eps, problema, pareto.archiveSize, pareto.archiveType);
+		pareto = new FronteiraPareto(pareto.S, maxmim, rank,  pareto.eps, problema, pareto.archiveSize);
 		populacao = new ArrayList<Solucao>();
 		offspring = new ArrayList<Solucao>();
 		
@@ -106,7 +106,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 		for (Iterator<Solucao> iterator = populacao.iterator(); iterator
 		.hasNext();) {
 			Solucao solucao = (Solucao) iterator.next();
-			pareto.add(solucao);
+			pareto.add(solucao, archiver);
 
 		}
 

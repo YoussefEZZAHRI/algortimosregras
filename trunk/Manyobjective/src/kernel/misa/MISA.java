@@ -55,14 +55,14 @@ public class MISA extends AlgoritmoAprendizado {
 	 * @param tc Taxa de clonagem
 	 * * @param pg N�mero de partes da divis�o do grid da popula��o secund�ria
 	 */
-	public MISA(int n, Problema prob, int g, int a, int t, double s, int tc, int pg, String[] maxmim, String tRank, int tamanhoGrid, double e, String tPoda){
-		super(n,prob,g,a,t, tRank, e, tamanhoGrid, tPoda);
+	public MISA(int n, Problema prob, int g, int a, int t, String s, int tc, int pg, String[] maxmim, String tRank, int tamanhoGrid, double e, String tPoda,boolean eval_analysis){
+		super(n,prob,g,a,t, maxmim, tRank, e, tamanhoGrid, tPoda, eval_analysis);
 		
 		taxaClonagem = tc;
 		totalClonagem = taxaClonagem * tamanhoPopulacao;
 		partesGrid = pg;
 		
-		this.s = s;
+		this.s = new Double(s).doubleValue();
 		
 		eps = e;
 		
@@ -139,7 +139,7 @@ public class MISA extends AlgoritmoAprendizado {
 		//Adiciona todos os clones na popula��o atual
 		populacao.addAll(clones);
 		//Obt�m os novos l�deres da popula��o
-		FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize, pareto.archiveType);
+		FronteiraPareto paretoTemp = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize);
 		encontrarSolucoesNaoDominadas(populacao, paretoTemp);
 		//Reduz a popula��o com o tamanho passado como parametro
 		reduzirPopulacao(populacao, paretoTemp);
@@ -167,7 +167,7 @@ public class MISA extends AlgoritmoAprendizado {
 		
 		populacaoSecundaria = new AdaptiveGrid(problema.m, partesGrid,tamanhoGrid );
 		clones = null;
-		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize, pareto.archiveType);
+		pareto = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize);
 	}
 	
 
@@ -360,7 +360,7 @@ public class MISA extends AlgoritmoAprendizado {
 	
 	public void mutacaoSolucoesNaoTaoBoas(ArrayList<Solucao> clones){
 		
-		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize, pareto.archiveType);
+		FronteiraPareto clonesNaoDominados = new FronteiraPareto(pareto.S, maxmim, pareto.rank, pareto.eps, problema, pareto.archiveSize);
 		encontrarSolucoesNaoDominadas(clones, clonesNaoDominados);
 		ArrayList<Solucao> melhores = clonesNaoDominados.getFronteira();
 		

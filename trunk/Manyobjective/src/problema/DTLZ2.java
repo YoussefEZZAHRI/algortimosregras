@@ -1,7 +1,9 @@
 package problema;
 
+import indicadores.PontoFronteira;
+
 import java.io.IOException;
-import java.io.PrintStream;
+
 import java.util.ArrayList;
 
 
@@ -92,9 +94,8 @@ public class DTLZ2 extends Problema {
 		
 		int tamanhoRepositorio = numSol;
 		
-		String poda = "null";
 		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio, poda);
+		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio);
 		
 		while(melhores.size()<numSol){
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
@@ -116,7 +117,7 @@ public class DTLZ2 extends Problema {
 			}
 			if(somaParcial==1){
 				if(!pareto.getFronteira().contains(melhor))
-					pareto.add(melhor);
+					pareto.add(melhor, archiver);
 				melhores.add(melhor);
 			}
 		}
@@ -130,6 +131,7 @@ public class DTLZ2 extends Problema {
 		return saida;
 	}
 	
+		
 	public boolean validarSolucaoFronteira(SolucaoNumerica s){
 		double soma = 0;
 		for (int i = 0; i < s.objetivos.length; i++) {
@@ -197,8 +199,8 @@ public class DTLZ2 extends Problema {
 	public static void main(String[] args) {
 		
 
-		int[] ms = {8};
-		int numSol = 10000;
+		int[] ms = {2, 3, 4, 5, 6,7,8,9, 10, 15, 20, 25, 30};
+		int numSol = 1000;
 		int k = 10;
 		
 		System.out.println("DTLZ2");
@@ -216,7 +218,7 @@ public class DTLZ2 extends Problema {
 			
 
 
-			ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
+			/*ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
 
 			try{
 				PrintStream ps = new PrintStream("pareto/DTLZ2_" + m + "_pareto.txt");
@@ -230,8 +232,32 @@ public class DTLZ2 extends Problema {
 
 
 				}
-			} catch (IOException ex){ex.printStackTrace();}
+			} catch (IOException ex){ex.printStackTrace();}*/
+			
+			try{
 
+				double[] rate_i = {0.0};
+				for (int j = 0; j < rate_i.length; j++) {
+					double rate = rate_i[j];
+					int numSol_total = 5000;
+					ArrayList<PontoFronteira> front_sub =  dtlz2.generatedSubOptimalFronts(rate, k, numSol_total);
+					if(rate != 0)
+						dtlz2.printFrontsPF(n, m, front_sub, "sub_"+rate, "sub/");
+					else
+						dtlz2.printFrontsPF(n, m, front_sub, "front_"+numSol_total, "sub/");
+
+
+					int s = (int)Math.floor(numSol/m);
+					
+					ArrayList<PontoFronteira> front_edge = dtlz2.obterSolucoesExtremas(n, numSol_total, s, front_sub);
+					dtlz2.printFrontsPF(n, m, front_edge, "edge",  "sub/");
+
+
+
+					ArrayList<PontoFronteira> front_knee = dtlz2.obtainSolutionsKnee(n, numSol_total, numSol, front_sub);
+					dtlz2.printFrontsPF(n, m, front_knee, "knee", "sub/");
+				}
+			} catch(IOException ex){ex.printStackTrace();}
 		}
 		
 		
@@ -296,6 +322,29 @@ public class DTLZ2 extends Problema {
 		*/
 		
 		
+	}
+	
+	public ArrayList<PontoFronteira> generatedSubOptimalFronts(double rate, int k, int numSol){
+		
+
+
+		double fator = 1 + rate;
+		
+		ArrayList<SolucaoNumerica> pftrue = obterFronteira(n, numSol);
+		
+		ArrayList<PontoFronteira> subOptimal = new ArrayList<PontoFronteira>();
+		
+		for (Iterator<SolucaoNumerica> iterator = pftrue.iterator(); iterator.hasNext();) {
+			SolucaoNumerica pontoFronteira = (SolucaoNumerica) iterator.next();
+			double[] newPointSubOptimal = new double[m];
+			for(int i = 0; i <m ;i++){
+				newPointSubOptimal[i] = pontoFronteira.objetivos[i] *fator;
+			}
+			
+			subOptimal.add(new PontoFronteira(newPointSubOptimal));
+		}
+		
+		return subOptimal;
 	}
 
 	public void distanciaIdeal(ArrayList<SolucaoNumerica> solucoes){

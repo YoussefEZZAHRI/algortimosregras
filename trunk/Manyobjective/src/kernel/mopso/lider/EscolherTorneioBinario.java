@@ -1,4 +1,4 @@
-package kernel.nuvemparticulas.lider;
+package kernel.mopso.lider;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,7 +6,7 @@ import java.util.Iterator;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
-import kernel.nuvemparticulas.Particula;
+import kernel.mopso.Particula;
 
 public class EscolherTorneioBinario extends EscolherLider {
 	

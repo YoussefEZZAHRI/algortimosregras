@@ -8,9 +8,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import archive.PreciseArchiver;
+import archive.UnboundArchive;
+
 import solucao.ComparetorObjetivo;
 import solucao.ComparetorObjetivoPF;
 import solucao.ComparetorRank;
+import solucao.ComparetorRankPF;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -36,7 +40,11 @@ public abstract class Problema {
 	public String[] maxmim;
 	
 	public boolean r;
-
+	
+	public PreciseArchiver archiver = new UnboundArchive();
+	
+	public double MAX_VALUE;
+	public double MIN_VALUE;
 	
 	public Problema(int m){
 			
@@ -49,6 +57,9 @@ public abstract class Problema {
 			maxmim[i] = "-";
 		}
 		this.r = false;
+		
+		MAX_VALUE = 1;
+		MIN_VALUE = 0;
 		
 	}
 	
@@ -210,6 +221,38 @@ public abstract class Problema {
 		}
 	}
 	
+	public void printFronts(int n, int m,ArrayList<SolucaoNumerica> fronteira, String id, String dir) throws IOException{
+
+		
+
+		String arqFronteira = dir + problema +"_" + m +"_" + id +  ".txt";
+
+		PrintStream psFronteira = new PrintStream(arqFronteira);
+
+		for (Iterator<SolucaoNumerica> iterator = fronteira.iterator(); iterator.hasNext();) {
+			SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+			for(int i = 0; i<m; i++){
+				psFronteira.print(new Double( solucao.objetivos[i])+ "\t");
+			}
+			psFronteira.println();
+		}
+	}
+	
+	public void printFrontsPF(int n, int m, ArrayList<PontoFronteira> fronteira, String id, String dir) throws IOException{
+		
+		String arqFronteira = dir + problema +"_" + m + "_" + id +".txt";
+		
+		PrintStream psFronteira = new PrintStream(arqFronteira);
+		
+		for (Iterator<PontoFronteira> iterator = fronteira.iterator(); iterator.hasNext();) {
+			PontoFronteira solucao = (PontoFronteira) iterator.next();
+			for(int i = 0; i<m; i++){
+				psFronteira.print(new Double( solucao.objetivos[i])+ "\t");
+			}
+			psFronteira.println();
+		}
+	}
+	
 	public double distanciaEuclidiana(double[] vetor1, double[] vetor2){
 		double soma = 0;
 		for (int i = 0; i < vetor1.length; i++) {
@@ -329,39 +372,110 @@ public abstract class Problema {
 		
 	}
 	
-	public ArrayList<SolucaoNumerica> obterSolucoesExtremas(int n, int s) {
+	/**
+	 * Obtains a set of solutions near the edges of the Pareto front
+	 * @param n Decision variables
+	 * @param numSol Solutions on the PFTrue
+	 * @param s Number of solutions for each dimension
+	 * @return
+	 */
+	public ArrayList<SolucaoNumerica> obterSolucoesExtremas(int n, int numSol,int s) {
 		ArrayList<SolucaoNumerica> retorno = new ArrayList<SolucaoNumerica>();
-		//N�mero de solucoes na fronteira
-		int numSol = 10000;
-		//Obt�m a fronteira de pareto real para o problema
-		ArrayList<SolucaoNumerica> fronteiraReal = obterFronteira(n, numSol);
+		
+
+		//To Obtain PFtrue
+		ArrayList<SolucaoNumerica> pftrue = obterFronteira(n, numSol);
 		for(int i = 0; i<m; i++){
 			ComparetorObjetivo comp = new ComparetorObjetivo(i);
-			Collections.sort(fronteiraReal, comp);
+			Collections.sort(pftrue, comp);
 			for(int j = 1; j<=s; j++){
-				retorno.add(fronteiraReal.get(j));
+				retorno.add(pftrue.get(j));
 			}
 		}
 		
+	
+		return retorno;
+		
+		
+	}
+	
+	public ArrayList<PontoFronteira> obterSolucoesExtremas(int n, int numSol,int s, ArrayList<PontoFronteira> front) {
+		ArrayList<PontoFronteira> retorno = new ArrayList<PontoFronteira>();
+		
+
+		//To Obtain PFtrue
+		
+		for(int i = 0; i<m; i++){
+			ComparetorObjetivoPF comp = new ComparetorObjetivoPF(i);
+			Collections.sort(front, comp);
+			for(int j = 1; j<=s; j++){
+				retorno.add(front.get(j));
+			}
+		}
+		
+	
+		return retorno;
+		
+		
+	}
+	
+	/**
+	 * Obtains a set of solutions near the knee of the Pareto front
+	 * @param n Decision variables
+	 * @param numSol Solutions on the PFTrue
+	 * @param s Number of solutions next the knee
+	 * @return
+	 */
+	public ArrayList<SolucaoNumerica> obtainSolutionsKnee(int n, int numSol,int s) {
+		ArrayList<SolucaoNumerica> retorno = new ArrayList<SolucaoNumerica>();
+		
+		//To Obtain PFtrue
+				ArrayList<SolucaoNumerica> pftrue = obterFronteira(n, numSol);
+		
+		//Obtains the knee of the Pareto Front
 		getJoelho(n, null);
 		 	
 		
 		for(int i = 0; i<numSol; i++){
-			Solucao temp = fronteiraReal.get(i);
+			Solucao temp = pftrue.get(i);
 			double dist = distanciaEuclidiana(temp.objetivos, joelho);
 			temp.rank = dist;
 		}
 		
 		ComparetorRank comp = new ComparetorRank();
-		Collections.sort(fronteiraReal, comp);
+		Collections.sort(pftrue, comp);
 		for(int j = 1; j<=s; j++){
-			retorno.add(fronteiraReal.get(j));
+			retorno.add(pftrue.get(j));
 		}
 		return retorno;
 		
 		
 	}
 	
+	public ArrayList<PontoFronteira> obtainSolutionsKnee(int n, int numSol,int s, ArrayList<PontoFronteira> front) {
+		ArrayList<PontoFronteira> retorno = new ArrayList<PontoFronteira>();
+		
+		
+		
+		//Obtains the knee of the Pareto Front
+		getJoelho(n, front);
+		 	
+		
+		for(int i = 0; i<numSol; i++){
+			PontoFronteira temp = front.get(i);
+			double dist = distanciaEuclidiana(temp.objetivos, joelho);
+			temp.rank = dist;
+		}
+		
+		ComparetorRankPF comp = new ComparetorRankPF();
+		Collections.sort(front, comp);
+		for(int j = 1; j<=s; j++){
+			retorno.add(front.get(j));
+		}
+		return retorno;
+		
+		
+	}
 	
 
 

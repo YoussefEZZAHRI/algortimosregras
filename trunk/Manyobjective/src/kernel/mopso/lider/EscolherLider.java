@@ -1,8 +1,8 @@
-package kernel.nuvemparticulas.lider;
+package kernel.mopso.lider;
 
 import java.util.ArrayList;
 
-import kernel.nuvemparticulas.Particula;
+import kernel.mopso.Particula;
 
 import solucao.Solucao;
 
