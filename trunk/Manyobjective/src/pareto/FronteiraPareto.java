@@ -136,12 +136,14 @@ public class FronteiraPareto {
 			ArrayList<SolucaoNumerica> cloneFronteira = (ArrayList<SolucaoNumerica>)front.clone();
 
 			double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
-
-			if(S!=0.5){
-				novosObjetivosSolucao = modificacaoDominanciaParetoCDAS(solucao.objetivos, S);
+			if(S!=0.5 && S>=0.25){
+					novosObjetivosSolucao = modificacaoDominanciaParetoCDAS(solucao.objetivos, S);
 			} else{
 				//novosObjetivosSolucao  = modificacaoDominanciaParetoEqualizar(solucao.objetivos, fator);
-				novosObjetivosSolucao  = solucao.objetivos;
+				
+					//scdas(S);
+					novosObjetivosSolucao  = solucao.objetivos;
+				
 				//System.out.println();
 			}
 
@@ -150,15 +152,17 @@ public class FronteiraPareto {
 
 				double[] novosObjetivosTemp = new double[temp.objetivos.length];
 
-				if(S!=0.5){				
-					novosObjetivosTemp = modificacaoDominanciaParetoCDAS(temp.objetivos, S);
-				} else
-					novosObjetivosTemp = temp.objetivos;				
+				if(S!=0.5 && S>=0.25){
+						novosObjetivosTemp = modificacaoDominanciaParetoCDAS(temp.objetivos, S);
+				} else{
+				
+						//scdas(S);
+						novosObjetivosTemp = temp.objetivos;
+				
+				}				
 				//novosObjetivosTemp = modificacaoDominanciaParetoEqualizar(temp.objetivos, fator);
 
 				comp = compareObjectiveVector(novosObjetivosSolucao, novosObjetivosTemp);
-
-
 
 				if(comp == DOMINATED_BY){
 					solucao.numDominacao++;
@@ -551,12 +555,203 @@ public class FronteiraPareto {
 		double r = r(fx);
 		double[] retorno = new double[fx.length];
 		for (int i = 0; i < fx.length; i++) {
-			retorno[i] = modificacaoCDASValor(fx[i], r, S);
+			retorno[i] = modificacaoCDASValor(fx[i], r, S*Math.PI);
 		}
 		
 		return retorno;
 	}
 	
+	public double[][] getReferenciasScdas(double delta){
+		int m = problema.m;
+		double referencia[][]=new double[m][m];
+		
+		double menores[]=new double[m]; //menor valor de cada objetivo
+		
+		for (int i = 0; i < menores.length; i++) {
+			menores[i] = Double.MAX_VALUE;
+		}
+		double maiores[]=new double[m];
+		
+		for (Iterator<Solucao> iter = front.iterator(); iter.hasNext();){//percorrendo as particulas
+			Solucao particula = iter.next();
+			for(int i=0;i<m;i++){//percorrendo os objetivos e pegando os maiores e menores
+				if(particula.objetivos[i]<=menores[i]){
+					menores[i]= Math.max(particula.objetivos[i]-delta,0);
+				}
+				if(particula.objetivos[i]>=maiores[i]){
+					maiores[i]=particula.objetivos[i]-delta;
+				}
+			}
+		}
+		for(int i=0;i<m;i++){//montando os conjuntos de referencia
+			referencia[i]=menores.clone();
+			referencia[i][i]=maiores[i];
+		}
+		
+		return referencia;
+	}
+	
+	/**
+	 * Método S-CDAS
+	 */
+	public void scdas(double delta){
+		Solucao[] frontOriginal=new Solucao[front.size()];
+		int part=0;
+		for (Iterator<Solucao> iter = front.iterator(); iter.hasNext();){
+			Solucao particula=iter.next(); //copiando front
+			frontOriginal[part] = particula;
+			part++;
+		}
+		double[][][] frontModificado=calcularScdas(delta);
+		//refinarScdas(frontOriginal, frontModificado);	
+		refinarScdasOriginal(frontOriginal, frontModificado);
+	}
+	/*
+	 * Método que refina o front verificando a dominância entre
+	 * as partículas do front modificado
+	 * @param frontOriginal - cópia do front original, uma vez que ele vai ser destruído
+	 * @param frontModificado - front modificado utilizando a fórtuma do S-cdas
+	 */
+	public void refinarScdasOriginal(Solucao[] frontOriginal, double[][][] frontModificado){
+		front.clear();
+		
+		int adicionar[]  = new int[frontOriginal.length];
+		for(int p=0;p<frontOriginal.length;p++){
+			int dominada=0;
+			for(int k=0;k<frontModificado[p].length;k++){
+				if(p != k){
+					//if((frontModificado[p][0]==0 && frontModificado[p][1]==0) || (frontModificado[k][0]==0 && frontModificado[k][1]==0) || (Double.compare(frontModificado[p][0],Double.NaN)==0 || Double.compare(frontModificado[p][1],Double.NaN)==0) || (Double.compare(frontModificado[k][0],Double.NaN)==0 || Double.compare(frontModificado[k][1],Double.NaN)==0)){
+						//if que elimina todos os pontos [0,0] e todos os pontos com NaN
+						//System.out.println("erro!");
+					//}else{
+					
+						//System.out.println("comp: p: "+p+" ["+frontOriginal[p].objetivos.clone()[0]+", "+frontOriginal[p].objetivos.clone()[1]+"] == k:"+k+" ["+frontModificado[k][0]+", "+frontModificado[k][1]+"]\torig: ["+frontOriginal[k].objetivos[0]+", "+frontOriginal[k].objetivos[1]+"]");
+					double[] vetor_original = frontModificado[p][p];
+					double[] vetor_modificado = frontModificado[p][k];
+					
+						int comp = compareObjectiveVector(vetor_original, vetor_modificado);
+	
+						if(comp == 1){ //(x,y) - y dominada por x
+							adicionar[k] = 1;
+						}
+					//}
+				}
+			}
+			//if(dominada == 0){
+				//front.add(frontOriginal[p]);
+			//}
+		}
+		
+		for (int i = 0; i < adicionar.length; i++) {
+			if(adicionar[i]!=1)
+				front.add(frontOriginal[i]);
+		}
+		
+		//percorre flag[]
+			//	adiconar no front fronteiraOriginal[i] se flag[i]!=1
+
+	}
+	/*
+	 * Método que refina o front verificando a dominância entre
+	 * as partículas do front modificado
+	 * @param frontOriginal - cópia do front original, uma vez que ele vai ser destruído
+	 * @param frontModificado - front modificado utilizando a fórtuma do S-cdas
+	 */
+	public void refinarScdas(Solucao[] frontOriginal, double[][] frontModificado){
+		front.clear();
+		for(int p=0;p<frontModificado.length;p++){
+			int dominada=0;
+			for(int k=0;k<frontModificado.length;k++){
+				if(p != k){
+					//if((frontModificado[p][0]==0 && frontModificado[p][1]==0) || (frontModificado[k][0]==0 && frontModificado[k][1]==0) || (Double.compare(frontModificado[p][0],Double.NaN)==0 || Double.compare(frontModificado[p][1],Double.NaN)==0) || (Double.compare(frontModificado[k][0],Double.NaN)==0 || Double.compare(frontModificado[k][1],Double.NaN)==0)){
+						//if que elimina todos os pontos [0,0] e todos os pontos com NaN
+						//System.out.println("erro!");
+					//}else{
+					
+						//System.out.println("comp: p: "+p+" ["+frontModificado[p][0]+", "+frontModificado[p][1]+"] == k:"+k+" ["+frontModificado[k][0]+", "+frontModificado[k][1]+"]\torig: ["+frontOriginal[k].objetivos[0]+", "+frontOriginal[k].objetivos[1]+"]");
+						int comp = compareObjectiveVector(frontModificado[p], frontModificado[k]);
+	
+						if(comp == -1){ //(x,y) - x dominada por y
+							dominada++;
+							break;
+						}
+					//}
+				}
+			}
+			if(dominada == 0){
+				front.add(frontOriginal[p]);
+			}
+		}
+
+	}
+	/*
+	 * Método que gera o front modificado pela fórmula do S-cdas
+	 * @param delta - valor do delta da fórmula do artigo
+	 */
+	public double[][][] calcularScdas(double delta){
+		double [][]referencia = getReferenciasScdas(delta);
+		int m=problema.m;
+		double[][][] frontModificado=new double[front.size()][front.size()][m];
+		double fi[]=new double[m];
+		double menores[] = new double[m];
+		
+		menores = referencia[0].clone();
+		
+		menores[0] = referencia[1][0];
+		
+		for(int i = 0; i<referencia.length; i++){
+			double[] ref = referencia[i];
+			for(int j = 0; j<ref.length; j++)
+				ref [j] = ref[j] - menores[j];
+		}
+		
+		
+		for (int p = 0; p< front.size(); p++){//percorrendo as particulas
+			Solucao particula = front.get(p);
+			double[] fix=new double[m];
+			for(int i=0;i<m;i++){
+				fix[i]=Math.max(particula.objetivos[i]-menores[i], 0);
+			}
+
+			double r = r(fix);
+			for(int i=0;i<m;i++){//percorrendo os objetivos
+				double l = AlgoritmoAprendizado.distanciaEuclidiana(fix,referencia[i]);
+				//double temp2= Math.abs(fix[i]-referencia[i][i])/l;
+				//fi[i] = Math.acos(temp2);
+				double cosWi = fix[i]/r;
+				double cosWi2 = cosWi*cosWi;
+				double senWi = Math.sqrt(1-cosWi2);
+				fi[i] = Math.asin((r*senWi)/l);
+				if(Double.compare(fi[i],Double.NaN) ==0)
+					//System.out.println("errado "+"---("+r+"*"+senWi+")/"+l+" dif: "+((r*senWi)/l));
+					fi[i] = Math.asin(1); //resulta em NaN quando (r*senWi)/l é maior que 1. esta diferenca e ignorada agora
+				if(Double.compare(fi[i],0) ==0)
+					fi[i] = 2*Math.PI;
+			}
+			
+			for(int y = 0; y<front.size(); y++){
+				Solucao solucao_y = front.get(y);
+				double[] fiy=new double[m];
+				for(int i=0;i<m;i++){
+					fiy[i]=Math.max(solucao_y.objetivos[i]-menores[i], 0);
+				}
+
+				double r_y = r(fiy);
+
+				for (int i = 0; i < fi.length; i++) {
+					double temp = modificacaoCDASValor(fiy[i], r_y, fi[i]);
+
+					frontModificado[p][y][i] = temp;
+				}
+
+			}
+
+
+
+
+		}
+		return frontModificado;
+	}
 	/**
 	 * Modificao da da dominancia de Pareto proposta por Sato
 	 * Derivacao do Sen do Wi atraves do Cos
@@ -565,19 +760,26 @@ public class FronteiraPareto {
 	 * @param si Paremetro da modificacao da dominacia (Varia entre 0.25 e 0.75)
 	 * @return
 	 */
-	public double modificacaoCDASValor(double fix, double r, double si){
+	public double modificacaoCDASValor(double fix, double r, double fi){
 		double cosWi = fix/r;
 		double cosWi2 = cosWi*cosWi;
+		
 		double senWi = Math.sqrt(1-cosWi2);
-		double senSiPi = Math.sin(si * Math.PI);
-		double cosSiPi = Math.cos(si * Math.PI);
+		if(cosWi2 == 1)
+			senWi = 0;
+		double senFi = Math.sin(fi);
+		double cosFi = Math.cos(fi);
+		
 		//Formula: r*sen(Wi+SiPi)/sen(SiPi)
-		double numerador = r*((senWi*cosSiPi)+(cosWi*senSiPi));
-		double novoFix = numerador/senSiPi;
+		double numerador = r*((senWi*cosFi)+(cosWi*senFi));
+		double novoFix = numerador/senFi;
 		
 		/*double diff = fix - novoFix;
 		
 		novoFix = fix + diff;*/
+		
+		if(Double.compare(novoFix,Double.NaN) == 0)
+			System.out.println("FGDFGDFGDSF");
 		
 		return Math.max(novoFix, 0);
 	}
