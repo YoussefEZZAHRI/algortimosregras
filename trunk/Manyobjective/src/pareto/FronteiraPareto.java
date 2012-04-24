@@ -617,7 +617,6 @@ public class FronteiraPareto {
 		
 		int adicionar[]  = new int[frontOriginal.length];
 		for(int p=0;p<frontOriginal.length;p++){
-			int dominada=0;
 			for(int k=0;k<frontModificado[p].length;k++){
 				if(p != k){
 					//if((frontModificado[p][0]==0 && frontModificado[p][1]==0) || (frontModificado[k][0]==0 && frontModificado[k][1]==0) || (Double.compare(frontModificado[p][0],Double.NaN)==0 || Double.compare(frontModificado[p][1],Double.NaN)==0) || (Double.compare(frontModificado[k][0],Double.NaN)==0 || Double.compare(frontModificado[k][1],Double.NaN)==0)){
