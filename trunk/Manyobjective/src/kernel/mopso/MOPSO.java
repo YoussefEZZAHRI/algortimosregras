@@ -23,6 +23,8 @@ import kernel.mopso.lider.EscolherNWSum;
 import kernel.mopso.lider.EscolherOposto;
 import kernel.mopso.lider.EscolherTorneioBinario;
 import kernel.mopso.lider.EscolherWSum;
+import kernel.mopso.lider.EscolherNGN;
+import kernel.mopso.lider.EscolherED;
 
 
 
@@ -475,6 +477,10 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			escolherLider = new EscolherWSum();
 		if(escolha.equals("NWSum"))
 			escolherLider = new EscolherNWSum();
+		if(escolha.equals("NGN"))
+			escolherLider = new EscolherNGN();
+		if(escolha.equals("ED"))
+			escolherLider = new EscolherED();
 		
 		
 			
