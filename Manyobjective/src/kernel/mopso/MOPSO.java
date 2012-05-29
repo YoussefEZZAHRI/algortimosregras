@@ -51,6 +51,11 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	
 	
 	
+	//Used to identify the swarm on the TreeMultiSwarm
+	public String ID;
+	
+	
+	
 	/**
 	 * 	
 	 * @param n - numero de variaveis
@@ -93,6 +98,10 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			System.exit(0);
 			}
 		}
+		
+		
+		
+		
 			
 		
 	}
@@ -175,6 +184,11 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			int cont = 0;
 			do{
 				SolucaoNumerica s = new SolucaoNumerica(n, problema.m);
+				
+				for (int j = 0; j < used_objectives.length; j++) {
+					s.used_objectives[j] = used_objectives[j];
+				}
+				
 				s.iniciarSolucaoAleatoria();
 				s.truncar();
 				particula.iniciarParticulaAleatoriamente(problema, s);
@@ -511,6 +525,16 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	public void evolutionaryLoop(){
 		SMPSO smpso = (SMPSO) this;
 		smpso.lacoEvolutivo();
+	}
+	
+	public void setUsedObjectives(boolean[] uo){
+		for (int i = 0; i < uo.length; i++) {
+			used_objectives[i] = uo[i];
+		}
+	}
+	
+	public String toString(){
+		return ID;
 	}
 	
 	

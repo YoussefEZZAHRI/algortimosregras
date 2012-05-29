@@ -91,6 +91,8 @@ public class DTLZ7 extends Problema {
 	    for (int i = 0; i < numberOfObjectives_; i++)
 	      solucao.objetivos[i] = f[i];
 	    
+	    avaliacoes++;
+	    
 	    return solucao.objetivos;
 		
 	}

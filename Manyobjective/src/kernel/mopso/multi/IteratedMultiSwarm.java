@@ -1,8 +1,14 @@
 package kernel.mopso.multi;
 
+import indicadores.Dominance;
+import indicadores.GD;
+import indicadores.IGD;
+import indicadores.PontoFronteira;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 import archive.UnboundArchive;
@@ -12,8 +18,12 @@ import kernel.mopso.MOPSO;
 import kernel.mopso.Particula;
 import kernel.mopso.SMPSO;
 import pareto.FronteiraPareto;
+import principal.Principal;
 import problema.Problema;
+import solucao.ComparetorDistancia;
+import solucao.ComparetorObjetivo;
 import solucao.Solucao;
+import solucao.SolucaoNumerica;
 
 
 
@@ -23,14 +33,21 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 	public MOPSO basis_mopso;
 	
 	public MOPSO[] swarms;
-	
-	//Indicates in which iteration the global archiver will be updated by the archivers from the swarm
-	public int update = 1;
+
 	
 	//Defines the range of the region that each swarm must search
 	public double box_range = 0.1;
 	
+	private double update_box_range_tax;
+	
+	private  double box_range_min = 0.1;
+	
+	private  double box_range_max = 0.1;
+	
 	public int iterations = 10;
+	
+	public GD gd_reset;
+	public IGD igd_reset;
 	
 	/**
 	 * 
@@ -48,18 +65,21 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 	 * @param eps Epsilon values for eapp and eaps
 	 * @param numberSwarms Number of swarms
 	 */
-	public IteratedMultiSwarm(int n, Problema prob, int generations, int evaluations, int popSize, String S, String[] maxmim, int repositorySize, String tRank, String archiving, String leaderChoice, double eps, int numberSwarms, int update, double range, int pop_swarm, int rep_swarm, int split_iterations, boolean eval_analysis){
+	public IteratedMultiSwarm(int n, Problema prob, int generations, int evaluations, int popSize, String S, String[] maxmim, int repositorySize, String tRank, String archiving, String leaderChoice, double eps, int numberSwarms, double range_mim, double range_max, int pop_swarm, int rep_swarm, int split_iterations, boolean eval_analysis){
 		super(n,prob,generations,evaluations, popSize, maxmim,tRank, eps, repositorySize, archiving, eval_analysis);
+				
+		box_range = box_range_min = range_mim;
 		
-		this.update = update;
-		
-		box_range = range;
+		box_range_max = range_max;
 		
 		iterations = split_iterations;
 		
+		update_box_range_tax = (box_range_max - box_range)/(iterations-1);
+		
+		
 		//If the parameters are different from the number of swarms, the remaining swarms are defined with the parameters of the SMPSO algorithm
 		String[] S_i = S.split(";");
-		if(S_i.length < numberSwarms){
+		if(S_i.length < numberSwarms+1){
 			String[] temp = S_i.clone();
 			String default_ = "0.5";
 			S_i = new String[numberSwarms+1];
@@ -73,7 +93,7 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 		
 		pareto = new FronteiraPareto(new Double(S_i[0]).doubleValue(), maxmim,rank, eps, problema, archiveSize);
 		String[] leaderChoice_i = leaderChoice.split(";");
-		if(leaderChoice_i.length < numberSwarms){
+		if(leaderChoice_i.length < numberSwarms+1){
 			String[] temp = leaderChoice_i.clone();
 			String default_ = "tb";
 			leaderChoice_i = new String[numberSwarms+1];
@@ -85,7 +105,7 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 			}
 		}
 		String[] archiving_i = archiving.split(";");
-		if(archiving_i.length < numberSwarms){
+		if(archiving_i.length < numberSwarms+1){
 			String[] temp = archiving_i.clone();
 			String default_ = "ideal";
 			archiving_i = new String[numberSwarms+1];
@@ -113,75 +133,113 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 
 		}
 		
+		
+		String caminhoDir = "evaluations/";
+		String temp = "temp";
+		ArrayList<PontoFronteira> pftrue= Principal.carregarFronteiraPareto(System.getProperty("user.dir"), problema.problema, problema.m);
+		
+		gd_reset = new GD(problema.m, caminhoDir, temp, pftrue);
+		gd_reset.preencherObjetivosMaxMin(maxmim);
+		
+		igd_reset = new IGD(problema.m, caminhoDir, temp, pftrue);
+		igd_reset.preencherObjetivosMaxMin(maxmim);
+		
 	}
 
 	@Override
 	public ArrayList<Solucao> executar() {
-		
+
 		try{
 			PrintStream comunication = new PrintStream("evaluations/comunication.txt");
-		
-		resetExecution();
 
-		ArrayList<Solucao> initial_front = basis_mopso.executar();
-		//if(eval_analysis)
-			//evaluationAnalysis(initial_front);
-		System.out.println();
-		int com = 0;
-		for(int k = 0; k<iterations; k++){
-			System.out.println("Iteration: " + k);
-			int groups[] = new int[initial_front.size()];
+			resetExecution();
 
-			ArrayList<double[]> centroids = clustering(initial_front, AlgoritmoAprendizado.PARAMETER_SPACE,swarms.length, groups);
-			comunication.println(com++ + "\t" + problema.avaliacoes);
-			//Inicia a populcaao
-			initializeSwarms(centroids, groups, initial_front);
+			ArrayList<Solucao> initial_front = basis_mopso.executar();
+			if(eval_analysis)
+			   evaluationAnalysis(initial_front);
+			System.out.println();
+			int com = 0;
+			for(int k = 0; k<iterations; k++){
+				System.out.println("Iteration: " + k);
+				int groups[] = new int[initial_front.size()];
 
-			for(int i = 0; i<geracoes; i++){
-				if(i%10 == 0)
-					System.out.print(i + " ");
-
-				for (int s = 0; s < swarms.length; s++) {
-					if(i%10 == 0)
-						System.out.print( "s" + s + " ");
-					swarms[s].evolutionaryLoop();
-				}
-				if(i % 10 ==0)
-					System.out.println();
+				ArrayList<double[]> centroids = clustering(initial_front, AlgoritmoAprendizado.PARAMETER_SPACE,swarms.length, groups);
+				comunication.println(com++ + "\t" + problema.avaliacoes);
+				System.out.println(box_range);
 				
-				/*if(eval_analysis){
+				if(centroids.size()<swarms.length)
+					System.out.println();
+				//initializeSwarms(centroids, groups, initial_front);
+				
+				//initializeSwarms(initial_front);
+				
+				initializeSwarms_extremes(initial_front);
 
-					for (int s_i = 0; s_i < swarms.length; s_i++) {
-						ArrayList<Solucao> swarm_pareto_i = swarms[s_i].pareto.getFronteira();
-						for (Iterator<Solucao> iterator = swarm_pareto_i
-								.iterator(); iterator.hasNext();) {
-							Solucao solucao = (Solucao) iterator.next();
-							pareto.add(solucao, new UnboundArchive());
-						}
+				for(int i = 0; i<geracoes; i++){
+					if(i%10 == 0)
+						System.out.print(i + " ");
+
+					for (int s = 0; s < swarms.length; s++) {
+						if(i%10 == 0)
+							System.out.print( "s" + s + " ");
+						swarms[s].evolutionaryLoop();
 					}
+					if(i % 10 ==0)
+						System.out.println();
 
-					evaluationAnalysis(pareto.getFronteira());
-					pareto.getFronteira().clear();
-				}*/
-			}
+					if(eval_analysis){
 
-			
-			pareto.getFronteira().clear();
-			for (int s_i = 0; s_i < swarms.length; s_i++) {
-				ArrayList<Solucao> swarm_pareto_i = swarms[s_i].pareto.getFronteira();
-				for (Iterator<Solucao> iterator = swarm_pareto_i
-						.iterator(); iterator.hasNext();) {
-					Solucao solucao = (Solucao) iterator.next();
-					pareto.add(solucao, new UnboundArchive());
+						for (int s_i = 0; s_i < swarms.length; s_i++) {
+							ArrayList<Solucao> swarm_pareto_i = swarms[s_i].pareto.getFronteira();
+							for (Iterator<Solucao> iterator = swarm_pareto_i
+									.iterator(); iterator.hasNext();) {
+								Solucao solucao = (Solucao) iterator.next();
+								pareto.add(solucao, new UnboundArchive());
+							}
+						}
+
+						evaluationAnalysis(pareto.getFronteira());
+						pareto.getFronteira().clear();
+					}
 				}
+				
+				/*double[][] indicators_swarm = new double[swarms.length][2];
+				
+				for (int s_i = 0; s_i < swarms.length; s_i++) {
+					ArrayList<Solucao> swarm_pareto_i = swarms[s_i].pareto.getFronteira();
+					calculate_indicators_swarms_reset(swarm_pareto_i,indicators_swarm,s_i);
+				}
+				
+				reset_dominated_swarms(indicators_swarm);*/
+				
+				pareto.getFronteira().clear();
+				
+				for (int s_i = 0; s_i < swarms.length; s_i++) {
+					ArrayList<Solucao> swarm_pareto_i = swarms[s_i].pareto.getFronteira();
+					PrintStream psSwarm = new PrintStream("evaluations/swarm_" + s_i + ".txt");
+					for (Iterator<Solucao> iterator = swarm_pareto_i
+							.iterator(); iterator.hasNext();) {
+						SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+						if(!pareto.getFronteira().contains(solucao))
+							pareto.add((Solucao)solucao.clone(), new UnboundArchive());
+						for(int o = 0; o< solucao.objetivos.length; o++)
+							psSwarm.print(solucao.objetivos[o] + "\t");
+						psSwarm.println();
+					}
+				}
+				
+				
+				
+				initial_front.clear();
+				initial_front.addAll(pareto.getFronteira());
+				
+				//reset_similar_swarms(similarity());
+				updateBoxRange();
 			}
+			if(eval_analysis)
+				evaluationAnalysis(pareto.getFronteira());
 			
-			initial_front.clear();
-			initial_front.addAll(pareto.getFronteira());
-		}
-		if(eval_analysis)
-			evaluationAnalysis(pareto.getFronteira());
-		return pareto.getFronteira();
+			return pareto.getFronteira();
 		}catch(IOException ex) {ex.printStackTrace(); return null;}
 	}
 
@@ -205,7 +263,7 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 			//Get the centroid guide for the swarm i
 			double[] centroid = centroids.get(i);
 			for(int j = 0; j<n; j++){
-				//Defines de lower and upper limits of the new search space. The values can't overcome the maximum values
+				//Defines the lower and upper limits of the new search space. The values can't overcome the maximum values
 				//of the search space of the problem
 				new_limits[0][j] = Math.max(centroid[j] - box_range, problema.MIN_VALUE);
 				new_limits[1][j] = Math.min(centroid[j] + box_range, problema.MAX_VALUE);
@@ -233,6 +291,8 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 			swarm.inicializarPopulacao(new_limits);
 			swarm.atualizarRepositorio();
 			
+			
+			
 		}
 		
 	
@@ -243,6 +303,130 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 			swarms[i].escolherParticulasMutacao();
 		}
 
+
+	}
+	
+	public void initializeSwarms(ArrayList<Solucao> solutions){
+		//Initializes the solutions of each swarm
+				for (int i = 0; i < swarms.length; i++) {
+					MOPSO swarm = swarms[i];
+					
+					double[][] new_limits = new double[2][n];
+					
+					int index_guide = (int)(Math.random() * solutions.size());
+					//Get the centroid guide for the swarm i
+					double[] centroid = ((SolucaoNumerica)solutions.get(index_guide)).getVariaveis();
+					for(int j = 0; j<n; j++){
+						//Defines the lower and upper limits of the new search space. The values can't overcome the maximum values
+						//of the search space of the problem
+						new_limits[0][j] = Math.max(centroid[j] - box_range, problema.MIN_VALUE);
+						new_limits[1][j] = Math.min(centroid[j] + box_range, problema.MAX_VALUE);
+						
+					}
+					
+					//if(swarm.pareto.getFronteira().size()==0){
+						for(int j = 0; j< swarm.archiveSize; j++){
+							int random_index = (int)(Math.random() * solutions.size());
+							Solucao random_solution = solutions.get(random_index);
+							if(!swarm.pareto.getFronteira().contains(random_solution))
+								swarm.pareto.add(random_solution, swarm.archiver);
+						}
+					//}
+					
+					
+					swarm.inicializarPopulacao(new_limits);
+					swarm.atualizarRepositorio();
+					
+					
+					
+				}
+				
+			
+				for (int i = 0; i < swarms.length; i++) {
+					//In each swarm, the population chooses the leader according to its Pareto front  
+					swarms[i].escolherLider.escolherLideres(swarms[i].populacao, swarms[i].pareto.getFronteira());
+					//Initial mutation for swarm i
+					swarms[i].escolherParticulasMutacao();
+				}
+		
+	}
+	
+	public void initializeSwarms_extremes(ArrayList<Solucao> solutions){
+		
+		ArrayList<Integer> available_dimensions = new ArrayList<Integer>();
+		
+		for(int i = 0; i<problema.m; i++){
+			available_dimensions.add(i);
+		}
+		
+		//Initializes the solutions of each swarm
+		
+
+		for (int i = 0; i < swarms.length; i++) {
+			MOPSO swarm = swarms[i];
+
+			double[][] new_limits = new double[2][n];
+			int index_guide = -1;
+			if(available_dimensions.size()>0){
+				int dimension = available_dimensions.remove(0);
+				
+				double closerValue = Double.MAX_VALUE;
+				
+				for(int j = 0; j<solutions.size(); j++){
+					if(solutions.get(j).objetivos[dimension] < closerValue){
+						closerValue = solutions.get(j).objetivos[dimension];
+						index_guide = j;
+					}
+				}
+				
+				
+			} else{
+				 index_guide = (int)(Math.random() * solutions.size());
+			}
+			//Get the centroid guide for the swarm i
+			double[] centroid = ((SolucaoNumerica)solutions.get(index_guide)).getVariaveis();
+			for(int j = 0; j<n; j++){
+				//Defines the lower and upper limits of the new search space. The values can't overcome the maximum values
+				//of the search space of the problem
+				new_limits[0][j] = Math.max(centroid[j] - box_range, problema.MIN_VALUE);
+				new_limits[1][j] = Math.min(centroid[j] + box_range, problema.MAX_VALUE);
+
+			}
+			
+			if(i<problema.m){
+				ComparetorObjetivo comp = new ComparetorObjetivo(i);
+				Collections.sort(solutions, comp);
+				for(int j = 0; j< swarm.archiveSize; j++){
+					Solucao random_solution = solutions.get(j);
+					if(!swarm.pareto.getFronteira().contains(random_solution))
+						swarm.pareto.add(random_solution, swarm.archiver);
+					if(j>=pareto.getFronteira().size())
+						break;
+				}
+			} else{
+				for(int j = 0; j< swarm.archiveSize; j++){
+					int random_index = (int)(Math.random() * solutions.size());
+					Solucao random_solution = solutions.get(random_index);
+					if(!swarm.pareto.getFronteira().contains(random_solution))
+						swarm.pareto.add(random_solution, swarm.archiver);
+				}
+			}
+
+
+			swarm.inicializarPopulacao(new_limits);
+			swarm.atualizarRepositorio();
+
+
+
+		}
+
+
+		for (int i = 0; i < swarms.length; i++) {
+			//In each swarm, the population chooses the leader according to its Pareto front  
+			swarms[i].escolherLider.escolherLideres(swarms[i].populacao, swarms[i].pareto.getFronteira());
+			//Initial mutation for swarm i
+			swarms[i].escolherParticulasMutacao();
+		}
 
 	}
 	
@@ -259,6 +443,215 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 		}
 		
 		problema.avaliacoes =0; 
+		
+		box_range = box_range_min;
+	}
+	
+	public void updateBoxRange(){
+		box_range= box_range + update_box_range_tax;
+	}
+	
+	public void calculate_indicators_swarms_reset(ArrayList<Solucao> solutions, double[][] indicators_swarm, int s_i){
+		ArrayList<PontoFronteira> solutions_pf = new ArrayList<PontoFronteira>();
+
+		for (Iterator<Solucao> iterator = solutions.iterator(); iterator.hasNext();) {
+			Solucao solution = (Solucao) iterator.next();
+			double objectives_temp[] = new double[solution.objetivos.length];
+			for(int i = 0; i < solution.objetivos.length; i++)
+				objectives_temp[i] = solution.objetivos[i];
+
+			PontoFronteira pf = new PontoFronteira(objectives_temp);
+			solutions_pf.add(pf);
+		}
+		
+		
+		 gd_reset.fronteira =  igd_reset.fronteira = solutions_pf;
+		 
+		 indicators_swarm[s_i][0] = gd_reset.calcular();
+		 indicators_swarm[s_i][1] = igd_reset.calcular();
+	}
+	
+	public void reset_dominated_swarms(double[][] indicators_swarm){
+		for(int i = 0; i< indicators_swarm.length; i++){
+			double[] swarm_i = indicators_swarm[i];
+			int[] cont = new int[2];
+			for(int j = 0; j< indicators_swarm.length; j++){
+				if(i!=j){
+					double[] swarm_j = indicators_swarm[j];
+					if(swarm_j[0]<swarm_i[0])
+						cont[0]++;
+					if(swarm_j[1]<swarm_i[1])
+						cont[1]++;
+				}
+			}
+			if(cont[0]>=(swarms.length/2) && cont[1]>=(swarms.length/2)){
+				System.out.println(i);
+				swarms[i].pareto.getFronteira().clear();
+				for(int j = 0; j<swarms[i].archiveSize; j++){
+					int random_index = (int) (Math.random() * pareto.getFronteira().size());
+					SolucaoNumerica solution = (SolucaoNumerica)pareto.getFronteira().get(random_index);
+					if(!swarms[i].pareto.getFronteira().contains(solution))
+						swarms[i].pareto.add((Solucao)solution.clone(), swarms[i].archiver);
+				}
+			}
+		}
+	}
+	
+	public void reset_similar_swarms(double[][] similarity){
+		boolean[] flag_reseted = new boolean[swarms.length];
+		
+		for(int i = 0; i<similarity.length-1; i++){
+			ArrayList<Integer> similars = new ArrayList<Integer>();
+			similars.add(i);
+			for(int j = i+1; j<similarity.length; j++){
+				if(!flag_reseted[j]){
+					if(similarity[i][j] < 0.35){
+						similars.add(j);
+						flag_reseted[j] = true;
+					}
+				}
+			}
+			
+			if(similars.size()>1){
+				reset_random(similars);
+				//reset_opposite(similars);
+			}
+			
+		}
+		
+	}
+	
+	public void reset_random(ArrayList<Integer> similars){
+		
+		Dominance dominance = new Dominance(problema.m);
+		dominance.objetivosMaxMin = pareto.objetivosMaxMin;
+		
+		double best_dominance = 0;
+		double index_dominance = -1;
+		
+		for(int i = 0; i< similars.size()-1;i++){
+			int index_i = similars.get(i);
+			for(int j = i+1; j<similars.size();j++){
+				int index_j = similars.get(j);
+				double[] dom = dominance.calcular2(swarms[index_i].pareto.getFronteira(), swarms[index_j].pareto.getFronteira());
+				for(int d = 0; d<dom.length; d++){
+					if(dom[d]>best_dominance){
+						best_dominance = dom[d];
+						if(d == 0)
+							index_dominance = index_i;
+						else
+							index_dominance = index_j;
+					}
+				}
+			}
+		}
+		
+		for(int i = 0; i<similars.size(); i++){
+			if(similars.get(i).intValue()!=index_dominance){
+				int index = similars.get(i);
+				swarms[index].pareto.getFronteira().clear();
+				for(int j = 0; j<swarms[index].archiveSize; j++){
+					int random_index = (int) (Math.random() * pareto.getFronteira().size());
+					SolucaoNumerica solution = (SolucaoNumerica)pareto.getFronteira().get(random_index);
+					if(!swarms[index].pareto.getFronteira().contains(solution))
+						swarms[index].pareto.add((Solucao)solution.clone(), swarms[index].archiver);
+				}
+			}
+		}
+		
+	}
+	
+	public void reset_opposite(ArrayList<Integer> similars){
+		
+		Dominance dominance = new Dominance(problema.m);
+		dominance.objetivosMaxMin = pareto.objetivosMaxMin;
+		
+		double best_dominance = 0;
+		double index_dominance = -1;
+		
+		for(int i = 0; i< similars.size()-1;i++){
+			int index_i = similars.get(i);
+			for(int j = i+1; j<similars.size();j++){
+				int index_j = similars.get(j);
+				double[] dom = dominance.calcular2(swarms[index_i].pareto.getFronteira(), swarms[index_j].pareto.getFronteira());
+				for(int d = 0; d<dom.length; d++){
+					if(dom[d]>best_dominance){
+						best_dominance = dom[d];
+						if(d == 0)
+							index_dominance = index_i;
+						else
+							index_dominance = index_j;
+					}
+				}
+			}
+		}
+		
+		
+		for(int i = 0; i<similars.size(); i++){
+			if(similars.get(i).intValue()!=index_dominance){
+				
+				int index = similars.get(i);
+				System.out.println(index);
+				swarms[index].pareto.getFronteira().clear();
+				for(int j = 0; j< pareto.getFronteira().size(); j++){
+					Solucao solution = pareto.getFronteira().get(j);
+					solution.menorDistancia = AlgoritmoAprendizado.distanciaEuclidiana(solution.objetivos, swarms[index].pareto.average_point);
+				}
+				
+				ComparetorDistancia comp = new ComparetorDistancia();
+				Collections.sort(pareto.getFronteira(), comp);
+				
+				for(int j = 0; j<swarms[index].archiveSize; j++){
+					SolucaoNumerica solution = (SolucaoNumerica)pareto.getFronteira().get(i);
+					if(!swarms[index].pareto.getFronteira().contains(solution))
+						swarms[index].pareto.add((Solucao)solution.clone(), swarms[index].archiver);
+				}
+			}
+		}
+		
+	}
+	
+	
+	
+	public double[][] similarity(){
+		
+		double[][] average_solution = new double[swarms.length][problema.m];
+				
+		for (int s_i = 0; s_i < swarms.length; s_i++) {
+			ArrayList<Solucao> swarm_pareto_i = swarms[s_i].pareto.getFronteira();
+			double[] average_solution_i = new double[problema.m];
+			for (Iterator<Solucao> iterator = swarm_pareto_i
+					.iterator(); iterator.hasNext();) {
+				Solucao solucao = (Solucao) iterator.next();
+				for(int i = 0; i<problema.m; i++){
+					average_solution_i[i] += solucao.objetivos[i];
+				}
+			}
+			for (int i = 0; i < average_solution_i.length; i++) {
+				average_solution_i[i] = average_solution_i[i]/swarm_pareto_i.size(); 
+				//System.out.print(average_solution_i[i] + "\t");
+			}
+			//System.out.println();
+			average_solution[s_i] = average_solution_i;
+			swarms[s_i].pareto.average_point = average_solution_i;
+		}
+		
+		double[][] similarity = new double[swarms.length][swarms.length];
+		
+		for(int i = 0; i<swarms.length-1; i++){
+			for(int j = i+1; j<swarms.length; j++){
+				double difference = 0;
+				for(int o = 0; o<average_solution[i].length; o++)
+					difference += Math.abs(average_solution[i][o] - average_solution[j][o]);
+				similarity[i][j] = difference;
+				similarity[j][i] = difference;
+			}
+		}
+		
+		System.out.println();
+		
+		return similarity;
+		
 	}
 
 }

@@ -51,6 +51,8 @@ public abstract class Solucao {
 	//Used on some archiving methods
 	public int guia;
 	
+	public boolean[] used_objectives;
+	
 	
 	/**
 	 * Construtor da classe
@@ -62,6 +64,12 @@ public abstract class Solucao {
 		this.m = m;
 		
 		objetivos = new double[m];
+		
+		used_objectives = new boolean[m];
+		
+		for (int i = 0; i < used_objectives.length; i++) {
+			used_objectives[i] = true;
+		}
 	
 	}
 	
@@ -186,6 +194,12 @@ public abstract class Solucao {
 			System.out.println();
 		
 		
+	}
+	
+	public void setUsedObjectives(boolean[] uo){
+		for (int i = 0; i < uo.length; i++) {
+			used_objectives[i] = uo[i];
+		}
 	}
 		
 	

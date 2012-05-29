@@ -170,6 +170,11 @@ public class SolucaoNumerica extends Solucao {
 
 			}
 		}
+		
+		novaSolucao.used_objectives = new boolean[used_objectives.length];
+		for (int i = 0; i < used_objectives.length; i++) {
+			novaSolucao.used_objectives[i] = used_objectives[i];
+		}
 			
 		return novaSolucao;
 	}

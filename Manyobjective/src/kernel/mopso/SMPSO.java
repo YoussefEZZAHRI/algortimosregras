@@ -117,7 +117,6 @@ public class SMPSO extends MOPSO{
 	}
 	
 	public ArrayList<Solucao> executarAvaliacoes(){
-
 		//Apaga todas as listas antes do inicio da execucao
 		reiniciarExecucao();
 		//Inicia a populcao
@@ -127,7 +126,6 @@ public class SMPSO extends MOPSO{
 			atualizarRepositorio();
 		else
 			iniciarRepositorioRank();
-		
 		calcularCrowdingDistance(pareto.getFronteira(), problema.m);
 		//Obtem os melhores globais para todas as particulas da populacao
 		escolherLider.escolherLideres(populacao, pareto.getFronteira());
@@ -179,7 +177,6 @@ public class SMPSO extends MOPSO{
 			//Define o melhor local
 			particula.escolherLocalBest(pareto);
 		}		
-		
 		if(rank || archiver.ID.equals("par") || archiver.ID.equals("pbr"))
 			rankParticula(populacao);
 		//Obtem as melhores particulas da populacao
