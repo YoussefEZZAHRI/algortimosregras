@@ -110,6 +110,8 @@ public abstract class AlgoritmoAprendizado {
 	
 	public static int  eval_id = 0;
 	
+	public boolean[] used_objectives;
+	
 	/**
 	 * 
 	 * @param n - numero de variaveis
@@ -145,6 +147,11 @@ public abstract class AlgoritmoAprendizado {
 		
 		if(eval_analysis)
 			initializeEvalAnalysis(maxmim, eval_id++ + "");
+		
+		used_objectives = new boolean[problema.m];
+		for (int i = 0; i < used_objectives.length; i++) {
+			used_objectives[i] = true;
+		}
 	}
 	
 	public abstract ArrayList<Solucao> executar();

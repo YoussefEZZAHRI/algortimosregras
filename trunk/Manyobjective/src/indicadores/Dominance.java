@@ -6,6 +6,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import solucao.Solucao;
+
 /**
  * Classe que calcula quantos pontos de uma fronteira dominam pontos da segunda fronteira e vice-versa
  * @author Andre
@@ -15,6 +17,10 @@ public class Dominance extends Indicador {
 	
 	public String idExec1;
 	public String idExec2;
+	
+	public Dominance(int m){
+		super(m,"","");
+	}
 	
 	public Dominance(int m, String caminho, String idExec1, String idExec2){
 		super(m, caminho, "");
@@ -46,6 +52,28 @@ public class Dominance extends Indicador {
 			for (Iterator<PontoFronteira> iterator2 = fronteira2.iterator(); iterator2
 					.hasNext();) {
 				PontoFronteira pontoFronteira2 = (PontoFronteira) iterator2
+						.next();
+				int dom = compararMedidas(pontoFronteira1.objetivos, pontoFronteira2.objetivos);
+				if(dom == 1)
+					dominacao[0]++;
+				if(dom == -1)
+					dominacao[1]++;
+			}
+		}
+		return dominacao;	
+	}
+	
+	public double[] calcular2(ArrayList<Solucao> fronteira1, ArrayList<Solucao> fronteira2) {
+		if(objetivosMaxMin == null){
+			System.err.println("Erro: Não foi definido se cada objetivo é de maximização ou minimização (Executar Método preencherObjetivosMaxMin)");
+			System.exit(0);
+		}
+		double dominacao[] = new double[2];
+		for (Iterator<Solucao> iterator = fronteira1.iterator(); iterator.hasNext();) {
+			Solucao pontoFronteira1 = (Solucao) iterator.next();
+			for (Iterator<Solucao> iterator2 = fronteira2.iterator(); iterator2
+					.hasNext();) {
+				Solucao pontoFronteira2 = (Solucao) iterator2
 						.next();
 				int dom = compararMedidas(pontoFronteira1.objetivos, pontoFronteira2.objetivos);
 				if(dom == 1)

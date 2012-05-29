@@ -43,12 +43,16 @@ public class FronteiraPareto {
 	
 	public int archiveSize;
 	
+	public static final int DEFAULT_VALUE = -1; 
+	
 	
 	
 	public static int DOMINATED_BY = -1;
 	public static int DOMINATES = 1;
 	public static int NON_DOMINATED = 0;
 	public static int EQUALS = 2;
+	
+	public double[] average_point;
 	
 	/*public FronteiraPareto(double s){
 		fronteira = new ArrayList<Solucao>();
@@ -137,12 +141,12 @@ public class FronteiraPareto {
 
 			double[] novosObjetivosSolucao = new double[solucao.objetivos.length];
 			if(S!=0.5 && S>=0.25){
-					novosObjetivosSolucao = modificacaoDominanciaParetoCDAS(solucao.objetivos, S);
+					novosObjetivosSolucao = modifySelectedObjectives(modificacaoDominanciaParetoCDAS(solucao.objetivos, S), solucao.used_objectives);
 			} else{
 				//novosObjetivosSolucao  = modificacaoDominanciaParetoEqualizar(solucao.objetivos, fator);
 				
 					//scdas(S);
-					novosObjetivosSolucao  = solucao.objetivos;
+					novosObjetivosSolucao  = modifySelectedObjectives(solucao.objetivos, solucao.used_objectives);
 				
 				//System.out.println();
 			}
@@ -153,14 +157,16 @@ public class FronteiraPareto {
 				double[] novosObjetivosTemp = new double[temp.objetivos.length];
 
 				if(S!=0.5 && S>=0.25){
-						novosObjetivosTemp = modificacaoDominanciaParetoCDAS(temp.objetivos, S);
+						novosObjetivosTemp =  modifySelectedObjectives(modificacaoDominanciaParetoCDAS(temp.objetivos, S), temp.used_objectives);
 				} else{
 				
 						//scdas(S);
-						novosObjetivosTemp = temp.objetivos;
+						novosObjetivosTemp = modifySelectedObjectives(temp.objetivos, temp.used_objectives);
 				
 				}				
 				//novosObjetivosTemp = modificacaoDominanciaParetoEqualizar(temp.objetivos, fator);
+				
+				compareSelectedObjectives(solucao, temp);
 
 				comp = compareObjectiveVector(novosObjetivosSolucao, novosObjetivosTemp);
 
@@ -509,6 +515,7 @@ public class FronteiraPareto {
 		//Se cont for igual ao tamanho dos elementos da solucao 1 entao a solucao 2 eh dominada pela sol1
 		//Se cont for igual a 0 a sol2 domina a sol1
 		//Se cont for maior do que 0 e menor que o tamanho ela nao domina e nem eh dominada
+		
 		int cont = 0; 
 		int cont2 = sol1.length;
 		for (int i = 0; i < sol1.length; i++) {
@@ -535,6 +542,57 @@ public class FronteiraPareto {
 				return NON_DOMINATED;
 			else return DOMINATES;
 		}
+	}
+	
+	/**
+	 * Check if the two solutions are optimizing the same set of objectives
+	 * @param solution1
+	 * @param solution2
+	 * @return
+	 */
+	public boolean compareSelectedObjectives(Solucao solution1, Solucao solution2){
+		for(int i = 0; i<problema.m;i++){
+			if(solution1.used_objectives[i]){
+				if(!solution2.used_objectives[i]){
+					System.err.println("Solutions with different selected objectives");
+					System.exit(0);
+					return false;
+				}
+			} else{
+				if(solution2.used_objectives[i]){
+					System.err.println("Solutions with different selected objectives");
+					System.exit(0);
+					return false;
+				}
+			}
+		}
+		
+		
+		return true;
+	}
+	
+	public double[] modifySelectedObjectives(Solucao solution){
+		double[] new_objective_value = new double[problema.m];
+		for (int i = 0; i < new_objective_value.length; i++) {
+			if(solution.used_objectives[i])
+				new_objective_value[i] = solution.objetivos[i];
+			else
+				new_objective_value[i] = DEFAULT_VALUE;
+		}
+		
+		return new_objective_value;
+	}
+	
+	public double[] modifySelectedObjectives(double[] solution_objectives, boolean[] used_objectives){
+		double[] new_objective_value = new double[problema.m];
+		for (int i = 0; i < new_objective_value.length; i++) {
+			if(used_objectives[i])
+				new_objective_value[i] = solution_objectives[i];
+			else
+				new_objective_value[i] = DEFAULT_VALUE;
+		}
+		
+		return new_objective_value;
 	}
 	
 	/*public int compararMedidas(Solucao sol1, Solucao sol2){

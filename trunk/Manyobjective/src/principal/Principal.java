@@ -30,6 +30,7 @@ import kernel.mopso.SMPSO;
 import kernel.mopso.SigmaMOPSO;
 import kernel.mopso.multi.IteratedMultiSwarm;
 import kernel.mopso.multi.MultiSwarm;
+import kernel.mopso.multi.TreeMultiSwarm;
 
 import problema.DTLZ1;
 import problema.DTLZ2;
@@ -112,7 +113,8 @@ public class Principal {
 	
 	public String front = "";
 	
-	public double box_range = 0.1;
+	public double box_range_mim = 0.1;
+	public double box_range_max = 0.5;
 	
 	public boolean eval_analysis = false;
 	
@@ -144,9 +146,11 @@ public class Principal {
 					if(principal.alg.equals("multi"))
 						principal.algoritmo = new MultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.shared, principal.update, principal.eval_analysis);
 					if(principal.alg.equals("imulti"))
-						principal.algoritmo = new IteratedMultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.update, principal.box_range, principal.pop_swarm, principal.rep_swarm, principal.split_iterations, principal.eval_analysis);
+						principal.algoritmo = new IteratedMultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.box_range_mim, principal.box_range_max, principal.pop_swarm, principal.rep_swarm, principal.split_iterations, principal.eval_analysis);
 
-					
+					if(principal.alg.equals("tmulti"))
+						principal.algoritmo = new  TreeMultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.update, principal.eval_analysis);
+
 					principal.executar();
 				
 				}
@@ -662,8 +666,11 @@ public class Principal {
 				if(tag.equals("fator"))
 					fator = new Double(valor).doubleValue();
 				
-				if(tag.equals("box_range"))
-					box_range = new Double(valor).doubleValue();
+				if(tag.equals("box_range_mim"))
+					box_range_mim = new Double(valor).doubleValue();
+				
+				if(tag.equals("box_range_max"))
+					box_range_max = new Double(valor).doubleValue();
 				
 				if(tag.equals("swarms"))
 					swarms = new Integer(valor).intValue();
