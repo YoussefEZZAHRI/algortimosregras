@@ -67,7 +67,7 @@ public class MultiSwarm extends AlgoritmoAprendizado {
 		String[] leaderChoice_i = leaderChoice.split(";");
 		if(leaderChoice_i.length != numberSwarms){
 			String[] temp = leaderChoice_i.clone();
-			String default_ = "tb";
+			String default_ = leaderChoice_i[leaderChoice_i.length-1];
 			leaderChoice_i = new String[numberSwarms];
 			for (int i = 0; i < leaderChoice_i.length; i++) {
 				if(i<temp.length)
@@ -76,17 +76,11 @@ public class MultiSwarm extends AlgoritmoAprendizado {
 					leaderChoice_i[i] = default_;
 			}
 		}
-		String[] archiving_i = archiving.split(";");
-		if(archiving_i.length != numberSwarms){
-			String[] temp = archiving_i.clone();
-			String default_ = "ideal";
-			archiving_i = new String[numberSwarms];
-			for (int i = 0; i <archiving_i.length; i++) {
-				if(i<temp.length)
-					archiving_i[i] = temp[i];
-				else
-					archiving_i[i] = default_;
-			}
+		String[] archiving_i_basis = archiving.split(";");
+		String[] archiving_i = new String[numberSwarms];
+		for(int i = 0; i< numberSwarms; i++){
+			int index = i % archiving_i_basis.length;
+			archiving_i[i] = archiving_i_basis[index];
 		}
 		
 		swarms = new MOPSO[numberSwarms];
@@ -203,10 +197,9 @@ public class MultiSwarm extends AlgoritmoAprendizado {
 
 	@Override
 	public ArrayList<Solucao> executarAvaliacoes() {
-		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	
 	
 	public void initializeSwarms(){

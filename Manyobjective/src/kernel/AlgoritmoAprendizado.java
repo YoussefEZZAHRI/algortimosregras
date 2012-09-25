@@ -1044,7 +1044,9 @@ public abstract class AlgoritmoAprendizado {
 	 */
 	public ArrayList<double[]> clustering(ArrayList<Solucao> front, int clusteringSpace, int k, int[] groups){
 		try{
-			PrintStream front_weka_file = new PrintStream("temp.arff");
+			
+			String temp = "temp/temp" + System.currentTimeMillis()+".arff";
+			PrintStream front_weka_file = new PrintStream(temp);
 			front_weka_file.println("@RELATION front");
 			front_weka_file.println();
 			if(clusteringSpace == PARAMETER_SPACE){
@@ -1078,7 +1080,7 @@ public abstract class AlgoritmoAprendizado {
 			front_weka_file.close();
 			
 			
-			FileReader file_front = new FileReader("temp.arff");
+			FileReader file_front = new FileReader(temp);
 			Instances front_weka = new Instances(file_front);
 			//System.out.println();
 			

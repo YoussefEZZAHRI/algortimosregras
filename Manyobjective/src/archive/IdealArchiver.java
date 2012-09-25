@@ -39,13 +39,14 @@ public class IdealArchiver extends PreciseArchiver {
 		int index = -1;
 		for (int i = 0; i<front.size(); i++) {
 			Solucao solucao = front.get(i);
-			if(solucao.menorDistancia > highDistanceValue){
+			if(solucao.menorDistancia >= highDistanceValue){
 				highDistanceValue = solucao.menorDistancia;
 				index = i;
 			}
 		}
-
-		front.remove(index);
+		try{
+			front.remove(index);
+		}	catch(ArrayIndexOutOfBoundsException ex){ex.printStackTrace();}
 
 	}
 

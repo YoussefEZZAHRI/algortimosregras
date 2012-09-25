@@ -49,6 +49,10 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 	public GD gd_reset;
 	public IGD igd_reset;
 	
+	public boolean reset = false;
+	
+	public String initialize = "ext";
+	
 	/**
 	 * 
 	 * @param n Decison variables
@@ -65,7 +69,7 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 	 * @param eps Epsilon values for eapp and eaps
 	 * @param numberSwarms Number of swarms
 	 */
-	public IteratedMultiSwarm(int n, Problema prob, int generations, int evaluations, int popSize, String S, String[] maxmim, int repositorySize, String tRank, String archiving, String leaderChoice, double eps, int numberSwarms, double range_mim, double range_max, int pop_swarm, int rep_swarm, int split_iterations, boolean eval_analysis){
+	public IteratedMultiSwarm(int n, Problema prob, int generations, int evaluations, int popSize, String S, String[] maxmim, int repositorySize, String tRank, String archiving, String leaderChoice, double eps, int numberSwarms, double range_mim, double range_max, int pop_swarm, int rep_swarm, int split_iterations, boolean eval_analysis, boolean reset, String init){
 		super(n,prob,generations,evaluations, popSize, maxmim,tRank, eps, repositorySize, archiving, eval_analysis);
 				
 		box_range = box_range_min = range_mim;
@@ -75,6 +79,10 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 		iterations = split_iterations;
 		
 		update_box_range_tax = (box_range_max - box_range)/(iterations-1);
+		
+		this.reset = reset;
+		
+		initialize = init;
 		
 		
 		//If the parameters are different from the number of swarms, the remaining swarms are defined with the parameters of the SMPSO algorithm
@@ -95,7 +103,7 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 		String[] leaderChoice_i = leaderChoice.split(";");
 		if(leaderChoice_i.length < numberSwarms+1){
 			String[] temp = leaderChoice_i.clone();
-			String default_ = "tb";
+			String default_ = leaderChoice_i[leaderChoice_i.length-1];
 			leaderChoice_i = new String[numberSwarms+1];
 			for (int i = 0; i < leaderChoice_i.length; i++) {
 				if(i<temp.length)
@@ -107,7 +115,7 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 		String[] archiving_i = archiving.split(";");
 		if(archiving_i.length < numberSwarms+1){
 			String[] temp = archiving_i.clone();
-			String default_ = "ideal";
+			String default_ = archiving_i[archiving_i.length-1];
 			archiving_i = new String[numberSwarms+1];
 			for (int i = 0; i <archiving_i.length; i++) {
 				if(i<temp.length)
@@ -163,17 +171,20 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 				System.out.println("Iteration: " + k);
 				int groups[] = new int[initial_front.size()];
 
-				ArrayList<double[]> centroids = clustering(initial_front, AlgoritmoAprendizado.PARAMETER_SPACE,swarms.length, groups);
+				
 				comunication.println(com++ + "\t" + problema.avaliacoes);
 				System.out.println(box_range);
 				
-				if(centroids.size()<swarms.length)
-					System.out.println();
-				//initializeSwarms(centroids, groups, initial_front);
 				
-				//initializeSwarms(initial_front);
+				if(initialize.equals("ctd")){
+					ArrayList<double[]> centroids = clustering(initial_front, AlgoritmoAprendizado.PARAMETER_SPACE,swarms.length, groups);
+					initializeSwarms(centroids, groups, initial_front);
+				}
+				if(initialize.equals("rnd"))
+					initializeSwarms(initial_front);
 				
-				initializeSwarms_extremes(initial_front);
+				if(initialize.equals("ext"))
+					initializeSwarms_extremes(initial_front);
 
 				for(int i = 0; i<geracoes; i++){
 					if(i%10 == 0)
@@ -233,7 +244,9 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 				initial_front.clear();
 				initial_front.addAll(pareto.getFronteira());
 				
-				//reset_similar_swarms(similarity());
+				if(reset)
+					reset_similar_swarms(similarity());
+				
 				updateBoxRange();
 			}
 			if(eval_analysis)
@@ -255,13 +268,22 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 	 * @param centroids
 	 */
 	public void initializeSwarms(ArrayList<double[]> centroids, int[] groups, ArrayList<Solucao> initial_front){
+	
 		//Initializes the solutions of each swarm
 		for (int i = 0; i < swarms.length; i++) {
 			MOPSO swarm = swarms[i];
 			
 			double[][] new_limits = new double[2][n];
+			
+			double[] centroid = null;
+			if(i<centroids.size())
 			//Get the centroid guide for the swarm i
-			double[] centroid = centroids.get(i);
+				centroid = centroids.get(i);
+			else{
+				int index_guide = (int)(Math.random() * initial_front.size());
+				//Get the centroid guide for the swarm i
+				centroid = ((SolucaoNumerica)initial_front.get(index_guide)).getVariaveis();
+			}
 			for(int j = 0; j<n; j++){
 				//Defines the lower and upper limits of the new search space. The values can't overcome the maximum values
 				//of the search space of the problem
@@ -270,12 +292,12 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 				
 			}
 			
-			
-			
-			for(int j = 0; j< groups.length; j++){
-				if(groups[j] == i){
-					swarm.pareto.add(initial_front.get(j), swarm.archiver);
-					/*if(swarm.populacao.size()<swarm.tamanhoPopulacao){
+			if(i<centroids.size()){
+				for(int j = 0; j< groups.length; j++){
+
+					if(groups[j] == i){
+						swarm.pareto.add(initial_front.get(j), swarm.archiver);
+						/*if(swarm.populacao.size()<swarm.tamanhoPopulacao){
 						SolucaoNumerica s = (SolucaoNumerica)initial_front.get(j);
 						Particula particula = new Particula();
 						particula.iniciarParticulaAleatoriamente(problema, s);
@@ -283,8 +305,17 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 						particula.localBestObjetivos = particula.solucao.objetivos;
 						swarm.populacao.add(particula);
 					}*/
+					}
+
 				}
-					
+			} else{
+				
+				for(int j = 0; j< swarm.archiveSize; j++){
+					int random_index = (int)(Math.random() * initial_front.size());
+					Solucao random_solution = initial_front.get(random_index);
+					if(!swarm.pareto.getFronteira().contains(random_solution))
+						swarm.pareto.add(random_solution, swarm.archiver);
+				}
 			}
 			
 			
@@ -396,12 +427,15 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 			if(i<problema.m){
 				ComparetorObjetivo comp = new ComparetorObjetivo(i);
 				Collections.sort(solutions, comp);
-				for(int j = 0; j< swarm.archiveSize; j++){
+				int j = 0;
+				
+				int as = swarm.archiveSize;
+				int ss = solutions.size();
+				while(j<as && j<ss){
 					Solucao random_solution = solutions.get(j);
 					if(!swarm.pareto.getFronteira().contains(random_solution))
 						swarm.pareto.add(random_solution, swarm.archiver);
-					if(j>=pareto.getFronteira().size())
-						break;
+					j++;
 				}
 			} else{
 				for(int j = 0; j< swarm.archiveSize; j++){
