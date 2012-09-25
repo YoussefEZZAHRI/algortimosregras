@@ -6,15 +6,15 @@ package indicadores;
  * @author Andre
  *
  */
-public class Spread extends Indicador {
+public class Spacing extends Indicador {
 	
 	//Array que contém para cada ponto da fronteira a menor distância euclidiana em relação à outro pronto da fronteira.
 	public double[] menores_distancias = null;
 	public double media;
 	
-	public Spread(int m, String caminho, String idExec){
+	public Spacing(int m, String caminho, String idExec){
 		super(m, caminho, idExec);
-		indicador = "spread";
+		indicador = "spacing";
 	}
 	
 	@Override

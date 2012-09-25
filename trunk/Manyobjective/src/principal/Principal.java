@@ -1,6 +1,8 @@
 package principal;
 
+import indicadores.Convergence;
 import indicadores.Dominance;
+import indicadores.Evaluations;
 import indicadores.GD;
 import indicadores.HistogramDTLZ2;
 import indicadores.IGD;
@@ -9,11 +11,12 @@ import indicadores.LargestDistance;
 import indicadores.NumeroPontos;
 import indicadores.PontoFronteira;
 import indicadores.PontosNaFronteira;
-import indicadores.Spread;
+import indicadores.Spacing;
 import indicadores.Tchebycheff;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -46,10 +49,11 @@ import problema.ZDT2;
 import problema.ZDT3;
 import solucao.Solucao;
 
+
 public class Principal {
 	
 	public String alg = null;
-	public String prob = null;
+	public String prob = "";
 	
 	public Problema problema;
 	
@@ -112,11 +116,14 @@ public class Principal {
 	public int update = 1;
 	
 	public String front = "";
+	public String true_pareto = ""; 
 	
-	public double box_range_mim = 0.1;
-	public double box_range_max = 0.5;
+	public double box_range_beg = 0.5;
+	public double box_range_end = 0.1;
 	
 	public boolean eval_analysis = false;
+	public boolean reset = false;
+	public String initialize = "ext";
 	
 	public Principal() {
 		n = -1;
@@ -146,12 +153,12 @@ public class Principal {
 					if(principal.alg.equals("multi"))
 						principal.algoritmo = new MultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.shared, principal.update, principal.eval_analysis);
 					if(principal.alg.equals("imulti"))
-						principal.algoritmo = new IteratedMultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.box_range_mim, principal.box_range_max, principal.pop_swarm, principal.rep_swarm, principal.split_iterations, principal.eval_analysis);
+						principal.algoritmo = new IteratedMultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.box_range_beg, principal.box_range_end, principal.pop_swarm, principal.rep_swarm, principal.split_iterations, principal.eval_analysis, principal.reset, principal.initialize);
 
 					if(principal.alg.equals("tmulti"))
 						principal.algoritmo = new  TreeMultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.update, principal.eval_analysis);
 
-					principal.executar();
+					principal.executar(args[0]);
 				
 				}
 			  }
@@ -160,50 +167,57 @@ public class Principal {
 	
 	
 
-	private  void executar()
+	private  void executar(String parameters)
 			throws IOException {
 		
-		if(alg.equals("multi") || alg.equals("imulti")){
-			S = "0.5";
-			String temp[] = escolhaLider.split(";");
-			escolhaLider = temp[0];
-			tipoArquivo = tipoArquivo.split(";")[0];
-		}
+		
 
-		String id = alg + "_" + prob + "_" + m;
+		String pre_id = alg + "_" + prob + "_" + m;
 		
 		if(tipoArquivo.equals("eapp") || tipoArquivo.equals("eaps")){
-			
 			S = eps+"";
 		}
 		
+		String pos_id = null;
+		
 		if(!rank){
-			if(tipoArquivo.equals(""))
-				id = id + "_" + S + "_" + escolhaLider;
-			else
-				id = id + "_" + S + "_" + escolhaLider+ "_" + tipoArquivo;
+			pos_id = S + "_" + escolhaLider+ "_" + tipoArquivo;
 		} else{
-			id = id+ "_" + S+ "_" + escolhaLider  + "_" + tipoRank;
+			pos_id = S+ "_" + escolhaLider  + "_" + tipoRank;
 		}
 		
-		String caminhoDir = null;
-						
-		if(!rank){
-			if(tipoArquivo.equals("")){
-				caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "_" + escolhaLider +"/" ;
-			} else{
-				caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + S + "_" + escolhaLider + "_" + tipoArquivo + "/" ;
-			}
-		}else{
-			caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" +S  + "_" + escolhaLider + "_" + tipoRank +"/" ;
+		if(alg.equals("imulti")){
+			String temp[] = escolhaLider.split(";");
+			escolhaLider = temp[0];
+			tipoArquivo = tipoArquivo.split(";")[0];
+			
+			if(reset)
+				pos_id = escolhaLider+ "_" + tipoArquivo + "_" + swarms + "_" + initialize + "_r";
+			else
+				pos_id = escolhaLider+ "_" + tipoArquivo + "_" + swarms + "_" + initialize;
 		}
+		
+		if(alg.equals("multi")){
+			tipoArquivo =  tipoArquivo.replace(';', '_');
+			escolhaLider = escolhaLider.split(";")[0];
+			pos_id = update + "_" + escolhaLider+ "_" + tipoArquivo + "_" + swarms + "_" + populacao;
+			
+		}
+		
+		String caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + pos_id +"/" ;
 		
 		File dir = new File(caminhoDir);
 		dir.mkdirs();
 		
+		String id = pre_id + "_" + pos_id;
+		
 		PrintStream psTempo =  new PrintStream(caminhoDir + id +"_texec.txt");
 		PrintStream psSolucaoGeral = new PrintStream(caminhoDir +id+"_solucoes.txt");
 		PrintStream psFronteiraGeral = new PrintStream(caminhoDir+id+ "_fronteira.txt");
+		
+		PrintStream psParameter =  new PrintStream(caminhoDir + id +"_parameters.txt");
+		
+		printParameters(psParameter, parameters);
 		
 		
 		maioresObjetivos = new double[m];
@@ -277,7 +291,7 @@ public class Principal {
 		
 		
 			
-		Spread spread = new Spread(m, caminhoDir, id);
+		Spacing spread = new Spacing(m, caminhoDir, id);
 		spread.preencherObjetivosMaxMin(maxmimObjetivos);
 		spread.calcularIndicadorArray(fronteiras);
 		
@@ -294,6 +308,10 @@ public class Principal {
 		LargestDistance ld = new LargestDistance(m, caminhoDir, id, pftrue);
 		ld.preencherObjetivosMaxMin(maxmimObjetivos);
 		ld.calcularIndicadorArray(fronteiras);
+		
+		Convergence con = new Convergence(m, caminhoDir, id, pftrue);
+		con.preencherObjetivosMaxMin(maxmimObjetivos);
+		con.calcularIndicadorArray(fronteiras);
 
 		double[] j =  problema.getJoelho(n, pftrue);
 		double[] l = problema.getLambda(n, pftrue);
@@ -302,9 +320,12 @@ public class Principal {
 		tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
 		tcheb.calcularTchebycheff(fronteiras);
 		
-		HistogramDTLZ2 hist = new HistogramDTLZ2(m, caminhoDir, id);
-		hist.preencherObjetivosMaxMin(maxmimObjetivos);
-		hist.generateHistogram(fronteiras);
+		if(prob.toUpperCase().equals("DTLZ2")){
+
+			HistogramDTLZ2 hist = new HistogramDTLZ2(m, caminhoDir, id);
+			hist.preencherObjetivosMaxMin(maxmimObjetivos);
+			hist.generateHistogram(fronteiras);
+		}
 
 		/*PontosNaFronteira pnf = new PontosNaFronteira(m, caminhoDir, idInd, pftrue);
 			pnf.preencherObjetivosMaxMin(maxmimObjetivos);
@@ -313,7 +334,22 @@ public class Principal {
 		NumeroPontos np = new NumeroPontos(m, caminhoDir, id);
 		np.preencherObjetivosMaxMin(maxmimObjetivos);
 		np.calcularIndicadorArray(fronteiras);
+		
+		Evaluations eval = new Evaluations(m, caminhoDir, id, problema);
+		eval.calcularIndicadorArray(fronteiras);
 
+	}
+
+
+	private void printParameters(PrintStream psParameters, String fileParameters) throws FileNotFoundException, IOException {
+		Reader reader = new FileReader(fileParameters);
+		BufferedReader buff = new BufferedReader(reader);
+		while(buff.ready()){
+			String linhaString = buff.readLine();
+			if(!linhaString.isEmpty()){
+				psParameters.println(linhaString);
+			}
+		}
 	}
 	
 	public void gerarSaida(ArrayList<Solucao> fronteira, PrintStream solGeral, PrintStream psFronteiraGeral, PrintStream solExecucao, PrintStream psFronteiraExec){
@@ -363,16 +399,18 @@ public class Principal {
 		ArrayList<PontoFronteira> pftrue= null;
 		double[] j = null;
 		double[] l = null;
-		if(indicador.equals("gd") || indicador.equals("igd") || indicador.equals("tcheb") || indicador.equals("pnf") || indicador.equals("all") ){
-
-			pftrue= carregarFronteiraPareto(System.getProperty("user.dir"), prob, m);
+		if(indicador.equals("gd") || indicador.equals("igd") || indicador.equals("tcheb") || indicador.equals("pnf") || indicador.equals("all") || indicador.equals("ld") || indicador.equals("con") ){
 			
-			j =  problema.getJoelho(n, pftrue);
-			l = problema.getLambda(n, pftrue);
-
+			if(problema == null)
+				pftrue= loadParetoFrontFile(true_pareto, m);
+			else{
+				pftrue= carregarFronteiraPareto(System.getProperty("user.dir"), prob, m);
+				j =  problema.getJoelho(n, pftrue);
+				l = problema.getLambda(n, pftrue);
+			}
 		}
 		
-		String indicators[] = {"gd", "igd", "spread"};
+		String indicators[] = {"gd", "igd", "spread","ld","con", "np"};
 		if(!indicador.equals("all")){
 			indicators = new String[1];
 			indicators[0] = indicador;
@@ -401,13 +439,20 @@ public class Principal {
 			if(indicador.equals("igd")){
 				ind = new IGD(m, caminhoDir, idExec, pftrue);
 			}
+			if(indicador.equals("ld")){
+				ind = new LargestDistance(m, caminhoDir, idExec, pftrue);
+			}
+			
+			if(indicador.equals("con")){
+				ind = new Convergence(m, caminhoDir, idExec, pftrue);
+			}
 
 			if(indicador.equals("tcheb"))
 				ind = new Tchebycheff(m, caminhoDir, idExec, j , l);
 
 
 			if(indicador.equals("spread"))
-				ind = new Spread(m, caminhoDir, idExec);
+				ind = new Spacing(m, caminhoDir, idExec);
 
 
 			if(indicador.equals("pnf"))
@@ -418,143 +463,44 @@ public class Principal {
 
 			if(ind!=null){
 				ind.preencherObjetivosMaxMin(maxmimObjetivos);
-				String frontFile = caminhoDir + "/" + front + ".txt";
+				String frontFile = caminhoDir + "/" + front + "_fronteira.txt";
+				//String frontFile = caminhoDir + "/" + front;
 				System.out.println("Indicador: " + ind.indicador);
 				ind.calcularIndicadorArquivo(frontFile);
 			}
 		}
 	}
 
-	public void executarIndicador3() throws IOException{
-		
-		if(alg1 == null){
-			System.err.println("Algoritmo para a execucao do indicador n�o foi definido (Tags alg1)");
-			System.exit(0);
-		}
-		
-		
-		String[] configuracoes = {"0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75"};
-		if(!alg1.equals("all")){
-			configuracoes = new String[1];
-			configuracoes[0] = alg1;
-		}
-		
-		ArrayList<PontoFronteira> pftrue= null;
-		double[] j = null;
-		double[] l = null;
-		if(indicador.equals("gd") || indicador.equals("igd") || indicador.equals("tcheb") || indicador.equals("pnf")){
-			
-			pftrue= carregarFronteiraPareto(System.getProperty("user.dir"), prob, m);
-			
-			j =  problema.getJoelho(n, pftrue);
-			l = problema.getLambda(n, pftrue);
 
-		}
-		
-		for (int i = 0; i < configuracoes.length; i++) {
-			alg1 = configuracoes[i];
-			String diretorio = dirExec;
-			if(diretorio.equals(""))
-				diretorio = System.getProperty("user.dir");
-
-			String caminhoDir = diretorio + "resultados/" + alg + "/" +prob + "/" + m + "/" + alg1 +"/";
-			File dir = new File(caminhoDir);
-			dir.mkdirs();
-
-			String idExec = alg + prob + "_" + m + alg1;
-			Indicador ind = null;
-			if(indicador.equals("gd")){
-					ind = new GD(m, caminhoDir, idExec, pftrue);
-			}
-			if(indicador.equals("igd")){
-						ind = new IGD(m, caminhoDir, idExec, pftrue);
-			}
-
-			if(indicador.equals("tcheb"))
-				ind = new Tchebycheff(m, caminhoDir, idExec, j , l);
-				
-		
-			if(indicador.equals("spread"))
-					ind = new Spread(m, caminhoDir, idExec);
-			
-			
-			if(indicador.equals("pnf"))
-				ind = new PontosNaFronteira(m, caminhoDir, idExec, pftrue);
-				
-			if(indicador.equals("np"))
-				ind = new NumeroPontos(m, caminhoDir, idExec);
-			
-			if(ind!=null){
-				ind.preencherObjetivosMaxMin(maxmimObjetivos);
-				String arquivo1 = caminhoDir + "/" + idExec  + "_fronteira.txt";
-				System.out.println("Indicador: " + ind.indicador);
-				System.out.println("S = " + alg1);
-				ind.calcularIndicadorArquivo(arquivo1);
-			}
-		}
-	}
-	
-	public void executarIndicador2() throws IOException{
-		
-		ArrayList<PontoFronteira> pftrue= null;
-		double[] j = null;
-		double[] l = null;
-		if(indicador.equals("gd") || indicador.equals("igd") || indicador.equals("tcheb") || indicador.equals("pnf")){
-
-			pftrue= carregarFronteiraPareto(System.getProperty("user.dir"), prob, m);
-			
-			if(indicador.equals("tcheb")){
-				j =  problema.getJoelho(n, pftrue);
-				l = problema.getLambda(n, pftrue);
-			}
-
-		}
-
-		String diretorio = dirExec;
-		if(diretorio.equals(""))
-			diretorio = System.getProperty("user.dir");
-
-		String caminhoDir = diretorio;
-		File dir = new File(caminhoDir);
-		dir.mkdirs();
-
-		String idExec = alg;
-		Indicador ind = null;
-		if(indicador.equals("gd")){
-			ind = new GD(m, caminhoDir, idExec, pftrue);
-		}
-		if(indicador.equals("igd")){
-			ind = new IGD(m, caminhoDir, idExec, pftrue);
-		}
-
-		if(indicador.equals("tcheb"))
-			ind = new Tchebycheff(m, caminhoDir, idExec, j , l);
-
-
-		if(indicador.equals("spread"))
-			ind = new Spread(m, caminhoDir, idExec);
-
-
-		if(indicador.equals("pnf"))
-			ind = new PontosNaFronteira(m, caminhoDir, idExec, pftrue);
-
-		if(indicador.equals("np"))
-			ind = new NumeroPontos(m, caminhoDir, idExec);
-
-		if(ind!=null){
-			ind.preencherObjetivosMaxMin(maxmimObjetivos);
-			String arquivo1 = caminhoDir + "/" + idExec  + "_fronteira.txt";
-			System.out.println("Indicador: " + ind.indicador);
-			System.out.println("Algorihtm = " + idExec);
-			ind.calcularIndicadorArquivo(arquivo1);
-		}
-	}
 
 	public static ArrayList<PontoFronteira> carregarFronteiraPareto(String dir, String problema, int objetivo){
 		ArrayList<PontoFronteira> pftrue = new ArrayList<PontoFronteira>();
 		try{
-			String arquivo = dir + "/pareto/" + problema + "_" + objetivo + "_pareto.txt";
+			String arquivo = dir + "/pareto/" + problema.toUpperCase() + "_" + objetivo + "_pareto.txt";
 			BufferedReader buff = new BufferedReader(new FileReader(arquivo));
+			while(buff.ready()){
+				String linha = buff.readLine().trim();
+				if(!linha.equals("")){
+					String[] linha_split = linha.split("\t");
+					double[] valores = new double[objetivo]; 
+					for (int i = 0; i < linha_split.length; i++) {
+						valores[i] = new Double(linha_split[i]);
+					}
+					PontoFronteira pf = new PontoFronteira(valores);
+					pftrue.add(pf);
+				}
+			}
+		}
+		catch(IOException ex){ex.printStackTrace();}
+		
+		return pftrue;
+		
+	}
+	
+	public static ArrayList<PontoFronteira> loadParetoFrontFile(String file, int objetivo){
+		ArrayList<PontoFronteira> pftrue = new ArrayList<PontoFronteira>();
+		try{
+			BufferedReader buff = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/pareto/" +file));
 			while(buff.ready()){
 				String linha = buff.readLine().trim();
 				if(!linha.equals("")){
@@ -644,6 +590,8 @@ public class Principal {
 				
 				if(tag.equals("front"))
 					front = valor;
+				if(tag.equals("true_pareto"))
+					true_pareto = valor;
 
 				if(tag.equals("numerocasosteste"))
 					numeroCasosTeste = new Integer(valor).intValue();
@@ -666,11 +614,11 @@ public class Principal {
 				if(tag.equals("fator"))
 					fator = new Double(valor).doubleValue();
 				
-				if(tag.equals("box_range_mim"))
-					box_range_mim = new Double(valor).doubleValue();
+				if(tag.equals("box_range_beg"))
+					box_range_beg = new Double(valor).doubleValue();
 				
-				if(tag.equals("box_range_max"))
-					box_range_max = new Double(valor).doubleValue();
+				if(tag.equals("box_range_end"))
+					box_range_end = new Double(valor).doubleValue();
 				
 				if(tag.equals("swarms"))
 					swarms = new Integer(valor).intValue();
@@ -716,6 +664,17 @@ public class Principal {
 						eval_analysis = true;
 					else
 						eval_analysis = false;
+				}
+				
+				if(tag.equals("reset")){
+					if(valor.equals("true"))
+						reset = true;
+					else
+						reset = false;
+				}
+				
+				if(tag.equals("initialize")){
+					initialize = valor;
 				}
 				
 				if(tag.equals("shared")){
@@ -769,7 +728,7 @@ public class Principal {
 					}
 				}
 				
-				if(tag.equals("poda")){
+				if(tag.equals("archiver")){
 					tipoArquivo = valor;
 					String tipos = "ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2";
 					if(!tipos.contains(tipoArquivo) && !valor.contains(";")){

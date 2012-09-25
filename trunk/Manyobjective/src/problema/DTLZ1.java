@@ -45,6 +45,43 @@ public class DTLZ1 extends Problema {
 		if(solucao.objetivos == null)
 		   solucao.objetivos = new double[m];
 		
+		double [] x = new double[n];
+	    double [] f = new double[m];
+	    int k = n - m + 1;
+	        
+	    for (int i = 0; i < n; i++)
+	      x[i] = solucao.getVariavel(i);
+	        
+	    double g = 0.0;
+	    for (int i = n - k; i < n; i++)
+	      g += (x[i] - 0.5)*(x[i] - 0.5) - Math.cos(20.0 * Math.PI * ( x[i] - 0.5));
+	        
+	    g = 100 * (k + g);        
+	    for (int i = 0; i < m; i++)
+	      f[i] = (1.0 + g) * 0.5;
+	        
+	    for (int i = 0; i < m; i++){
+	      for (int j = 0; j < m - (i + 1); j++)            
+	        f[i] *= x[j];                
+	        if (i != 0){
+	          int aux = m - (i + 1);
+	          f[i] *= 1 - x[aux];
+	        } //if
+	    }//for
+	        
+	    for (int i = 0; i < m; i++)
+	      solucao.objetivos[i] = f[i];
+	  
+		
+		avaliacoes++;
+		return solucao.objetivos;
+	}
+	
+	public double[] calcularObjetivos2(Solucao sol) {
+		SolucaoNumerica solucao = (SolucaoNumerica) sol;
+		if(solucao.objetivos == null)
+		   solucao.objetivos = new double[m];
+		
 		double g = g1(solucao.getVariaveis());
 		//System.out.println(g);
 
