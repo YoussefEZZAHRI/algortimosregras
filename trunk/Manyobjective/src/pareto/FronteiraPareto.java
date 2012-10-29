@@ -185,7 +185,7 @@ public class FronteiraPareto {
 				if(solucao.numDominadas>0)
 					front.add(solucao);
 				else{
-					if(front.size()==archiveSize)
+					if(front.size()>=archiveSize)
 						archiver.filter(front, solucao);
 					else
 						front.add(solucao);

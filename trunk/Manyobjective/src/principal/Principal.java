@@ -730,7 +730,7 @@ public class Principal {
 				
 				if(tag.equals("archiver")){
 					tipoArquivo = valor;
-					String tipos = "ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2";
+					String tipos = "ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2 hyper";
 					if(!tipos.contains(tipoArquivo) && !valor.contains(";")){
 						System.err.println("Tipo de arquivamento especificado nao existe");
 						System.err.println("Tipos: ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2");
