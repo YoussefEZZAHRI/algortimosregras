@@ -24,6 +24,7 @@ import archive.DistributedArchiver;
 import archive.DominatingArchive;
 import archive.EpsAPP;
 import archive.EpsAPS;
+import archive.HyperPlaneReferenceArchive;
 import archive.IdealArchiver;
 import archive.MGAArchiver;
 import archive.PreciseArchiver;
@@ -930,6 +931,9 @@ public abstract class AlgoritmoAprendizado {
 				archiver = new EpsAPP();
 			if(archiveType.equals("eaps"))
 				archiver = new EpsAPS();
+			
+			if(archiveType.equals("hyper"))
+				archiver = new HyperPlaneReferenceArchive(archiveSize);
 		}
 		
 	}
@@ -1167,6 +1171,150 @@ public abstract class AlgoritmoAprendizado {
 		
 	}
 	
+
+	
+	public static double[][] getReferencePointsHyperPlane(int m, int p, double[][] extremes){
+		int dimension=m; //m
+		int divisions=p;  //p
+		
+		double[] limInf, limSup;
+		
+		limInf = new double[dimension];
+		limSup = new double[dimension];
+		
+		for(int j = 0; j<dimension;j++){
+			limInf[j] = 0;
+			limSup[j] = 1;
+		}
+		
+		 
+		
+		int number_points = (int) combination((dimension+divisions-1), divisions);
+		
+		double base_points [][] = new double[number_points][dimension];
+		
+		double intervals[] = new double[dimension];
+		
+		for(int j = 0; j<dimension; j++)
+			intervals[j] = (limSup[j]-limInf[j])/(double) divisions;
+		
+		
+
+		
+		double solucaoAtual[] = new double[dimension];
+		double solucaoAnterior[] = new double[dimension];
+
+		double error=1-0.999999; //aceitar uma pequena margem de erro por falhas de arredondamento que impediam a geração de 100 ou mais pontos
+		
+		for(int j=0; j<dimension;j++){
+			solucaoAtual[j] = limInf[j];
+			solucaoAnterior[j] = limInf[j];
+		}
+		
+
+		int col;
+		float sumCol;
+		
+		int num_current_points = 0;
+		
+		
+		while(num_current_points<number_points){ //i - linha atual
+			for(int j=0;j<dimension;j++){ //j - coluna atual
+				if(j==dimension-1) //se essa coluna e a ultima, incrementa
+					solucaoAtual[j]=solucaoAnterior[j]+intervals[j];
+				else //se nao, repete
+					solucaoAtual[j]=solucaoAnterior[j];
+				if(j>0){ //se estourar e não for a primeira coluna
+					col=j;
+					while(col>0){
+						//if(solucaoAtual[col]>=1+margemErro){ //se estourou
+						if(solucaoAtual[col]>limSup[j]+error){ //se estourou
+							//solucaoAtual[col]=0;
+							solucaoAtual[col]=limInf[j];
+							solucaoAtual[col-1]=solucaoAnterior[col-1]+intervals[j];
+						}
+						col--;
+					}
+				}
+			}
+			sumCol=0;
+			
+			for(int j=0;j<dimension;j++){
+				sumCol+=solucaoAtual[j];
+			}
+			if(sumCol>1-error && sumCol<1+error){
+				double[] current_reference_point = new double[dimension];
+				
+				for(int j =0;j<dimension;j++){
+					current_reference_point[j] = solucaoAtual[j];
+				}
+				base_points[num_current_points++] = current_reference_point; 
+				
+			}
+
+			solucaoAnterior=solucaoAtual.clone();
+			
+			for(int j=0; j<dimension;j++){
+				solucaoAtual[j] = limInf[j];
+				
+			}
+		}
+		
+		for(int j = 0; j<dimension; j++){
+			limInf[j] = Double.MAX_VALUE;
+			limSup[j] = 0;
+			for(int i = 0; i<extremes.length;i++){
+				double[] extremes_i = extremes[i];
+				if(extremes_i[j]<limInf[j])
+					limInf[j] = extremes_i[j];
+				if(extremes_i[j]>limSup[j])			
+					limSup[j] = extremes_i[j];
+			}
+		}
+		
+		double reference_points[][] = new double[number_points][dimension];
+		
+		for(int i = 0; i<base_points.length; i++){
+			double[] base_point = base_points[i];
+			reference_points[i] = new double[dimension];
+			for(int j =0; j< dimension; j++){
+				double new_value = (limSup[j]-limInf[j])*base_point[j] + limInf[j];
+				reference_points[i][j] = new_value;
+				
+			}
+		}
+		return reference_points;
+	}
+	
+	public static double combination(int n, int p){
+		int fact_n = factorial(n);
+		int fact_p = factorial(p);
+		int fact_n_p = factorial(n-p);
+		return fact_n/(fact_p*fact_n_p);
+	}
+	
+	public static int factorial(int n){
+		if(n == 0)
+			return 1;
+		return n * factorial(n-1);
+	}
+	
+	public static void main(String[] args) {
+		int m = 3;
+		int p = 3;
+		
+		double[][] extremes = {{1,0,0}, {1, 0,0}, {1,0,0}};
+		
+		double[][] reference= AlgoritmoAprendizado.getReferencePointsHyperPlane(m,p,extremes);
+		for(int i = 0; i< reference.length; i++){
+			double reference_point[] = reference[i]; 
+			for(int j = 0; j<reference_point.length; j++)
+				System.out.print(reference_point[j] + "\t");
+			System.out.println();
+		}
+
+		
+	}
 
 	
 	

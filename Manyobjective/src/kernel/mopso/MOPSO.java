@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import archive.HyperPlaneReferenceArchive;
+
 import problema.Problema;
 import pareto.FronteiraPareto;
 import rank.AverageRank;
@@ -253,6 +255,12 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			//System.out.print(pareto.getFronteira().size() + " - ");
 			pareto.scdas(pareto.S);
 			//System.out.println(pareto.getFronteira().size());
+		}
+		
+		if(archiver.ID.equals("hyper")){
+			HyperPlaneReferenceArchive hyper = (HyperPlaneReferenceArchive) archiver;
+			
+			hyper.filterHyperplane(pareto.getFronteira(), obterSolucoesExtremasIdeais(pareto.getFronteira(), false, problema), problema.m);
 		}
 		
 		
