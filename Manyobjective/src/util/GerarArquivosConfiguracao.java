@@ -11,31 +11,31 @@ public class GerarArquivosConfiguracao {
 		
 		
 		
-		String jar = "multi.jar";
+		String jar = "ref.jar";
 
-		String problema  = "dtlz6";
+		String problema  = "dtlz2";
 	
 
 
 
 		//String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
 		String[] algs = {"0.5"};
-		String metodo = "imulti";
+		String metodo = "smopso";
 		String objetivos = "-";
-		String exec = "30";
+		String exec = "20";
 		String g = "100";
-		//String a = "385850";
-		String a = "-1";
+		String a = "50000";
+		//String a = "-1";
 		//String p[] = {"25", "50", "100", "200"};
-		String[] p = {"100"};
+		String[] p = {"200"};
 		String r = "200";
 		String rank = "false";
-		//String archiver = "mga";
-		String archiver = "mga;ideal";
+		String archiver = "ideal";
+		//String archiver = "mga;ideal";
 		String[] eps = {"0.1","0.05", "0.025", "0.01", "0.005", "0.0025", "0.001", "0.0005", "0.00025", "0.0001"  };
 		int k = 10;
-		String lider = "tb";
-		String  direxec = "/home/andre/doutorado/experimentos/multi/";
+		String lider = "NWSum";
+		String  direxec = "/home/andre/doutorado/experimentos/ref/";
 		//String[]  swarms = {"3","5","10", "20", "30"};
 		String[]  swarms = {"10"};
 		String shared = "false";
@@ -243,13 +243,13 @@ public class GerarArquivosConfiguracao {
 	public static void main(String[] args) {
 
 		//int[] ms = {3,5,10,20,30,50};
-		int[] ms = {5,10,20,30};		
+		int[] ms = {2,3,5,10,20};		
 	
 		
 		String ind = "";
 
 		try{
-			PrintStream psExec = new PrintStream("exec-imulti.txt");
+			PrintStream psExec = new PrintStream("exec-ref.txt");
 			for (int i = 0; i < ms.length; i++) {
 				
 				gerarArquivos(ms[i],ind, psExec);

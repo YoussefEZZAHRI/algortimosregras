@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 
+import archive.HyperPlaneReferenceArchive;
+
 
 import kernel.AlgoritmoAprendizado;
 import kernel.genetic.NSGA2;
@@ -178,6 +180,12 @@ public class Principal {
 			S = eps+"";
 		}
 		
+		if(tipoArquivo.equals("hyper")){
+			HyperPlaneReferenceArchive hyper_archiver = (HyperPlaneReferenceArchive) algoritmo.archiver;
+			S = hyper_archiver.reference_index+"";
+			
+		}
+		
 		String pos_id = null;
 		
 		if(!rank){
@@ -286,6 +294,7 @@ public class Principal {
 			
 			System.out.println("Tempo Execucao: " + ((double)(tfinal - tinicial)/1000) + " (s)");
 			System.out.println();
+			
 		}
 		
 		
@@ -337,6 +346,16 @@ public class Principal {
 		
 		Evaluations eval = new Evaluations(m, caminhoDir, id, problema);
 		eval.calcularIndicadorArray(fronteiras);
+		
+		if(tipoArquivo.equals("hyper")){
+			PrintStream psSolucaoHyper = new PrintStream(caminhoDir+id+"_reference.txt");
+			HyperPlaneReferenceArchive hyper_archiver = (HyperPlaneReferenceArchive) algoritmo.archiver;
+			for(int k = 0; k<m; k++){
+				psSolucaoHyper.print(hyper_archiver.reference_point[k] + "\t");
+			}
+			psSolucaoHyper.println();
+			
+		}
 
 	}
 

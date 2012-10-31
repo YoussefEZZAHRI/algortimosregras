@@ -257,11 +257,6 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			//System.out.println(pareto.getFronteira().size());
 		}
 		
-		if(archiver.ID.equals("hyper")){
-			HyperPlaneReferenceArchive hyper = (HyperPlaneReferenceArchive) archiver;
-			
-			hyper.filterHyperplane(pareto.getFronteira(), obterSolucoesExtremasIdeais(pareto.getFronteira(), false, problema), problema.m);
-		}
 		
 		
 		/*try{
