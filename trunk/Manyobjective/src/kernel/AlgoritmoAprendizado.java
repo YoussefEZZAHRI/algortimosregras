@@ -933,7 +933,7 @@ public abstract class AlgoritmoAprendizado {
 				archiver = new EpsAPS();
 			
 			if(archiveType.equals("hyper"))
-				archiver = new HyperPlaneReferenceArchive(archiveSize);
+				archiver = new HyperPlaneReferenceArchive(problema.m);
 		}
 		
 	}
