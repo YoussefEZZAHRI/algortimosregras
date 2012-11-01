@@ -25,6 +25,7 @@ import archive.DominatingArchive;
 import archive.EpsAPP;
 import archive.EpsAPS;
 import archive.HyperPlaneReferenceArchive;
+import archive.HyperPlaneReferenceArchiveRandom;
 import archive.IdealArchiver;
 import archive.MGAArchiver;
 import archive.PreciseArchiver;
@@ -934,6 +935,9 @@ public abstract class AlgoritmoAprendizado {
 			
 			if(archiveType.equals("hyper"))
 				archiver = new HyperPlaneReferenceArchive(problema.m);
+			
+			if(archiveType.equals("hyp_r"))
+				archiver = new HyperPlaneReferenceArchiveRandom(problema.m);
 		}
 		
 	}

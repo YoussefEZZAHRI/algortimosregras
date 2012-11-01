@@ -353,6 +353,8 @@ public class PrepararArquivos {
 		
 		File diretorio = new File(caminhoDirExec);
 		diretorio.mkdirs();
+		
+		System.out.println(metodo[0] + problema + "_"+ ind + "_" + idMetodo + "_indicadores_all.txt");
 
 		
 		PrintStream psSaida = new PrintStream(caminhoDirExec + metodo[0] + problema + "_"+ ind + "_" + idMetodo + "_indicadores_all.txt");
@@ -656,39 +658,39 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 		PrepararArquivos pre = new PrepararArquivos();
 
 		//String dir = "/home/andre/gemini/doutorado/experimentos/poda/";		
-		String dirEntrada = "/home/andrebia/gemini/doutorado/experimentos/multi/";
-		String dirSaida = "/media/Dados/Andre/multi/";
+		String dirEntrada = "/home/andrebia/gemini/doutorado/experimentos/ref/";
+		String dirSaida = "/media/dados/Andre/ref/";
 		//String dir2 = "/home/andre/gemini/doutorado/experimentos/poda/";
 		//int objetivo = 2;
 		String problema  = "DTLZ2";
-		String lider = "tb";
+		String lider = "NWSum";
 		
 		//String[] algs = {"tb_mga_3_ctd","tb_mga_5_ctd","tb_mga_10_ctd","tb_mga_20_ctd", "tb_mga_30_ctd", "tb_mga_3_ctd_r","tb_mga_5_ctd_r","tb_mga_10_ctd_r","tb_mga_20_ctd_r", "tb_mga_30_ctd_r"};
 		//String[] algs = {"tb_mga_3_ext","tb_mga_5_ext","tb_mga_10_ext", "tb_mga_30_ext"};
 		//String[] algs = {"0.5_tb_ideal","0.5_tb_mga"};
-		String[] algs = {"tb_mga_30_ext","tb_mga_30_ctd","tb_mga_30_rnd","0.5_tb_ideal","0.5_tb_mga"};
+		String[] algs = {"0.5_NWSum_ideal","64_NWSum_hyper","194_NWSum_hyper"};
 		//String metodo[] = {"imulti","imulti","imulti","imulti"};
-		String metodo[] = {"imulti","imulti","imulti","smopso","smopso"};
+		String metodo[] = {"smopso","smopso","smopso"};
 		//String metodo = "smopso";
 		
 		
 		//int objs[] = {3,5,10,15,20,30};
-		int objs[] = {3,5,10,20,30};
-		int exec = 30;
+		int objs[] = {20};
+		int exec = 20;
 
 		try{
 
 			
 			
-			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "gd", objs, algs,lider);
-			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "igd", objs, algs,lider);
-			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "spread", objs, algs,lider);
-			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "ld", objs, algs,lider);
+			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "gd", objs, algs,lider);
+			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "igd", objs, algs,lider);
+			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "spacing", objs, algs,lider);
+			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "ld", objs, algs,lider);
 			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "con", objs, algs,lider);
 			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "eval", objs, algs,lider);
 			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "tcheb", objs, algs,lider);
 			
-			for (int i = 0; i < objs.length; i++) {
+			/*for (int i = 0; i < objs.length; i++) {
 				System.out.println(objs[i]);
 				
 				//pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "gd");
@@ -698,7 +700,7 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 				pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "con");
 				//pre.gerarComando(dirEntrada, dirSaida, problema, objs[i], algs, exec, metodo, "hypervolume");
 				//pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "hypervolume");
-			}
+			}*/
 			
 			
 
