@@ -18,15 +18,28 @@ public class Dominance extends Indicador {
 	public String idExec1;
 	public String idExec2;
 	
+
+	public boolean mesma_linha = false;
+	
+
 	public Dominance(int m){
 		super(m,"","");
 	}
 	
+
 	public Dominance(int m, String caminho, String idExec1, String idExec2){
 		super(m, caminho, "");
-		indicador = "dominance";
+		indicador = "cover";
 		this.idExec1 = idExec1;
 		this.idExec2 = idExec2;
+	}
+	
+	public Dominance(int m, String caminho, String idExec1, String idExec2, boolean ml){
+		super(m, caminho, "");
+		indicador = "cover";
+		this.idExec1 = idExec1;
+		this.idExec2 = idExec2;
+		mesma_linha = ml;
 	}
 
 	@Override
@@ -36,17 +49,17 @@ public class Dominance extends Indicador {
 	}
 	
 	/**
-	 * Método que calcula dominância entre as duas fronteiras
+	 * Mï¿½todo que calcula dominï¿½ncia entre as duas fronteiras
 	 * @param fronteira1 Primeira fronteira
 	 * @param fronteira2 Segunda fronteira
 	 * @return
 	 */
-	public double[] calcular(ArrayList<PontoFronteira> fronteira1, ArrayList<PontoFronteira> fronteira2) {
+	public double calcular(ArrayList<PontoFronteira> fronteira1, ArrayList<PontoFronteira> fronteira2) {
 		if(objetivosMaxMin == null){
-			System.err.println("Erro: Não foi definido se cada objetivo é de maximização ou minimização (Executar Método preencherObjetivosMaxMin)");
+			System.err.println("Erro: Nï¿½o foi definido se cada objetivo ï¿½ de maximizaï¿½ï¿½o ou minimizaï¿½ï¿½o (Executar Mï¿½todo preencherObjetivosMaxMin)");
 			System.exit(0);
 		}
-		double dominacao[] = new double[2];
+		double dominacao = 0;
 		for (Iterator<PontoFronteira> iterator = fronteira1.iterator(); iterator.hasNext();) {
 			PontoFronteira pontoFronteira1 = (PontoFronteira) iterator.next();
 			for (Iterator<PontoFronteira> iterator2 = fronteira2.iterator(); iterator2
@@ -54,10 +67,11 @@ public class Dominance extends Indicador {
 				PontoFronteira pontoFronteira2 = (PontoFronteira) iterator2
 						.next();
 				int dom = compararMedidas(pontoFronteira1.objetivos, pontoFronteira2.objetivos);
-				if(dom == 1)
-					dominacao[0]++;
-				if(dom == -1)
-					dominacao[1]++;
+				if(dom == 1){
+					dominacao++;
+					break;
+				}
+				
 			}
 		}
 		return dominacao;	
@@ -65,7 +79,7 @@ public class Dominance extends Indicador {
 	
 	public double[] calcular2(ArrayList<Solucao> fronteira1, ArrayList<Solucao> fronteira2) {
 		if(objetivosMaxMin == null){
-			System.err.println("Erro: Não foi definido se cada objetivo é de maximização ou minimização (Executar Método preencherObjetivosMaxMin)");
+			System.err.println("Erro: Nï¿½o foi definido se cada objetivo ï¿½ de maximizaï¿½ï¿½o ou minimizaï¿½ï¿½o (Executar Mï¿½todo preencherObjetivosMaxMin)");
 			System.exit(0);
 		}
 		double dominacao[] = new double[2];
@@ -86,7 +100,7 @@ public class Dominance extends Indicador {
 	}
 	
 	/**
-	 * Método que calcula o ranking de dominacia entre dois conjuntos de fronteiras
+	 * Mï¿½todo que calcula o ranking de dominacia entre dois conjuntos de fronteiras
 	 * @param nomeArquivo1 Fronteira 1
 	 * @param nomeArquivo2 Fronteira 2
 	 * @throws IOException
@@ -118,14 +132,24 @@ public class Dominance extends Indicador {
 			ArrayList<PontoFronteira> fronteira1 = (ArrayList<PontoFronteira>) fronteiras1.get(i);
 			for (int j = 0; j< fronteiras2.size(); j++) {
 				ArrayList<PontoFronteira> fronteira2 = (ArrayList<PontoFronteira>) fronteiras2.get(j);
-				
-				double[] ranking = calcular(fronteira1, fronteira2);
-				
-				comando1.append(ranking[0] + ",");
-				psIndGeralF1.println(ranking[0]);
-				
-				comando2.append(ranking[1] + ",");
-				psIndGeralF2.println(ranking[1]);
+
+				if(!mesma_linha || i == j){
+
+					double ranking1 = calcular(fronteira1, fronteira2);
+					double ranking2 = calcular(fronteira2, fronteira1);
+
+					double rank1 = ranking1/(fronteira1.size());
+					double rank2 = ranking2/(fronteira2.size());
+
+					comando1.append(rank1 + ",");
+					psIndGeralF1.println(rank1);
+
+
+					comando2.append(rank2 + ",");
+					psIndGeralF2.println(rank2);
+
+					System.out.println(rank1 + "\t" + rank2);
+				}
 			}
 			
 		}
