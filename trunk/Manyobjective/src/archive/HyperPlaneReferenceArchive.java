@@ -26,6 +26,7 @@ public class HyperPlaneReferenceArchive extends PreciseArchiver {
 		this.m = m;
 		loadReferencePoints(m);
 		selectRandomReferencePoint();
+		System.out.println("Reference Index: " + reference_index);
 		System.out.print("Reference Point:");
 		for(int i = 0; i<m; i++){
 			System.out.print("\t" + reference_point[i]);

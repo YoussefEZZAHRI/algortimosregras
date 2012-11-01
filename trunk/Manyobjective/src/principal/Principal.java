@@ -326,6 +326,8 @@ public class Principal {
 		double[] j =  problema.getJoelho(n, pftrue);
 		double[] l = problema.getLambda(n, pftrue);
 		
+		//double[] j = {0.0,0.0,0.666,0.0,0.333};
+		
 		Tchebycheff tcheb = new Tchebycheff(m, caminhoDir, id, j , l);
 		tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
 		tcheb.calcularTchebycheff(fronteiras);
@@ -355,6 +357,11 @@ public class Principal {
 				psSolucaoHyper.print(hyper_archiver.reference_point[k] + "\t");
 			}
 			psSolucaoHyper.println();
+			
+			
+			Tchebycheff tcheb_hyp = new Tchebycheff(m, caminhoDir, id, hyper_archiver.reference_point , l);
+			tcheb_hyp.preencherObjetivosMaxMin(maxmimObjetivos);
+			tcheb_hyp.calcularTchebycheff(fronteiras);
 			
 		}
 
