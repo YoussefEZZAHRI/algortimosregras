@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import archive.HyperPlaneReferenceArchiveRandom;
+
 
 import pareto.FronteiraPareto;
 import problema.Problema;
@@ -72,6 +74,11 @@ public class SMPSO extends MOPSO{
 			//if(i>exploiting && !escolherLider.id.equals("exploiting"))
 				//escolherLider = new EscolherExploiting(problema.m);
 			lacoEvolutivo();
+			
+			if(archiver.ID.equals("hyp_r")){
+				HyperPlaneReferenceArchiveRandom h = (HyperPlaneReferenceArchiveRandom) archiver;
+				h.changeReferencePoint(i);
+			}
 			
 			/*Calculo do GD para cada iteracao
 			 * ArrayList<PontoFronteira> pf_i = new ArrayList<PontoFronteira>();
