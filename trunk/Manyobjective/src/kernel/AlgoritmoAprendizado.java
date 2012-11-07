@@ -933,8 +933,14 @@ public abstract class AlgoritmoAprendizado {
 			if(archiveType.equals("eaps"))
 				archiver = new EpsAPS();
 			
-			if(archiveType.equals("hyper"))
-				archiver = new HyperPlaneReferenceArchive(problema.m);
+			if(archiveType.equals("hyp_a"))
+				archiver = new HyperPlaneReferenceArchive(problema.m, HyperPlaneReferenceArchive.ALL);
+			if(archiveType.equals("hyp_ed"))
+				archiver = new HyperPlaneReferenceArchive(problema.m, HyperPlaneReferenceArchive.EDGE);
+			if(archiveType.equals("hyp_m"))
+				archiver = new HyperPlaneReferenceArchive(problema.m, HyperPlaneReferenceArchive.MIDDLE);
+			if(archiveType.equals("hyp_ex"))
+				archiver = new HyperPlaneReferenceArchive(problema.m, HyperPlaneReferenceArchive.EXTREME);
 			
 			if(archiveType.equals("hyp_r"))
 				archiver = new HyperPlaneReferenceArchiveRandom(problema.m);
