@@ -1,6 +1,7 @@
 package principal;
 
 import indicadores.Convergence;
+import indicadores.DistributionReferencePoint;
 import indicadores.Dominance;
 import indicadores.Evaluations;
 import indicadores.GD;
@@ -181,11 +182,10 @@ public class Principal {
 			S = eps+"";
 		}
 		
-		if(tipoArquivo.equals("hyper")){
+		/*if(tipoArquivo.equals("hyper")){
 			HyperPlaneReferenceArchive hyper_archiver = (HyperPlaneReferenceArchive) algoritmo.archiver;
 			S = hyper_archiver.reference_index+"";
-			
-		}
+		}*/
 		
 		String pos_id = null;
 		
@@ -332,6 +332,8 @@ public class Principal {
 		tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
 		tcheb.calcularTchebycheff(fronteiras);
 		
+		
+		
 		if(prob.toUpperCase().equals("DTLZ2")){
 
 			HistogramDTLZ2 hist = new HistogramDTLZ2(m, caminhoDir, id);
@@ -350,7 +352,7 @@ public class Principal {
 		Evaluations eval = new Evaluations(m, caminhoDir, id, problema);
 		eval.calcularIndicadorArray(fronteiras);
 		
-		if(tipoArquivo.equals("hyper")){
+		if(tipoArquivo.substring(0,3).equals("hyp")){
 			PrintStream psSolucaoHyper = new PrintStream(caminhoDir+id+"_reference.txt");
 			HyperPlaneReferenceArchive hyper_archiver = (HyperPlaneReferenceArchive) algoritmo.archiver;
 			for(int k = 0; k<m; k++){
@@ -362,6 +364,10 @@ public class Principal {
 			Tchebycheff tcheb_hyp = new Tchebycheff(m, caminhoDir, id, hyper_archiver.reference_point , l);
 			tcheb_hyp.preencherObjetivosMaxMin(maxmimObjetivos);
 			tcheb_hyp.calcularTchebycheff(fronteiras);
+			
+			DistributionReferencePoint dist = new DistributionReferencePoint(m, caminhoDir, id, hyper_archiver.reference_point);
+			dist.preencherObjetivosMaxMin(maxmimObjetivos);
+			dist.calcularDistribution(fronteiras);
 			
 		}
 
@@ -819,12 +825,12 @@ public class Principal {
 				
 				if(tag.equals("archiver")){
 					tipoArquivo = valor;
-					String tipos = "ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2 hyper hyp_r";
+					/*String tipos = "ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2 hyper hyp_r";
 					if(!tipos.contains(tipoArquivo) && !valor.contains(";")){
 						System.err.println("Tipo de arquivamento especificado nao existe");
 						System.err.println("Tipos: ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2");
 						System.exit(0);
-					}
+					}*/
 
 				}
 			

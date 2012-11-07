@@ -16,27 +16,60 @@ import solucao.Solucao;
 
 public class HyperPlaneReferenceArchive extends PreciseArchiver {
 	
+	public final static int ALL = 0;
+	public final static int EDGE = 1;
+	public final static int MIDDLE = 2;
+	public final static int EXTREME = 3;
+	
+	public final static double MAX_OBJ_VALUE = 0.6;
+	
 	public int m;
 	public double[][] reference_points = null;
 	public int reference_index = -1;
 	public double[] reference_point = null;
 
-	public HyperPlaneReferenceArchive(int m) {
-		ID = "hyper";
+	public HyperPlaneReferenceArchive(int m, int region) {
+		
 		this.m = m;
 		loadReferencePoints(m);
-		selectRandomReferencePoint();
+		
+		if(region==ALL){
+			selectRandomReferencePoint(reference_points);
+			ID = "hyp_a";
+		}
+		if(region==EDGE){
+			selectRandomReferencePoint(pointsOnEdge());
+			ID = "hyp_ed";
+		}
+		if(region==MIDDLE){
+			selectRandomReferencePoint(pointsOnMiddle());
+			ID = "hyp_m";
+		}
+		
+		if(region==EXTREME){
+			int random_extreme = (int)(Math.random()*m);
+			ID = "hyp_ex";
+			if(m<8)
+				selectRandomReferencePoint(pointsNearExtreme(random_extreme, 0.5));
+			else
+				selectRandomReferencePoint(pointsNearExtreme(random_extreme, 0.9));
+		}
+		
+		
+		
+		
 		System.out.println("Reference Index: " + reference_index);
 		System.out.print("Reference Point:");
+		
+		
 		for(int i = 0; i<m; i++){
 			System.out.print("\t" + reference_point[i]);
 		}
 		System.out.println();
-
 	}
 	
-	//Removes the solutio with worst distance to the reference point
-	public void filter(ArrayList<Solucao> front, Solucao new_solution) {
+	//Removes the solution with worst distance to the reference point
+	public void filter(ArrayList<Solucao> front, Solucao new_solution) {	
 		
 		front.add( new_solution);
 		
@@ -100,12 +133,143 @@ public class HyperPlaneReferenceArchive extends PreciseArchiver {
 		} catch(IOException ex){ex.printStackTrace();}
 	}
 	
-	public void selectRandomReferencePoint(){
-		reference_index =  (int) (Math.random()*reference_points.length);;
+	public void selectRandomReferencePoint(double[][] reference_points){
+		reference_index =  (int) (Math.random()*reference_points.length);
 		reference_point = reference_points[reference_index];
 	}
 	
+	/**
+	 * Returns only the points that belongs to the edges of the hyperplane
+	 * @return
+	 */
+	public double[][] pointsOnEdge(){
+		ArrayList<double[]> edgePoints = new ArrayList<double[]>();
+		for(int i = 0;i<reference_points.length;i++){
+			double[] point = reference_points[i];
+			int cont = 0;
+			for(int j=0; j<point.length;j++){
+				if(point[j]==0)
+					cont++;
+				if(cont>0)
+					break;
+			}
+			
+			if(cont > 0)
+				edgePoints.add(point);
+		}
+		
+		System.out.println(edgePoints.size());
+		
+		/*try{
+		PrintStream edge = new PrintStream("edge.txt"); 
+		for (Iterator iterator = edgePoints.iterator(); iterator.hasNext();) {
+			double[] ds = (double[]) iterator.next();
+			for(int i = 0; i< ds.length;i++)
+				edge.print(ds[i] + "\t");
+			edge.println();
+		}
+		
+		}catch(IOException ex){ex.printStackTrace();}*/
+		
+		double edgePoints_double[][] = new double[edgePoints.size()][m];
+		int i = 0;
+		for (Iterator<double[]> iterator = edgePoints.iterator(); iterator.hasNext();) {
+			double[] ds = iterator.next();
+			edgePoints_double[i++] = ds;
+		}
+		return edgePoints_double;
+	}
 	
+	/**
+	 * Returns only the points in the middle of the Hyperplane.
+	 * Points not on the edges and with no more than 0.6 of objective value
+	 * @return
+	 */
+	public double[][] pointsOnMiddle(){
+		ArrayList<double[]> middlePoints = new ArrayList<double[]>();
+		for(int i = 0;i<reference_points.length;i++){
+			double[] point = reference_points[i];
+			int cont = 0;
+			int cont2 = 0;
+			for(int j=0; j<point.length;j++){
+				if(point[j]==0)
+					cont++;
+				if(point[j]>MAX_OBJ_VALUE)
+					cont2++;
+				
+				if(cont>0)
+					break;
+				if(cont2>0)
+					break;
+			}
+			
+			if(cont == 0 && cont2==0){
+				middlePoints.add(point);
+			}
+		}
+		
+		System.out.println(middlePoints.size());
+		
+		/*try{
+		PrintStream edge = new PrintStream("/home/andrebia/middle.txt"); 
+		for (Iterator iterator = middlePoints.iterator(); iterator.hasNext();) {
+			double[] ds = (double[]) iterator.next();
+			for(int i = 0; i< ds.length;i++)
+				edge.print(ds[i] + "\t");
+			edge.println();
+		}
+		
+		}catch(IOException ex){ex.printStackTrace();}*/
+		
+		double middlePoints_double[][] = new double[middlePoints.size()][m];
+		int i = 0;
+		for (Iterator<double[]> iterator = middlePoints.iterator(); iterator.hasNext();) {
+			double[] ds = iterator.next();
+			middlePoints_double[i++] = ds;
+		}
+		return middlePoints_double;
+	}
+	
+	/**
+	 * Return the points if max_dist from the extremen point of index "index"
+	 * @param index Index of the extreme point
+	 * @param max_dist maximum distance
+	 * @return
+	 */
+	public double[][] pointsNearExtreme(int index, double max_dist ){
+		
+		double extremePoint[] = new double[m];
+		
+		extremePoint[index] = 1;
+		
+		ArrayList<double[]> points_near = new ArrayList<double[]>();
+		
+		for(int i = 0;i<reference_points.length;i++){
+			double[] point = reference_points[i];
+			double dist = AlgoritmoAprendizado.distanciaEuclidiana(point, extremePoint);
+			if(dist<max_dist)
+				points_near.add(point);
+		}
+		
+		System.out.println(points_near.size());
+		
+		/*try{
+			PrintStream edge = new PrintStream("/home/andrebia/near.txt"); 
+			for (Iterator iterator = points_near.iterator(); iterator.hasNext();) {
+				double[] ds = (double[]) iterator.next();
+				for(int i = 0; i< ds.length;i++)
+					edge.print(ds[i] + "\t");
+				edge.println();
+			}
+		}catch(IOException ex){ex.printStackTrace();}*/
+		double nearPoints_double[][] = new double[points_near.size()][m];
+		int i = 0;
+		for (Iterator<double[]> iterator = points_near.iterator(); iterator.hasNext();) {
+			double[] ds = iterator.next();
+			nearPoints_double[i++] = ds;
+		}
+		return nearPoints_double;
+	}
 	
 	/**
 	 * Removes from the archive the solutions in the most crowded regions of the hyperplane

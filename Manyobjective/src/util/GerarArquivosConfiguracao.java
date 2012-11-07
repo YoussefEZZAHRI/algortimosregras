@@ -30,7 +30,7 @@ public class GerarArquivosConfiguracao {
 		String[] p = {"200"};
 		String r = "200";
 		String rank = "false";
-		String archiver = "hyper";
+		String archiver = "ideal";
 		//String archiver = "mga;ideal";
 		String[] eps = {"0.1","0.05", "0.025", "0.01", "0.005", "0.0025", "0.001", "0.0005", "0.00025", "0.0001"  };
 		int k = 10;
@@ -243,7 +243,7 @@ public class GerarArquivosConfiguracao {
 	public static void main(String[] args) {
 
 		//int[] ms = {3,5,10,20,30,50};
-		int[] ms = {2,3,5,10,20};		
+		int[] ms = {3,5,10,15,20};		
 	
 		
 		String ind = "";
