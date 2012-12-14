@@ -175,9 +175,30 @@ public class IteratedMultiSwarm extends AlgoritmoAprendizado {
 				comunication.println(com++ + "\t" + problema.avaliacoes);
 				System.out.println(box_range);
 				
+				PrintStream psTemp = new PrintStream("solucoes.txt");
+				for (Iterator iterator = initial_front.iterator(); iterator
+						.hasNext();) {
+					SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+					for(int i = 0; i<problema.n; i++)
+						psTemp.print(new Double(solucao.getVariavel(i)).toString().replace('.', ',') + "\t");
+					psTemp.println();
+				}
+				
 				
 				if(initialize.equals("ctd")){
 					ArrayList<double[]> centroids = clustering(initial_front, AlgoritmoAprendizado.PARAMETER_SPACE,swarms.length, groups);
+					
+					PrintStream psCen = new PrintStream("centroids.txt");
+					for (Iterator iterator = centroids.iterator(); iterator
+							.hasNext();) {
+						double[] ds = (double[]) iterator.next();
+						for (int i = 0; i < ds.length; i++) {
+							double d = ds[i];
+							psCen.print(new Double(d).toString().replace('.', ',')  + "\t");
+						}
+						psCen.println();
+					}
+					
 					initializeSwarms(centroids, groups, initial_front);
 				}
 				if(initialize.equals("rnd"))
