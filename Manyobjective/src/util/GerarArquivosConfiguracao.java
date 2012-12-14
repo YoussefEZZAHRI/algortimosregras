@@ -13,7 +13,7 @@ public class GerarArquivosConfiguracao {
 		
 		String jar = "ref.jar";
 
-		String problema  = "dtlz2";
+		String problema  = "dtlz4";
 	
 
 
@@ -30,7 +30,7 @@ public class GerarArquivosConfiguracao {
 		String[] p = {"200"};
 		String r = "200";
 		String rank = "false";
-		String archiver = "mga";
+		String archiver[] = {"hyp_m", "hyp_ex", "ideal", "dist", "eucli", "tcheb", "ar", "crowd", "rand", "ag", "dom", "mga"};
 		//String archiver = "mga;ideal";
 		String[] eps = {"0.1","0.05", "0.025", "0.01", "0.005", "0.0025", "0.001", "0.0005", "0.00025", "0.0001"  };
 		int k = 10;
@@ -65,7 +65,7 @@ public class GerarArquivosConfiguracao {
 						String res = reset[l];
 
 						String[] liderTemp = lider.split(";");
-						String[] archiveTemp = archiver.split(";");
+						String[] archiveTemp = archiver[0].split(";");
 						String arquivo = "";
 						String id = "";
 						String pos_id = "";
@@ -115,7 +115,7 @@ public class GerarArquivosConfiguracao {
 						ps.println("numexec = " + exec);
 						ps.println("S =" + algs[0]);
 						ps.println("rank = false");
-						ps.println("archiver = " + archiver);				
+						ps.println("archiver = " + archiver[0]);				
 						ps.println("lider = " + lider);	
 						ps.println("swarms = " + sw);
 						ps.println("box_range_mim = " + box_range_beg);	
@@ -143,7 +143,7 @@ public class GerarArquivosConfiguracao {
 						String pop = p[l];
 						String[] liderTemp = lider.split(";");
 
-						String arquivo =  "arquivosMulti/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ up +"_" +  liderTemp[0]  + "_" +  archiver.replace(';', '_')+ "_" + sw + "_"+ pop +".txt";
+						String arquivo =  "arquivosMulti/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ up +"_" +  liderTemp[0]  + "_" +  archiver[0].replace(';', '_')+ "_" + sw + "_"+ pop +".txt";
 						PrintStream ps = new PrintStream(arquivo);
 
 						ps.println("algoritmo = " + metodo);
@@ -158,7 +158,7 @@ public class GerarArquivosConfiguracao {
 						ps.println("numexec = " + exec);
 						ps.println("S =" + algs[0]);
 						ps.println("rank = false");
-						ps.println("archiver = " + archiver);				
+						ps.println("archiver = " + archiver[0]);				
 						ps.println("lider = " + lider);	
 						ps.println("swarms = " + sw);
 						ps.println("shared = " + shared);
@@ -174,12 +174,12 @@ public class GerarArquivosConfiguracao {
 		
 		
 		
-		if(archiver.equals("eaps") || archiver.equals("eapp")){
+		if(archiver[0].equals("eaps") || archiver[0].equals("eapp")){
 			for (int i = 0; i < eps.length; i++) {
 				String e = eps[i];
 				String arquivo = "";
 				if(ind.equals(""))
-					arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ e  + "_" +  lider+ "_" + archiver + ".txt";
+					arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ e  + "_" +  lider+ "_" + archiver[0] + ".txt";
 				PrintStream ps = new PrintStream(arquivo);
 
 				ps.println("algoritmo = " + metodo);
@@ -195,15 +195,18 @@ public class GerarArquivosConfiguracao {
 				ps.println("numexec = " + exec);
 				ps.println("S = 0.5");
 				ps.println("rank = false");
-				ps.println("archiver = " + archiver);				
+				ps.println("archiver = " + archiver[0]);				
 				ps.println("lider = " + lider);	
 			}
 		} else {
 			if(metodo.equals("smopso")){ 
 				for (int i = 0; i < algs.length; i++) {
+					for (int j = 0; j < archiver.length; j++) {
+						
+					String archiver_j = archiver[j];
 					String s = algs[i];
 					String arquivo = "";
-					String pos_id  = m + "_"+s + "_" +  lider +"_" + archiver;
+					String pos_id  = m + "_"+s + "_" +  lider +"_" + archiver_j;
 					String id = "principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ pos_id;;
 					if(ind.equals("")){
 						arquivo = "arquivos/" + id +".txt";
@@ -229,9 +232,10 @@ public class GerarArquivosConfiguracao {
 					ps.println("numexec = " + exec);
 					ps.println("S = " + s);
 					ps.println("rank = " + rank);
-					ps.println("archiver = " + archiver);				
+					ps.println("archiver = " + archiver_j);				
 					ps.println("lider = " + lider);			
 					ps.println("direxec =  " + direxec);
+				}
 				}
 			}
 		}
@@ -247,12 +251,12 @@ public class GerarArquivosConfiguracao {
 		try{
 			PrintStream psExec = new PrintStream("exec-arq.txt");
 			for (int i = 0; i < ms.length; i++) {
-				
+				System.out.println(ms[i]);
 				gerarArquivos(ms[i],ind, psExec);
 			}
 			
 
-		} catch (Exception e) {
+		} catch (Exception e) { e.printStackTrace();
 		}
 	}
 
