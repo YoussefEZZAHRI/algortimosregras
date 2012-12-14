@@ -18,7 +18,7 @@ public class CrowdingDistanceArchiver extends PreciseArchiver {
 	}
 
 	/**
-	 * Removes the solution with wrost Crowding Distance
+	 * Removes the solution with worst Crowding Distance
 	 */
 	public void filter(ArrayList<Solucao> front, Solucao new_solution) {
 		
@@ -27,7 +27,17 @@ public class CrowdingDistanceArchiver extends PreciseArchiver {
 
 		AlgoritmoAprendizado.calcularCrowdingDistance(front, m);
 
-		double highCDValue = 0;
+		double highCDValue = Double.MAX_VALUE;
+		int index = -1;
+		for (int i = 0; i<front.size(); i++) {
+			Solucao solucao = front.get(i);
+			if(solucao.crowdDistance < highCDValue){
+				highCDValue = solucao.crowdDistance;
+				index = i;
+			}
+		}
+		
+		/*double highCDValue = 0;
 		int index = -1;
 		for (int i = 0; i<front.size(); i++) {
 			Solucao solucao = front.get(i);
@@ -37,7 +47,7 @@ public class CrowdingDistanceArchiver extends PreciseArchiver {
 			}
 		}
 
-		front.remove(index);
+		front.remove(index);*/
 
 		
 	}

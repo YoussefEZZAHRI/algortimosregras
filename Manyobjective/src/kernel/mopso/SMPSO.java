@@ -3,6 +3,9 @@ package kernel.mopso;
 
 
 
+
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -13,6 +16,8 @@ import archive.HyperPlaneReferenceArchiveRandom;
 import pareto.FronteiraPareto;
 import problema.Problema;
 import solucao.Solucao;
+import solucao.SolucaoNumerica;
+
 
 
 /**
@@ -119,6 +124,39 @@ public class SMPSO extends MOPSO{
 		if(eval_analysis)
 			evaluationAnalysis(pareto.getFronteira());
 		
+
+		// Imprimir populacao e fronteira
+		try{
+
+			PrintStream psPopulacao = new PrintStream("populacao.txt");
+
+			for (Iterator iterator = populacao.iterator(); iterator.hasNext();) {
+				Particula particula = (Particula) iterator.next();
+
+				for(int i = 0; i<problema.m; i++){
+					psPopulacao.print(particula.solucao.objetivos[i] + "\t");
+				}
+
+				psPopulacao.println();
+
+			}
+
+
+			PrintStream psFronteira = new PrintStream("fronteira.txt");
+
+			for (Iterator iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
+				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
+
+				for(int i = 0; i<problema.m; i++){
+					psFronteira.print(solucao.objetivos[i] + "\t");
+				}
+
+				psFronteira.println();
+
+			}
+
+		} catch(IOException ex){ex.printStackTrace();}
+		
 		return pareto.getFronteira();
 		
 	}
@@ -169,6 +207,8 @@ public class SMPSO extends MOPSO{
 		for (Iterator<Particula> iter = populacao.iterator(); iter.hasNext();) {
 			Particula particula = (Particula) iter.next();
 			//Calcula a nova velocidade
+			
+			//particula.calcularNovaVelocidade();
 			particula.calcularNovaVelocidadeConstriction();
 			//Calcula a nova posicao
 			particula.calcularNovaPosicao();

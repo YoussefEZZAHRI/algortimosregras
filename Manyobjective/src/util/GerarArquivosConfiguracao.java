@@ -18,7 +18,7 @@ public class GerarArquivosConfiguracao {
 
 
 
-		//String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70", "0.75"};
+		//String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.5"};
 		String[] algs = {"0.5"};
 		String metodo = "smopso";
 		String objetivos = "-";
@@ -30,12 +30,12 @@ public class GerarArquivosConfiguracao {
 		String[] p = {"200"};
 		String r = "200";
 		String rank = "false";
-		String archiver = "ideal";
+		String archiver = "mga";
 		//String archiver = "mga;ideal";
 		String[] eps = {"0.1","0.05", "0.025", "0.01", "0.005", "0.0025", "0.001", "0.0005", "0.00025", "0.0001"  };
 		int k = 10;
-		String lider = "NWSum";
-		String  direxec = "/home/andre/doutorado/experimentos/ref/";
+		String lider = "tb";
+		String  direxec = "/home/andre/doutorado/experimentos/arq/";
 		//String[]  swarms = {"3","5","10", "20", "30"};
 		String[]  swarms = {"10"};
 		String shared = "false";
@@ -52,11 +52,10 @@ public class GerarArquivosConfiguracao {
 		//String initialize[] = {"ctd"};
 
 
-		if(!ind.equals("")){
+		/*if(!ind.equals("")){
 			algs = new String[1];
 			algs[0] = "0.5";
-		}
-
+		}*/
 		if(metodo.equals("imulti")){
 			for (int i = 0; i < swarms.length; i++) {
 				String sw = swarms[i];
@@ -204,16 +203,13 @@ public class GerarArquivosConfiguracao {
 				for (int i = 0; i < algs.length; i++) {
 					String s = algs[i];
 					String arquivo = "";
-					String id = "";
-					String pos_id = "";
+					String pos_id  = m + "_"+s + "_" +  lider +"_" + archiver;
+					String id = "principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ pos_id;;
 					if(ind.equals("")){
-						pos_id = m + "_"+s + "_" +  lider +"_" + archiver;
-						id = "principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ pos_id;
 						arquivo = "arquivos/" + id +".txt";
-
 					}
 					else
-						arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_" + ind+ ".txt";
+						arquivo = "arquivos/" + id + "_" + ind +".txt";
 					if(!rank.equals("false"))
 						arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ s  + "_"+lider + "_" + rank + ".txt";
 
@@ -242,14 +238,14 @@ public class GerarArquivosConfiguracao {
 	}			
 	public static void main(String[] args) {
 
-		//int[] ms = {3,5,10,20,30,50};
-		int[] ms = {3,5,10,15,20};		
+		int[] ms = {3,5,10,15,20};
+		//int[] ms = {10,15,20};		
 	
 		
 		String ind = "";
 
 		try{
-			PrintStream psExec = new PrintStream("exec-ref.txt");
+			PrintStream psExec = new PrintStream("exec-arq.txt");
 			for (int i = 0; i < ms.length; i++) {
 				
 				gerarArquivos(ms[i],ind, psExec);
