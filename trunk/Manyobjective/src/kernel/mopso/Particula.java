@@ -162,10 +162,12 @@ public class Particula {
 	}
 	 
 	 public double getC1(){
+		 //return c1 = 2.05;
 		 return c1 = 1.5 + Math.random();
 	 }
 	 
 	 public double getC2(){
+		 //return c2 = 2.05;
 		 return c2 = 1.5 + Math.random();
 	 }
 	 
@@ -213,6 +215,12 @@ public class Particula {
 		
 		velocidade = parte5;
 		
+		for (int i = 0; i < velocidade.length; i++) {
+			System.out.print(velocidade[i] + "\t");
+		}
+		
+		System.out.println();
+		
 		
 	}
 	
@@ -233,11 +241,22 @@ public class Particula {
 		
 		double fi = getFi();
 		double raiz = fi*fi - 4*fi;
-		if(raiz<0)
+		
+		
+		double X = 2;
+		if(raiz>=0)
+			X = 2.0/(2-fi-Math.sqrt(raiz));
+		
+		
+		
+		/*if(raiz<0)
 			raiz = 0;
-		double X = 2.0/(2-fi-Math.sqrt(raiz));
+		//double X = Math.abs(2.0/(2-fi-Math.sqrt(raiz)));
+		double X = 2.0/(2-fi-Math.sqrt(raiz));*/
+		
 		
 		velocidade = multiplicacao(X, parte5);
+		
 		
 		for (int i = 0; i < velocidade.length; i++) {
 			double deltai = (limitesMaxVelSup[i]-limitesMaxVelInf[i])/2;
@@ -248,9 +267,13 @@ public class Particula {
 					velocidade[i] = deltai*-1;
 			}
 			
+		}	
+		
+		/*for (int i = 0; i < velocidade.length; i++) {
+			System.out.print(velocidade[i] + "\t");
 		}
 		
-		
+		System.out.println();*/
 	}
 	
 	/**
