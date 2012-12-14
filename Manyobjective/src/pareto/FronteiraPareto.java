@@ -170,7 +170,7 @@ public class FronteiraPareto {
 
 				comp = compareObjectiveVector(novosObjetivosSolucao, novosObjetivosTemp);
 
-				if(comp == DOMINATED_BY){
+				if(comp == DOMINATED_BY || comp == EQUALS){
 					solucao.numDominacao++;
 					//	System.out.println("dominada por: " +temp.indice);
 				}

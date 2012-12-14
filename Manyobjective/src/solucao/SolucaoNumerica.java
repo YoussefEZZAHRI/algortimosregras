@@ -98,7 +98,7 @@ public class SolucaoNumerica extends Solucao {
 			buff.append(new Double(variaveis[i]).toString().replace('.', ',') + "\t");
 			//buff.append(variaveis[i] + "\t");
 		}
-		buff.append("\n");
+		/*buff.append("\n");
 		if(objetivos.length>0){
 			for (int i = 0; i < objetivos.length; i++) {
 				//buff.append(new Double(variaveis[i]).toString().replace('.', ',') + "\n");
@@ -115,7 +115,7 @@ public class SolucaoNumerica extends Solucao {
 				}
 			
 		
-		//buff.append("\n" + crowdDistance + "\t");
+		//buff.append("\n" + crowdDistance + "\t");*/
 		
 		return buff.toString();
 	}

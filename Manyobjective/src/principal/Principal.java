@@ -24,6 +24,8 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import archive.HyperPlaneReferenceArchive;
@@ -50,6 +52,7 @@ import problema.TestCaseSelection;
 import problema.ZDT1;
 import problema.ZDT2;
 import problema.ZDT3;
+import solucao.ComparetorObjetivoPF;
 import solucao.Solucao;
 
 
@@ -298,14 +301,17 @@ public class Principal {
 			
 		}
 		
-		
-		
 			
 		Spacing spread = new Spacing(m, caminhoDir, id);
 		spread.preencherObjetivosMaxMin(maxmimObjetivos);
 		spread.calcularIndicadorArray(fronteiras);
 		
 		ArrayList<PontoFronteira> pftrue= carregarFronteiraPareto(System.getProperty("user.dir"), prob, m);
+		
+		ComparetorObjetivoPF comp = new ComparetorObjetivoPF(0);
+		Collections.sort(pftrue, comp);
+		
+		
 
 		GD gd = new GD(m, caminhoDir, id, pftrue);
 		gd.preencherObjetivosMaxMin(maxmimObjetivos);

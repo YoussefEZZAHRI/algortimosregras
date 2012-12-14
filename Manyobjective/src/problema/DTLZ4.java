@@ -2,11 +2,14 @@ package problema;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
 import pareto.FronteiraPareto;
+import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
 
@@ -125,7 +128,18 @@ public class DTLZ4 extends Problema {
 		
 		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio);
 		
+		int num_fim = 0;
+		
+		int tam_ant = 0;
+		
 		while(melhores.size()<numSol){
+			//if(melhores.size() % 50000 == 0)
+				//System.out.print(melhores.size() + " ");
+			if(tam_ant != melhores.size()){
+				System.out.println(melhores.size() + " ");
+				tam_ant = melhores.size();
+			}
+				
 			SolucaoNumerica melhor = new SolucaoNumerica(n, m);
 
 			for (int i = m-1; i <n; i++) {
@@ -134,23 +148,40 @@ public class DTLZ4 extends Problema {
 
 			for (int i = 0; i < m-1; i++) {
 				double newVal = rand.nextDouble();
+			
 				melhor.setVariavel(i, newVal);
 			}
 
 			
 			calcularObjetivos(melhor);
 			
-			if(!pareto.getFronteira().contains(melhor))
-				pareto.add(melhor, archiver);
+			for(int i = 0; i<m;i++){
+				BigDecimal b = new BigDecimal(melhor.objetivos[i]);		 
+				double temp = (b.setScale(3, BigDecimal.ROUND_UP)).doubleValue();
+				melhor.objetivos[i] = temp;
+			}
 			
 			
+			 
 			
-			melhores.add(melhor);
+			//if(!pareto.getFronteira().contains(melhor))
+				//pareto.add(melhor, archiver);
+			
+			if(melhor.objetivos[0] > 0.9){
+				num_fim++;
+				if(num_fim < numSol*0.5)
+					melhores.add(melhor);
+			} else
+				melhores.add(melhor);
 			
 		}
 								
 		ArrayList<SolucaoNumerica> saida = new ArrayList<SolucaoNumerica>();
-		for (Iterator<Solucao> iterator = pareto.getFronteira().iterator(); iterator.hasNext();) {
+		
+		ComparetorObjetivo comp = new ComparetorObjetivo(0);
+		Collections.sort(melhores, comp);
+		
+		for (Iterator<SolucaoNumerica> iterator = melhores.iterator(); iterator.hasNext();) {
 			SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
 			saida.add(solucaoNumerica);
 		}
@@ -162,8 +193,8 @@ public class DTLZ4 extends Problema {
 	
 	public static void main(String[] args) {
 		
-		int[] ms = {2,3,5,10,15,20,25,30};
-		int numSol = 10000;
+		int[] ms = {3};
+		int numSol = 100000;
 		int k = 10;
 		
 		System.out.println("DTLZ4");
@@ -182,7 +213,7 @@ public class DTLZ4 extends Problema {
 			ArrayList<SolucaoNumerica> f = dtlz4.obterFronteira(n, numSol);
 
 			try{
-				PrintStream ps = new PrintStream("pareto/DTLZ4_" + m + "_pareto.txt");
+				PrintStream ps = new PrintStream("pareto3/DTLZ4_" + m + "_pareto.txt");
 				for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
 					SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
 					.next();
