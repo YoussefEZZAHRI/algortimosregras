@@ -3,12 +3,15 @@ package problema;
 import indicadores.PontoFronteira;
 
 import java.io.IOException;
+import java.io.PrintStream;
 
 import java.util.ArrayList;
 
 
 import java.util.Iterator;
 import java.util.Random;
+
+import archive.UnboundArchive;
 
 import kernel.AlgoritmoAprendizado;
 
@@ -199,8 +202,8 @@ public class DTLZ2 extends Problema {
 	public static void main(String[] args) {
 		
 
-		int[] ms = {2, 3, 4, 5, 6,7,8,9, 10, 15, 20, 25, 30};
-		int numSol = 1000;
+		int[] ms = {2};
+		int numSol = 200;
 		int k = 10;
 		
 		System.out.println("DTLZ2");
@@ -214,27 +217,63 @@ public class DTLZ2 extends Problema {
 
 			//int decimalPlace = 5;
 			DTLZ2 dtlz2 = new DTLZ2(m, k);
-
 			
+			String[] maxmim = {"-","-"};
+			
+			
+			FronteiraPareto pareto = new FronteiraPareto(0.45,maxmim, false, 0.0, dtlz2, numSol);
 
 
-			/*ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
+			ArrayList<SolucaoNumerica> f = dtlz2.obterFronteira(n, numSol);
 
 			try{
-				PrintStream ps = new PrintStream("pareto/DTLZ2_" + m + "_pareto.txt");
+				PrintStream ps = new PrintStream("pareto5/DTLZ2_" + m + "_pareto_inv.txt");
+				PrintStream ps25 = new PrintStream("pareto5/DTLZ2_" + m + "_25_inv.txt");
+				PrintStream ps35 = new PrintStream("pareto5/DTLZ2_" + m + "_35_inv.txt");
+				PrintStream ps45 = new PrintStream("pareto5/DTLZ2_" + m + "_45_inv.txt");
+				
+				for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
+					SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator.next();
+					for(int j = 0; j<m; j++){
+						solucaoNumerica.objetivos[j] = 1-solucaoNumerica.objetivos[j];
+					}
+				}
+				
+				
 				for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
 					SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
 					.next();
+					double[] modificado_25 = FronteiraPareto.modificacaoDominanciaParetoCDAS(solucaoNumerica.objetivos, 0.25);
+					double[] modificado_35 = FronteiraPareto.modificacaoDominanciaParetoCDAS(solucaoNumerica.objetivos, 0.35);
+					double[] modificado_45 = FronteiraPareto.modificacaoDominanciaParetoCDAS(solucaoNumerica.objetivos, 0.45);
+					
 					for(int j = 0; j<m; j++){
 						ps.print(solucaoNumerica.objetivos[j] + "\t");
+						if(!pareto.getFronteira().contains(solucaoNumerica))
+							pareto.add(solucaoNumerica, new UnboundArchive());
+						ps25.print(modificado_25[j] + "\t");
+						ps35.print(modificado_35[j] + "\t");
+						ps45.print(modificado_45[j] + "\t");			
 					}
 					ps.println();
-
-
+					ps25.println();
+					ps35.println();
+					ps45.println();
 				}
-			} catch (IOException ex){ex.printStackTrace();}*/
+				
+				PrintStream psPareto = new PrintStream("pareto5/DTLZ2_" + m + "_pareto_cdas_inv.txt");
+				
+				for (Iterator<Solucao> iterator2 = pareto.getFronteira().iterator(); iterator2.hasNext();) {
+					SolucaoNumerica solucaoNumerica2 = (SolucaoNumerica) iterator2
+							.next();
+					for(int j = 0; j<m; j++){
+						psPareto.print(solucaoNumerica2.objetivos[j] + "\t");
+					}
+					psPareto.println();
+				}
+			} catch (IOException ex){ex.printStackTrace();}
 			
-			try{
+			/*try{
 
 				double[] rate_i = {0.0};
 				for (int j = 0; j < rate_i.length; j++) {
@@ -257,7 +296,7 @@ public class DTLZ2 extends Problema {
 					ArrayList<PontoFronteira> front_knee = dtlz2.obtainSolutionsKnee(n, numSol_total, numSol, front_sub);
 					dtlz2.printFrontsPF(n, m, front_knee, "knee", "sub/");
 				}
-			} catch(IOException ex){ex.printStackTrace();}
+			} catch(IOException ex){ex.printStackTrace();}*/
 		}
 		
 		

@@ -21,11 +21,13 @@ public class DistributionReferencePoint extends Indicador {
 	/*
 	 * O indicador deve receber como entrada a fronteia de pareto real, PFtrue
 	 */
-	public DistributionReferencePoint(int m, String caminho, String idExec, double[] r){
+	public DistributionReferencePoint(int m, String caminho, String idExec, double[] r ){
 		super(m, caminho, idExec);
 		indicador = "dist";
 		
 		reference = r;
+		
+		
 		
 	}
 	
