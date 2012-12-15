@@ -45,9 +45,9 @@ public class CrowdingDistanceArchiver extends PreciseArchiver {
 				highCDValue = solucao.crowdDistance;
 				index = i;
 			}
-		}
+		}*/
 
-		front.remove(index);*/
+		front.remove(index);
 
 		
 	}

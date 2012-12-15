@@ -121,7 +121,8 @@ public class DTLZ6 extends Problema {
 	
 	public static void main(String[] args) {
 				
-		int[] ms = {2,3,5,10,15,20,25,30};
+		//int[] ms = {2,3,5,10,15,20,25,30};
+		int[] ms = {3};
 		int numSol = 10000;
 		int k = 10;
 		
@@ -143,7 +144,7 @@ public class DTLZ6 extends Problema {
 			ArrayList<SolucaoNumerica> f = dtlz6.obterFronteira(n, numSol);
 
 			try{
-				PrintStream ps = new PrintStream("pareto/DTLZ6_" + m + "pareto.txt");
+				PrintStream ps = new PrintStream("pareto5/DTLZ6_" + m + "pareto.txt");
 				for (Iterator<SolucaoNumerica> iterator = f.iterator(); iterator.hasNext();) {
 					SolucaoNumerica solucaoNumerica = (SolucaoNumerica) iterator
 					.next();

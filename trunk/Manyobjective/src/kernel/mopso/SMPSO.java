@@ -4,8 +4,7 @@ package kernel.mopso;
 
 
 
-import java.io.IOException;
-import java.io.PrintStream;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -16,7 +15,7 @@ import archive.HyperPlaneReferenceArchiveRandom;
 import pareto.FronteiraPareto;
 import problema.Problema;
 import solucao.Solucao;
-import solucao.SolucaoNumerica;
+
 
 
 
@@ -126,7 +125,7 @@ public class SMPSO extends MOPSO{
 		
 
 		// Imprimir populacao e fronteira
-		try{
+		/*try{
 
 			PrintStream psPopulacao = new PrintStream("populacao.txt");
 
@@ -155,7 +154,7 @@ public class SMPSO extends MOPSO{
 
 			}
 
-		} catch(IOException ex){ex.printStackTrace();}
+		} catch(IOException ex){ex.printStackTrace();}*/
 		
 		return pareto.getFronteira();
 		
@@ -210,6 +209,7 @@ public class SMPSO extends MOPSO{
 			
 			//particula.calcularNovaVelocidade();
 			particula.calcularNovaVelocidadeConstriction();
+			//particula.calcularNovaVelocidade();
 			//Calcula a nova posicao
 			particula.calcularNovaPosicao();
 			if(particula.mutacao){

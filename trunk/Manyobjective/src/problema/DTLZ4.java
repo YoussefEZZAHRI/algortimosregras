@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
-import pareto.FronteiraPareto;
 import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoNumerica;
@@ -121,12 +120,6 @@ public class DTLZ4 extends Problema {
 		Random rand = new Random();
 		rand.setSeed(1000);
 		
-		double eps = 0;
-		
-		int tamanhoRepositorio = numSol;
-		
-		
-		FronteiraPareto pareto = new FronteiraPareto(s, maxmim, r,eps, this, tamanhoRepositorio);
 		
 		int num_fim = 0;
 		

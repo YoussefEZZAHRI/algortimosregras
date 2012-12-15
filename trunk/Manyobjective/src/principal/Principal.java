@@ -25,7 +25,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 
 import archive.HyperPlaneReferenceArchive;
@@ -147,7 +146,7 @@ public class Principal {
 
 
 			if(!principal.indicador.equals(""))
-				principal.executarIndicador2();
+				principal.executarIndicador();
 			else{
 				if(principal.alg.equals("sigma"))
 					principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank, principal.S_MAX, principal.tipoArquivo, principal.eps, principal.eval_analysis);
@@ -445,7 +444,8 @@ public class Principal {
 			}
 		}
 		
-		String indicators[] = {"gd", "igd", "spread","ld","con", "np"};
+		//String indicators[] = {"gd", "igd", "spread","ld","con", "np"};
+		String indicators[] = {"gd", "igd", "spread"};
 		if(!indicador.equals("all")){
 			indicators = new String[1];
 			indicators[0] = indicador;

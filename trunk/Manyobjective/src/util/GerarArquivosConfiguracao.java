@@ -34,8 +34,10 @@ public class GerarArquivosConfiguracao {
 		//String archiver = "mga;ideal";
 		String[] eps = {"0.1","0.05", "0.025", "0.01", "0.005", "0.0025", "0.001", "0.0005", "0.00025", "0.0001"  };
 		int k = 10;
+
 		String lider = "tb";
 		String  direxec = "/home/andre/doutorado/experimentos/arq/";
+
 		//String[]  swarms = {"3","5","10", "20", "30"};
 		String[]  swarms = {"10"};
 		String shared = "false";
@@ -127,6 +129,7 @@ public class GerarArquivosConfiguracao {
 						ps.println("reset = " + res);
 						ps.println("initialize = " + init);
 
+
 						
 							
 					}
@@ -208,11 +211,19 @@ public class GerarArquivosConfiguracao {
 					String arquivo = "";
 					String pos_id  = m + "_"+s + "_" +  lider +"_" + archiver_j;
 					String id = "principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ pos_id;;
+
 					if(ind.equals("")){
+	
+						id = "principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ pos_id;
 						arquivo = "arquivos/" + id +".txt";
 					}
-					else
-						arquivo = "arquivos/" + id + "_" + ind +".txt";
+
+					else{
+						id = pos_id + "_" + ind;
+						arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_" +  pos_id + "_" + ind+ ".txt";
+					}
+
+				
 					if(!rank.equals("false"))
 						arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ s  + "_"+lider + "_" + rank + ".txt";
 
@@ -242,10 +253,11 @@ public class GerarArquivosConfiguracao {
 	}			
 	public static void main(String[] args) {
 
+
 		int[] ms = {3,5,10,15,20};
 		//int[] ms = {10,15,20};		
+
 	
-		
 		String ind = "";
 
 		try{

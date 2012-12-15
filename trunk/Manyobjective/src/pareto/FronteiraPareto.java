@@ -609,7 +609,7 @@ public class FronteiraPareto {
 	/**
 	 * Modificacao da fronteira de pareto pelo metodo CDAS
 	 */
-	public double[] modificacaoDominanciaParetoCDAS(double[] fx, double S){
+	public static double[] modificacaoDominanciaParetoCDAS(double[] fx, double S){
 		double r = r(fx);
 		double[] retorno = new double[fx.length];
 		for (int i = 0; i < fx.length; i++) {
@@ -817,7 +817,7 @@ public class FronteiraPareto {
 	 * @param si Paremetro da modificacao da dominacia (Varia entre 0.25 e 0.75)
 	 * @return
 	 */
-	public double modificacaoCDASValor(double fix, double r, double fi){
+	public static double modificacaoCDASValor(double fix, double r, double fi){
 		double cosWi = fix/r;
 		double cosWi2 = cosWi*cosWi;
 		
@@ -904,7 +904,7 @@ public class FronteiraPareto {
 		return retorno;
 	}
 	
-	public double r(double[] objetivos){
+	public static double r(double[] objetivos){
 		double soma = 0;
 		for (int i = 0; i < objetivos.length; i++) {
 			double fix = objetivos[i];

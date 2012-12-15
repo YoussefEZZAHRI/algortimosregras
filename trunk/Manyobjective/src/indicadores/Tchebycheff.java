@@ -93,4 +93,62 @@ public class Tchebycheff extends Indicador {
 	}
 
 	
+public static void main(String[] args) {
+		
+		
+		
+
+		
+		/*String dirEntrada = "/home/andrebia/gemini/doutorado/experimentos/ref/";
+		String dirSaida = "/media/dados/Andre/ref/medidas/";
+		
+		String problema  = "DTLZ4";
+		
+		String id = "0.5_NWSum_hyp_m";
+		
+		String[] algoritmos = {"0.5_NWSum_hyp_m","0.5_NWSum_ideal","0.5_tb_crowd"};
+		
+		String metodo = "smopso";
+	
+		int objs[] = {3,5,10,15,20};
+		
+		String reference_file = dirSaida + metodo + "_" + problema + "_"+ id + "_reference.txt";
+		
+		ArrayList<double[]> references =  DistributionReferencePointAll.loadReferencePoints(reference_file);
+		System.out.println();
+				
+		for (int k = 0; k < algoritmos.length; k++) {
+			String algoritmo = algoritmos[k];
+
+
+
+			for(int i = 0; i<objs.length; i++){
+				int m = objs[i];
+
+				String idExec = metodo + "_" + problema + "_" + m+ "_" + algoritmo;
+
+				double r[] = references.get(i);
+				String maxmim[] = new String[m];
+				for (int j = 0; j < maxmim.length; j++) {
+					maxmim[j] = "-";
+
+				}
+
+				double l[] = new double[m];
+				Arrays.fill(l, 1);
+
+				String arq = dirEntrada + "resultados/" + metodo + "/" + problema + "/" + m + "/" +			
+						algoritmo + "/" + metodo + "_" + problema + "_" + m + "_" + algoritmo + "_fronteira.txt";	
+
+				Tchebycheff tcheb = new Tchebycheff(m, dirSaida, idExec, r, l);
+				ArrayList<ArrayList<PontoFronteira>> fronteiras = new ArrayList<ArrayList<PontoFronteira>>();
+				try{
+					tcheb.carregarArrayList(arq, fronteiras);
+					tcheb.calcularTchebycheff(fronteiras);
+				}catch(IOException ex){ex.printStackTrace();}
+
+			}
+		}*/
+}
+
 }
