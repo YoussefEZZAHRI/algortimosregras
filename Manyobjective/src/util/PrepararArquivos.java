@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+
 public class PrepararArquivos {
 	
 	public static int numObjHiper = 10;
@@ -352,6 +353,107 @@ public class PrepararArquivos {
 
 	}
 	
+	
+	public void executarFriedman(String dirEntrada, String dirSaida, String problema, int objetivo, String[] algoritmos, int exec, String metodo[], String ind, PrintStream psSaida) throws IOException{
+		Double[][] valores = new Double[algoritmos.length][exec];
+		
+
+		BufferedReader buff;
+
+
+		for (int j = 0; j < algoritmos.length; j++) {
+
+			String arq = dirEntrada + "resultados/" + metodo[j] + "/" + problema + "/" + objetivo + "/" +			
+			algoritmos[j] + "/" + metodo[j] + "_" + problema + "_" + objetivo + "_" + algoritmos[j] + "_" + ind + ".txt";
+			
+			//System.out.println(arq);
+
+
+			buff = new BufferedReader(new FileReader(arq));
+			int tam = 0;
+			while(buff.ready() && tam<exec){
+				String linha = buff.readLine();
+				if(!linha.isEmpty()){
+					if(linha.contains(","))
+						linha = linha.replace(',', '.');
+					Double val = new Double(linha);
+					//try{
+					valores[j][tam++] = val;
+					
+					/*BigDecimal b = new BigDecimal(val);		 
+					val = (b.setScale(8, BigDecimal.ROUND_UP)).doubleValue();
+					comando2.append(val + ",");*/
+					//} catch(ArrayIndexOutOfBoundsException x){x.printStackTrace();}
+				}
+			}	
+		}  
+		
+		double melhorMedia = Double.MAX_VALUE;
+		int index = -1;
+		
+		for (int i = 0; i < valores.length; i++) {
+			Double[] medida_alg = valores[i];
+			double media = 0;
+			for (int j = 0; j < medida_alg.length; j++) {
+				media += medida_alg[j];
+			}
+			media = media/medida_alg.length;
+			if(media<= melhorMedia){
+				melhorMedia = media;
+				index = i;
+			}
+		}
+		
+		String arqCSV = dirSaida + "medidas/friedman_" + metodo[0] + problema + objetivo + "_" + ind + ".csv";
+		
+
+		//if(psSaida == null)
+			//psSaida = new PrintStream(caminhoDirExec + "medidas/" + metodo[0] + problema + "_"+ ind + "_" + objetivo + "_indicadores.txt");
+		
+		BufferedReader buffCSV = new BufferedReader(new FileReader(arqCSV));
+		buffCSV.readLine();
+		
+		int num = algoritmos.length;
+		
+		System.out.println("index: " + index);
+
+		int inicio = 0;
+		int current_line = 0;
+		for(int i = 0; i<index-1; i++){
+			int index_line = (inicio) + (index -2-i);
+			inicio = inicio + (num-(i+1));
+			while(current_line < index_line){
+				buffCSV.readLine();
+				current_line++;
+			}
+			
+			String line = buffCSV.readLine();
+			//System.out.println(line);
+			String[] line_split = line.split(";");
+			if(line_split[5].equals("FALSE"))
+				System.out.println(line_split[0]);
+			current_line++;
+		}
+		
+		while(current_line < inicio){
+			buffCSV.readLine();
+			current_line++;
+		}
+		
+		int remain = num - index;
+		
+		for(int i = 0; i< remain; i++){
+			String line = buffCSV.readLine();
+			//System.out.println(line);
+			String[] line_split = line.split(";");
+			if(line_split[5].equals("FALSE"))
+				System.out.println(line_split[0]);
+		}
+		
+		System.out.println();
+
+	}
+	
 	public void preparArquivoTempo(String dirEntrada, String dirSaida, String problema, String objetivo, String[] algoritmos , int exec, String metodo[], PrintStream psSaida) throws IOException{
 		Double[][] valores = new Double[algoritmos.length][exec];
 		
@@ -634,13 +736,16 @@ public class PrepararArquivos {
 			
 	}
 	
-public void preparArquivosComandosFriedman(String dir, String dir2, String problema, String objetivo, String[] algoritmos , int exec, String metodo[], String ind) throws IOException{
+	public String preparArquivosComandosFriedman(String dir, String dir2, String problema, String objetivo, String[] algoritmos , int exec, String metodo[], String ind) throws IOException{
 		
 
 		BufferedReader buff;
 		
+		String id = metodo[0] + problema + "_" + ind +"_" + objetivo;
+		
+		String arquivo_saida = dir2 + "medidas/" + id + "_comando_friedman.r"; 
 
-		PrintStream psSaida = new PrintStream(dir2 + "medidas/" + metodo[0] + problema + "_" + ind +"_" + objetivo + "_comando_friedman.txt");
+		PrintStream psSaida = new PrintStream(arquivo_saida);
 
 		System.out.println(dir2 + "medidas/" + metodo[0] + problema + "_" + ind +"_" + objetivo + "_comando_friedman.txt");
 		
@@ -710,11 +815,23 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 		
 		
 		psSaida.println(comandos);
+		
+		psSaida.println("png(\"" + dir2 + "medidas/" + id + ".png\")");
+		
 		psSaida.println(comandosBox);
 		
-	
-		
+		psSaida.println("dev.off()");
+		return arquivo_saida;
 	}
+
+	public void executarComandoLinux(String arquivo){
+		Runtime run = Runtime.getRuntime();
+		
+		String command = "R CMD BATCH "+ arquivo;
+		try{
+			run.exec(command);
+		} catch (IOException ex) {ex.printStackTrace();}
+	} 
 
 
 	
@@ -726,7 +843,7 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 		String dirSaida = "/media/dados/Andre/ref/";
 		//String dir2 = "/home/andre/gemini/doutorado/experimentos/poda/";
 		//int objetivo = 2;
-		String problema  = "DTLZ6";
+		String problema  = "DTLZ4";
 		
 		//String[] algs = {"tb_mga_3_ctd","tb_mga_5_ctd","tb_mga_10_ctd","tb_mga_20_ctd", "tb_mga_30_ctd", "tb_mga_3_ctd_r","tb_mga_5_ctd_r","tb_mga_10_ctd_r","tb_mga_20_ctd_r", "tb_mga_30_ctd_r"};
 		//String[] algs = {"tb_mga_3_ext","tb_mga_5_ext","tb_mga_10_ext", "tb_mga_30_ext"};
@@ -774,16 +891,29 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			for (int i = 0; i < objs.length; i++) {
 				System.out.println(objs[i]);
 				
-				pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "gd");
-				pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "igd");
-				pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "spacing");
+				System.out.println("Gerando scripts .R");
+				String arquivo = pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "gd");
+				System.out.println("Executando o script");
+				pre.executarComandoLinux(arquivo);
+				//pre.executarFriedman(dirEntrada, dirSaida, problema, objs[i], algs, exec, metodo, "gd", null);
+				
+				
+				//pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "igd");
+				//pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "spacing");
 				//pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "ld");
 				//pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "con");
 				//pre.gerarComando(dirEntrada, dirSaida, problema, objs[i], algs, exec, metodo, "hypervolume");
 				//pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "hypervolume");
 			}
 			
+			System.out.println("Esperando execução do script");
+			Thread.sleep(4000);
 			
+			for (int i = 0; i < objs.length; i++) {
+				System.out.println(objs[i]);
+				System.out.println("Pós teste do Friedman");
+				pre.executarFriedman(dirEntrada, dirSaida, problema, objs[i], algs, exec, metodo, "gd", null);
+			}	
 
 			//pre.juntarFronteira(dir, problema, objetivo, algs, exec, metodo);
 			//pre.inverterMaxMim(dir, problema, objetivo, algs, exec, metodo);
@@ -806,7 +936,7 @@ public void preparArquivosComandosFriedman(String dir, String dir2, String probl
 			
 			
 
-		} catch (IOException ex){ex.printStackTrace();}
+		} catch (Exception ex){ex.printStackTrace();}
 		
 		
 	}
