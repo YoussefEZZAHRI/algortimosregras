@@ -13,35 +13,36 @@ public class GerarArquivosConfiguracao {
 		
 		String jar = "ref.jar";
 
-		String problema  = "dtlz4";
+		String problema  = "dtlz2";
 	
 
 
 
 		//String[] algs = {"0.25", "0.30", "0.35", "0.40", "0.45", "0.5"};
 		String[] algs = {"0.5"};
-		String metodo = "smopso";
+		String metodo = "multi";
 		String objetivos = "-";
 		String exec = "20";
 		String g = "100";
-		String a = "50000";
+		String a = "-1";
 		//String a = "-1";
-		//String p[] = {"25", "50", "100", "200"};
-		String[] p = {"200"};
+		String p[] = {"200", "50", "20"};
+		//String[] p = {"100"};
 		String r = "200";
 		String rank = "false";
-		String archiver[] = {"hyp_m", "hyp_ex", "ideal", "dist", "eucli", "tcheb", "ar", "crowd", "rand", "ag", "dom", "mga"};
-		//String archiver = "mga;ideal";
+		//String archiver[] = {"hyp_m", "hyp_ex", "ideal", "dist", "eucli", "tcheb", "ar", "crowd", "rand", "ag", "dom", "mga"};
+		String archiver[] = {"mga;ideal"};
 		String[] eps = {"0.1","0.05", "0.025", "0.01", "0.005", "0.0025", "0.001", "0.0005", "0.00025", "0.0001"  };
 		int k = 10;
 
 		String lider = "tb";
-		String  direxec = "/home/andre/doutorado/experimentos/arq/";
+		String  direxec = "/home/andre/doutorado/experimentos/multi/";
 
-		//String[]  swarms = {"3","5","10", "20", "30"};
-		String[]  swarms = {"10"};
+		String[]  swarms = {"3","10",  "30"};
+		//String[]  swarms = {"6"};
 		String shared = "false";
-		String[] update = {"2", "10", "20", "50"};
+		//String[] update = {"2", "10", "20", "50"};
+		String[] update = {"10"};
 		String box_range_beg = "0.5";	
 		String box_range_end = "0.1";	
 		String pop_swarm = "75";
@@ -143,11 +144,14 @@ public class GerarArquivosConfiguracao {
 				for(int j = 0; j < update.length; j++){
 					String up = update[j];
 					for(int l = 0; l < p.length; l++){
-						String pop = p[l];
+						String pop = p[i];
 						String[] liderTemp = lider.split(";");
+						String id = "principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ up +"_" +  liderTemp[0]  + "_" +  archiver[0].replace(';', '_')+ "_" + sw + "_"+ pop; 
+						String arquivo =  "arquivosMulti/" +id+ ".txt";
+						PrintStream ps = new PrintStream(arquivo);	
 
-						String arquivo =  "arquivosMulti/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ up +"_" +  liderTemp[0]  + "_" +  archiver[0].replace(';', '_')+ "_" + sw + "_"+ pop +".txt";
-						PrintStream ps = new PrintStream(arquivo);
+						psExec.println("nohup java  -Xms128m -Xmx768m -jar " + jar + " " + arquivo + " > logs/" + id+".log &");
+
 
 						ps.println("algoritmo = " + metodo);
 						ps.println("problema = " + problema);
@@ -156,7 +160,7 @@ public class GerarArquivosConfiguracao {
 						ps.println("k = " + k);
 						ps.println("max_min = " + objetivos);
 						ps.println("geracoes = " + g);
-						ps.println("populacao = " + p[0]);
+						ps.println("populacao = " + pop);
 						ps.println("repositorio = " + r);
 						ps.println("numexec = " + exec);
 						ps.println("S =" + algs[0]);
@@ -181,9 +185,15 @@ public class GerarArquivosConfiguracao {
 			for (int i = 0; i < eps.length; i++) {
 				String e = eps[i];
 				String arquivo = "";
+				String id = "principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ e  + "_" +  lider+ "_" + archiver[0];
 				if(ind.equals(""))
-					arquivo = "arquivos/principal_" + metodo + "_"+problema.toUpperCase() + "_" + m +"_"+ e  + "_" +  lider+ "_" + archiver[0] + ".txt";
+					arquivo = "arquivos/" + id + ".txt";
+				
 				PrintStream ps = new PrintStream(arquivo);
+				
+
+				psExec.println("nohup java  -Xms128m -Xmx768m -jar " + jar + " " + arquivo + " > logs/" + id+".log &");
+
 
 				ps.println("algoritmo = " + metodo);
 				ps.println("problema = " + problema);
