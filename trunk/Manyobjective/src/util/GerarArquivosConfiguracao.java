@@ -38,7 +38,7 @@ public class GerarArquivosConfiguracao {
 		String lider = "tb";
 		String  direxec = "/home/andre/doutorado/experimentos/multi/";
 
-		String[]  swarms = {"3","10",  "30"};
+		String[]  swarms = {"3","10","30"};
 		//String[]  swarms = {"6"};
 		String shared = "false";
 		//String[] update = {"2", "10", "20", "50"};

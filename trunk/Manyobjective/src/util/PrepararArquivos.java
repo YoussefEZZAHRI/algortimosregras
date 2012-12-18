@@ -415,7 +415,14 @@ public class PrepararArquivos {
 		
 		int num = algoritmos.length;
 		
+		int[] melhores = new int[algoritmos.length];
+		melhores[index] = 1;
+		
+		index++;
 		System.out.println("index: " + index);
+		
+		
+		 
 
 		int inicio = 0;
 		int current_line = 0;
@@ -430,8 +437,13 @@ public class PrepararArquivos {
 			String line = buffCSV.readLine();
 			//System.out.println(line);
 			String[] line_split = line.split(";");
-			if(line_split[5].equals("FALSE"))
-				System.out.println(line_split[0]);
+			if(line_split[5].equals("FALSE")){
+				String equivalentes = line_split[0].replaceAll("\"", "");
+				//System.out.println(line_split[0]);
+				String equivalentes_split[] = equivalentes.split("-");
+				int index_equivalentes = new Integer(equivalentes_split[0]).intValue()-1;
+				melhores[index_equivalentes] = 1;
+			}
 			current_line++;
 		}
 		
@@ -442,12 +454,26 @@ public class PrepararArquivos {
 		
 		int remain = num - index;
 		
+		
+		
+		
 		for(int i = 0; i< remain; i++){
 			String line = buffCSV.readLine();
 			//System.out.println(line);
 			String[] line_split = line.split(";");
-			if(line_split[5].equals("FALSE"))
-				System.out.println(line_split[0]);
+			if(line_split[5].equals("FALSE")){
+				String equivalentes = line_split[0].replaceAll("\"", "");
+				
+				//System.out.println(line_split[0]);
+				String equivalentes_split[] = equivalentes.split("-");
+				int index_equivalentes = new Integer(equivalentes_split[1]).intValue()-1;
+				melhores[index_equivalentes] = 1;
+			}
+		}
+		
+		for (int i = 0; i < melhores.length; i++) {
+			if(melhores[i] == 1)
+				System.out.println( (i+1)+": "+ algoritmos[i]);
 		}
 		
 		System.out.println();
@@ -839,7 +865,7 @@ public class PrepararArquivos {
 		PrepararArquivos pre = new PrepararArquivos();
 
 		//String dirEntrada = "/media/dados/Andre/ref/medidas/";		
-		String dirEntrada = "/home/andrebia/gemini/doutorado/experimentos/ref/";
+		String dirEntrada = "/home/andre/gemini/doutorado/experimentos/ref/";
 		String dirSaida = "/media/dados/Andre/ref/";
 		//String dir2 = "/home/andre/gemini/doutorado/experimentos/poda/";
 		//int objetivo = 2;
@@ -849,7 +875,7 @@ public class PrepararArquivos {
 		//String[] algs = {"tb_mga_3_ext","tb_mga_5_ext","tb_mga_10_ext", "tb_mga_30_ext"};
 
 		//String[] algs = {"0.5_NWSum_hyp_a","0.5_NWSum_hyp_ed","0.5_NWSum_hyp_ex","0.5_NWSum_hyp_m","0.5_NWSum_ideal","0.5_tb_crowd"};
-		String[] algs = {"0.25_tb_crowd","0.30_tb_crowd","0.35_tb_crowd","0.40_tb_crowd","0.45_tb_crowd","0.5_NWSum_ideal","0.5_tb_crowd","0.5_sigma_ideal"};
+		String[] algs = {"0.30_tb_crowd","0.35_tb_crowd","0.40_tb_crowd","0.45_tb_crowd","0.5_NWSum_ideal","0.5_tb_crowd","0.5_sigma_ideal"};
 		//String[] algs = {"0.5_sigma_ideal", "0.5_tb_ideal"};
 
 		//String[] algs = {"0.25_tb_crowd","0.30_tb_crowd","0.35_tb_crowd","0.40_tb_crowd","0.45_tb_crowd","0.5_NWSum_ideal","0.5_tb_crowd"};
@@ -907,7 +933,7 @@ public class PrepararArquivos {
 			}
 			
 			System.out.println("Esperando execução do script");
-			Thread.sleep(4000);
+			Thread.sleep(1000);
 			
 			for (int i = 0; i < objs.length; i++) {
 				System.out.println(objs[i]);
