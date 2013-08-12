@@ -51,8 +51,8 @@ public class GerarFolds {
 	public static void main(String[] args) {
 		
 		GerarFolds folds = new GerarFolds();
-		String nomebase = "jm1-cfs";
-		String caminhoBase = "c:\\Andre\\bases\\revista\\"+nomebase+"\\";
+		String nomebase = "cm1";
+		String caminhoBase = "E:\\Andre\\Dropbox\\UFS\\SAD\\bases\\";
 		//String caminhoBase = "/home/andre/mestrado/weka-3-5-5/data/";
 		//String arquivoARFF = caminhoBase + nomebase + "/it0/" + nomebase + "_data.arff";
 		String arquivoARFF = caminhoBase + nomebase + ".arff";
@@ -61,7 +61,7 @@ public class GerarFolds {
 			Reader reader = new FileReader(arquivoARFF);
 			Instances dados = new Instances(reader);
 			dados.setClassIndex(dados.numAttributes()-1);
-			folds.gerarFolds(10, dados, nomebase, caminhoBase);
+			folds.gerarFolds(3, dados, nomebase, caminhoBase);
 		} catch (Exception e){e.printStackTrace();}
 	}
 
