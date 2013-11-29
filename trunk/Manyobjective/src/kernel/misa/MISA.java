@@ -59,7 +59,7 @@ public class MISA extends AlgoritmoAprendizado {
 		super(n,prob,g,a,t, maxmim, tRank, e, tamanhoGrid, tPoda, eval_analysis);
 		
 		taxaClonagem = tc;
-		totalClonagem = taxaClonagem * tamanhoPopulacao;
+		totalClonagem = taxaClonagem * populationSize;
 		partesGrid = pg;
 		
 		this.s = new Double(s).doubleValue();
@@ -158,7 +158,7 @@ public class MISA extends AlgoritmoAprendizado {
 	 */
 	public void iniciarPopulacao(){
 		populacao = new ArrayList<Solucao>();
-		for(int i = 0; i<tamanhoPopulacao; i++){
+		for(int i = 0; i<populationSize; i++){
 			SolucaoNumerica s = new SolucaoNumerica(n, problema.m);
 			s.iniciarSolucaoAleatoria();
 			populacao.add(s);
@@ -180,7 +180,7 @@ public class MISA extends AlgoritmoAprendizado {
 		//Se o n�mero das melhores solu��es � menor que o tamanho m�ximo, todas as solu��es s�o adicionadas na popula��o final 
 		//e as melhores solu��es (domindas por menos solu��es) dominadas da popula��o
 		//Caso contr�rio somente as melhore solu��es s�o adicionadas na popula��o final
-		if(paretoTemp.getFronteira().size()<tamanhoPopulacao){
+		if(paretoTemp.getFronteira().size()<populationSize){
 			ArrayList<Solucao> temp = obterMelhoresAnticorpos(paretoTemp, populacaoFinal, 1.0);
 			populacaoFinal.clear();
 			populacaoFinal.addAll(temp);
@@ -194,7 +194,7 @@ public class MISA extends AlgoritmoAprendizado {
 			
 			
 			populacaoFinal.clear();
-			for(int i = 0; i<tamanhoPopulacao; i++)
+			for(int i = 0; i<populationSize; i++)
 				populacaoFinal.add(solucoesFinais.get(i));	
 		}
 	}
@@ -209,7 +209,7 @@ public class MISA extends AlgoritmoAprendizado {
 	public ArrayList<Solucao> obterMelhoresAnticorpos(FronteiraPareto paretoAtual, ArrayList<Solucao> populacao,  double porcentagemaMinima){
 		ArrayList<Solucao> melhores = new ArrayList<Solucao>();
 		melhores.addAll(paretoAtual.getFronteira());
-		int maxMelhores = (int)(porcentagemaMinima*tamanhoPopulacao);
+		int maxMelhores = (int)(porcentagemaMinima*populationSize);
 		//Caso o n�mero das melhores solu��es seja menor que a porcentamge tamanhoMelhores da popula��o deve-se preencher os array das melhores solu��es
 		if(melhores.size()< maxMelhores){
 			ArrayList<Solucao> dominadas = new ArrayList<Solucao>();

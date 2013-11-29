@@ -129,7 +129,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 
 		
 		populacao.clear();
-		for(int i = 0; i<tamanhoPopulacao; i++){
+		for(int i = 0; i<populationSize; i++){
 			Solucao solucao = populacaoCombinada.get(i);
 			populacao.add(solucao);
 		}
@@ -168,7 +168,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	
 	public void gerarOffsping(ArrayList<Solucao> solucoes, Comparator<Solucao> comp){
 		offspring.clear();
-		for(int i = 0; i<tamanhoPopulacao; i++){
+		for(int i = 0; i<populationSize; i++){
 			Solucao pai1 = escolherPaiBinaryTournament(solucoes, comp); 
 			Solucao pai2 = escolherPaiBinaryTournament(solucoes, comp);
 			Solucao filho = recombinacao(pai1, pai2);
@@ -182,7 +182,7 @@ public class NSGA2 extends AlgoritmoAprendizado {
 	
 	public void iniciarPopulacao(){
 		populacao = new ArrayList<Solucao>();
-		for(int i = 0; i<tamanhoPopulacao; i++){
+		for(int i = 0; i<populationSize; i++){
 			Solucao s = null;
 			if(tipoSolucao.equals("numerica"))
 				s = new SolucaoNumerica(n, problema.m);

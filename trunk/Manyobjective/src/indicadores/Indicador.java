@@ -131,7 +131,7 @@ public abstract class Indicador {
 				fronteira.add(pf);
 			}
 		}
-		
+		buff.close();
 		if(calcularFronteira){
 			//double valor = calcular();
 			//imprimirValor(valor);

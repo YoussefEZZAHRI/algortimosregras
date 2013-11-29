@@ -178,7 +178,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 */
 	public void inicializarPopulacao(){
 		
-		for(int i = 0; i<tamanhoPopulacao; i++){
+		for(int i = 0; i<populationSize; i++){
 			Particula particula = new Particula();
 			//Contador utilizada para a cria��o da regra n�o ficar presa no la�o
 			int cont = 0;
@@ -208,7 +208,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 	 */
 	public void inicializarPopulacao(double[][] limit_search_space){
 		
-		for(int i = populacao.size(); i<tamanhoPopulacao; i++){
+		for(int i = populacao.size(); i<populationSize; i++){
 			Particula particula = new Particula();
 			//Contador utilizada para a cria��o da regra n�o ficar presa no la�o
 			int cont = 0;
@@ -220,6 +220,32 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 				problema.calcularObjetivos(s);
 				cont++;
 			}while(populacao.contains(particula) && (cont<20));
+			//Avaliando os objetivos da particula;
+			particula.localBestObjetivos = particula.solucao.objetivos;
+			populacao.add(particula);	
+		}
+		if(rank)
+			rankParticula(populacao);
+	}
+	
+	/**
+	 * Starts a new swarm with a set of initial solutions 
+	 * @param solutions initial solutions
+	 * @param limit_search_space Limits of the search space
+	 */
+	public void initializePopulation(ArrayList<Solucao> solutions, double[][] limit_search_space){
+		
+		for (Iterator<Solucao> iterator = solutions.iterator(); iterator.hasNext();) {
+			Solucao solution = (Solucao) iterator.next();
+			Particula particula = new Particula();
+			//Contador utilizada para a cria��o da regra n�o ficar presa no la�o
+			
+			SolucaoNumerica s = (SolucaoNumerica) solution;
+			s.truncar();
+			particula.iniciarParticulaAleatoriamente(problema, s);
+			problema.calcularObjetivos(s);
+
+			
 			//Avaliando os objetivos da particula;
 			particula.localBestObjetivos = particula.solucao.objetivos;
 			populacao.add(particula);	
@@ -516,6 +542,7 @@ public abstract class MOPSO extends AlgoritmoAprendizado{
 			}
 			ps.println();
 		}
+		ps.close();
 		
 	}
 	

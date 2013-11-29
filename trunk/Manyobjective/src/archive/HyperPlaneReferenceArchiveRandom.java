@@ -79,6 +79,8 @@ public class HyperPlaneReferenceArchiveRandom extends PreciseArchiver {
 					number_points++;
 			}
 			
+			reader.close();
+			
 			reader = new BufferedReader(new FileReader(reference_file));
 			
 			reference_points = new double[number_points][m];
@@ -98,7 +100,7 @@ public class HyperPlaneReferenceArchiveRandom extends PreciseArchiver {
 				}
 					
 			}
-			
+			reader.close();
 		} catch(IOException ex){ex.printStackTrace();}
 	}
 	

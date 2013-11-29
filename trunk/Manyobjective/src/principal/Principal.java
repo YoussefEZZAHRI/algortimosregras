@@ -31,8 +31,6 @@ import archive.HyperPlaneReferenceArchive;
 
 
 import kernel.AlgoritmoAprendizado;
-import kernel.genetic.NSGA2;
-import kernel.misa.MISA;
 import kernel.mopso.SMPSO;
 import kernel.mopso.SigmaMOPSO;
 import kernel.mopso.multi.IteratedMultiSwarm;
@@ -76,7 +74,7 @@ public class Principal {
 	public int numeroavaliacoes=-1;
 	
 	
-	public String S;
+	public String S = "0.5";
 	public double S_MAX;
 	
 	public boolean rank;
@@ -89,6 +87,7 @@ public class Principal {
 	public String alg2;
 	public String dirExec = "";
 	public boolean mesma_linha = false;
+	public boolean eval = false;
 	public int num_sol_fronteira = 0;
 	
 	public String indicador = "";
@@ -152,15 +151,10 @@ public class Principal {
 					principal.algoritmo = new SigmaMOPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.tipoRank, principal.S_MAX, principal.tipoArquivo, principal.eps, principal.eval_analysis);
 				if(principal.alg.equals("smopso"))
 					principal.algoritmo = new SMPSO(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio, principal.tipoRank, principal.S_MAX, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.eval_analysis);
-				if(principal.alg.equals("misa"))
-					principal.algoritmo = new MISA(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.taxaclonagem, principal.partesgrid, principal.maxmimObjetivos, principal.tipoRank, principal.repositorio,principal.eps, principal.tipoArquivo, principal.eval_analysis);
-				if(principal.alg.equals("nsga2"))
-					principal.algoritmo = new NSGA2(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.tipoSolucao, principal.maxmimObjetivos, principal.tipoRank, principal.tipoArquivo,principal.eps, principal.repositorio, principal.eval_analysis);
 				if(principal.alg.equals("multi"))
 					principal.algoritmo = new MultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.shared, principal.update, principal.eval_analysis);
 				if(principal.alg.equals("imulti"))
 					principal.algoritmo = new IteratedMultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.box_range_beg, principal.box_range_end, principal.pop_swarm, principal.rep_swarm, principal.split_iterations, principal.eval_analysis, principal.reset, principal.initialize);
-
 				if(principal.alg.equals("tmulti"))
 					principal.algoritmo = new  TreeMultiSwarm(principal.n, principal.problema, principal.geracoes, principal.numeroavaliacoes, principal.populacao, principal.S, principal.maxmimObjetivos, principal.repositorio , principal.tipoRank, principal.tipoArquivo, principal.escolhaLider,principal.eps, principal.swarms, principal.update, principal.eval_analysis);
 
@@ -215,7 +209,7 @@ public class Principal {
 			
 		}
 		
-		String caminhoDir = System.getProperty("user.dir") + "/resultados/" + alg + "/" +prob + "/" + m + "/" + pos_id +"/" ;
+		String caminhoDir = System.getProperty("user.dir") + "/results/" + alg + "/" +prob + "/" + m + "/" + pos_id +"/" ;
 		
 		File dir = new File(caminhoDir);
 		dir.mkdirs();
@@ -223,8 +217,8 @@ public class Principal {
 		String id = pre_id + "_" + pos_id;
 		
 		PrintStream psTempo =  new PrintStream(caminhoDir + id +"_texec.txt");
-		PrintStream psSolucaoGeral = new PrintStream(caminhoDir +id+"_solucoes.txt");
-		PrintStream psFronteiraGeral = new PrintStream(caminhoDir+id+ "_fronteira.txt");
+		PrintStream psSolucaoGeral = new PrintStream(caminhoDir +id+"_solutions.txt");
+		PrintStream psFronteiraGeral = new PrintStream(caminhoDir+id+ "_fronts.txt");
 		
 		PrintStream psParameter =  new PrintStream(caminhoDir + id +"_parameters.txt");
 		
@@ -243,15 +237,15 @@ public class Principal {
 			dir = new File(caminhoDirExec);
 			dir.mkdirs();
 
-			PrintStream psSolucaoExec = new PrintStream(caminhoDirExec+id+"_solucoes.txt");
-			PrintStream psFronteiraExec = new PrintStream(caminhoDirExec+id+"_fronteira.txt");
+			PrintStream psSolucaoExec = new PrintStream(caminhoDirExec+id+"_solutions.txt");
+			PrintStream psFronteiraExec = new PrintStream(caminhoDirExec+id+"_fronts.txt");
 			
 			psTempo.print(i +":\t" + Calendar.getInstance().getTimeInMillis() + "\t");
 			tinicial = Calendar.getInstance().getTimeInMillis();
 			
 			ArrayList<Solucao> solucoes = null;
 
-			System.out.println("Execucao: " + i);
+			System.out.println("Execution: " + i);
 			if(numeroavaliacoes==-1)
 				solucoes =  algoritmo.executar();
 			else
@@ -285,9 +279,9 @@ public class Principal {
 			psFronteiraGeral.println();
 		
 			System.out.println();
-			System.out.println("Numero de avaliacoes: " + problema.avaliacoes);
+			System.out.println("Fitness evaluation number: " + problema.avaliacoes);
 			
-			System.out.println("Piores Objetivos: ");
+			System.out.println("Worst objective function values: ");
 			for (int j = 0; j < maioresObjetivos.length; j++) {
 				System.out.print(maioresObjetivos[j] + "\t");
 				
@@ -295,86 +289,94 @@ public class Principal {
 			System.out.println();
 			tfinal = Calendar.getInstance().getTimeInMillis();
 			
-			System.out.println("Tempo Execucao: " + ((double)(tfinal - tinicial)/1000) + " (s)");
+			System.out.println("Execution time: " + ((double)(tfinal - tinicial)/1000) + " (s)");
 			System.out.println();
 			
 		}
 		
-			
-		Spacing spread = new Spacing(m, caminhoDir, id);
-		spread.preencherObjetivosMaxMin(maxmimObjetivos);
-		spread.calcularIndicadorArray(fronteiras);
-		
-		ArrayList<PontoFronteira> pftrue= carregarFronteiraPareto(System.getProperty("user.dir"), prob, m);
-		
-		ComparetorObjetivoPF comp = new ComparetorObjetivoPF(0);
-		Collections.sort(pftrue, comp);
-		
-		
+		if(eval){
+			Spacing spread = new Spacing(m, caminhoDir, id);
+			spread.preencherObjetivosMaxMin(maxmimObjetivos);
+			spread.calcularIndicadorArray(fronteiras);
 
-		GD gd = new GD(m, caminhoDir, id, pftrue);
-		gd.preencherObjetivosMaxMin(maxmimObjetivos);
-		gd.calcularIndicadorArray(fronteiras);
+			ArrayList<PontoFronteira> pftrue= carregarFronteiraPareto(System.getProperty("user.dir"), prob, m);
 
-		IGD igd = new IGD(m, caminhoDir, id, pftrue);
-		igd.preencherObjetivosMaxMin(maxmimObjetivos);
-		igd.calcularIndicadorArray(fronteiras);
-		
-		LargestDistance ld = new LargestDistance(m, caminhoDir, id, pftrue);
-		ld.preencherObjetivosMaxMin(maxmimObjetivos);
-		ld.calcularIndicadorArray(fronteiras);
-		
-		Convergence con = new Convergence(m, caminhoDir, id, pftrue);
-		con.preencherObjetivosMaxMin(maxmimObjetivos);
-		con.calcularIndicadorArray(fronteiras);
+			ComparetorObjetivoPF comp = new ComparetorObjetivoPF(0);
+			Collections.sort(pftrue, comp);
 
-		double[] j =  problema.getJoelho(n, pftrue);
-		double[] l = problema.getLambda(n, pftrue);
-		
-		//double[] j = {0.0,0.0,0.666,0.0,0.333};
-		
-		Tchebycheff tcheb = new Tchebycheff(m, caminhoDir, id, j , l);
-		tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
-		tcheb.calcularTchebycheff(fronteiras);
-		
-		
-		
-		if(prob.toUpperCase().equals("DTLZ2")){
 
-			HistogramDTLZ2 hist = new HistogramDTLZ2(m, caminhoDir, id);
-			hist.preencherObjetivosMaxMin(maxmimObjetivos);
-			hist.generateHistogram(fronteiras);
-		}
 
-		/*PontosNaFronteira pnf = new PontosNaFronteira(m, caminhoDir, idInd, pftrue);
+			GD gd = new GD(m, caminhoDir, id, pftrue);
+			gd.preencherObjetivosMaxMin(maxmimObjetivos);
+			gd.calcularIndicadorArray(fronteiras);
+
+			IGD igd = new IGD(m, caminhoDir, id, pftrue);
+			igd.preencherObjetivosMaxMin(maxmimObjetivos);
+			igd.calcularIndicadorArray(fronteiras);
+
+			LargestDistance ld = new LargestDistance(m, caminhoDir, id, pftrue);
+			ld.preencherObjetivosMaxMin(maxmimObjetivos);
+			ld.calcularIndicadorArray(fronteiras);
+
+			Convergence con = new Convergence(m, caminhoDir, id, pftrue);
+			con.preencherObjetivosMaxMin(maxmimObjetivos);
+			con.calcularIndicadorArray(fronteiras);
+
+			double[] j =  problema.getJoelho(n, pftrue);
+			double[] l = problema.getLambda(n, pftrue);
+
+			//double[] j = {0.0,0.0,0.666,0.0,0.333};
+
+			Tchebycheff tcheb = new Tchebycheff(m, caminhoDir, id, j , l);
+			tcheb.preencherObjetivosMaxMin(maxmimObjetivos);
+			tcheb.calcularTchebycheff(fronteiras);
+
+
+
+			if(prob.toUpperCase().equals("DTLZ2")){
+
+				HistogramDTLZ2 hist = new HistogramDTLZ2(m, caminhoDir, id);
+				hist.preencherObjetivosMaxMin(maxmimObjetivos);
+				hist.generateHistogram(fronteiras);
+			}
+
+			/*PontosNaFronteira pnf = new PontosNaFronteira(m, caminhoDir, idInd, pftrue);
 			pnf.preencherObjetivosMaxMin(maxmimObjetivos);
 			pnf.calcularIndicadorArray(fronteiras);*/
 
-		NumeroPontos np = new NumeroPontos(m, caminhoDir, id);
-		np.preencherObjetivosMaxMin(maxmimObjetivos);
-		np.calcularIndicadorArray(fronteiras);
-		
-		Evaluations eval = new Evaluations(m, caminhoDir, id, problema);
-		eval.calcularIndicadorArray(fronteiras);
-		
-		if(tipoArquivo.substring(0,3).equals("hyp")){
-			PrintStream psSolucaoHyper = new PrintStream(caminhoDir+id+"_reference.txt");
-			HyperPlaneReferenceArchive hyper_archiver = (HyperPlaneReferenceArchive) algoritmo.archiver;
-			for(int k = 0; k<m; k++){
-				psSolucaoHyper.print(hyper_archiver.reference_point[k] + "\t");
+			NumeroPontos np = new NumeroPontos(m, caminhoDir, id);
+			np.preencherObjetivosMaxMin(maxmimObjetivos);
+			np.calcularIndicadorArray(fronteiras);
+
+			Evaluations evaluations = new Evaluations(m, caminhoDir, id, problema);
+			evaluations.calcularIndicadorArray(fronteiras);
+
+			if(tipoArquivo.substring(0,3).equals("hyp")){
+				PrintStream psSolucaoHyper = new PrintStream(caminhoDir+id+"_reference.txt");
+				HyperPlaneReferenceArchive hyper_archiver = (HyperPlaneReferenceArchive) algoritmo.archiver;
+				for(int k = 0; k<m; k++){
+					psSolucaoHyper.print(hyper_archiver.reference_point[k] + "\t");
+				}
+				psSolucaoHyper.println();
+
+
+				Tchebycheff tcheb_hyp = new Tchebycheff(m, caminhoDir, id, hyper_archiver.reference_point , l);
+				tcheb_hyp.preencherObjetivosMaxMin(maxmimObjetivos);
+				tcheb_hyp.calcularTchebycheff(fronteiras);
+
+				DistributionReferencePoint dist = new DistributionReferencePoint(m, caminhoDir, id, hyper_archiver.reference_point);
+				dist.preencherObjetivosMaxMin(maxmimObjetivos);
+				dist.calcularDistribution(fronteiras);
+				psSolucaoHyper.close();
+
 			}
-			psSolucaoHyper.println();
-			
-			
-			Tchebycheff tcheb_hyp = new Tchebycheff(m, caminhoDir, id, hyper_archiver.reference_point , l);
-			tcheb_hyp.preencherObjetivosMaxMin(maxmimObjetivos);
-			tcheb_hyp.calcularTchebycheff(fronteiras);
-			
-			DistributionReferencePoint dist = new DistributionReferencePoint(m, caminhoDir, id, hyper_archiver.reference_point);
-			dist.preencherObjetivosMaxMin(maxmimObjetivos);
-			dist.calcularDistribution(fronteiras);
-			
+		
 		}
+		psTempo.close();
+		psFronteiraGeral.close();
+		psParameter.close();
+		psSolucaoGeral.close();
+		
 
 	}
 
@@ -388,6 +390,7 @@ public class Principal {
 				psParameters.println(linhaString);
 			}
 		}
+		buff.close();
 	}
 	
 	public void gerarSaida(ArrayList<Solucao> fronteira, PrintStream solGeral, PrintStream psFronteiraGeral, PrintStream solExecucao, PrintStream psFronteiraExec){
@@ -397,10 +400,10 @@ public class Principal {
 			solGeral.println(solucao);
 			solExecucao.println(solucao);
 			for(int i = 0; i<m; i++){
-				//psFronteiraExec.print(new Double( solucao.objetivos[i])+ "\t");
-				//psFronteiraGeral.print(new Double(solucao.objetivos[i]) + "\t");
-				psFronteiraExec.print(new Double( solucao.objetivos[i]).toString().replace('.', ',')+ "\t");
-				psFronteiraGeral.print(new Double(solucao.objetivos[i]).toString().replace('.', ',') + "\t");	
+				psFronteiraExec.print(new Double( solucao.objetivos[i])+ "\t");
+				psFronteiraGeral.print(new Double(solucao.objetivos[i]) + "\t");
+				//psFronteiraExec.print(new Double( solucao.objetivos[i]).toString().replace('.', ',')+ "\t");
+				//psFronteiraGeral.print(new Double(solucao.objetivos[i]).toString().replace('.', ',') + "\t");	
 			}
 			psFronteiraExec.println();
 			psFronteiraGeral.println();
@@ -591,6 +594,7 @@ public class Principal {
 					pftrue.add(pf);
 				}
 			}
+			buff.close();
 		}
 		catch(IOException ex){ex.printStackTrace();}
 		
@@ -614,6 +618,7 @@ public class Principal {
 					pftrue.add(pf);
 				}
 			}
+			buff.close();
 		}
 		catch(IOException ex){ex.printStackTrace();}
 		
@@ -677,7 +682,7 @@ public class Principal {
 				}
 				String tag = linha[0].trim().toLowerCase();
 				String valor = linha[1].trim();
-				if(tag.equals("algoritmo"))
+				if(tag.equals("algorithm"))
 					alg = valor;
 
 				if(tag.equals("direxec"))
@@ -697,12 +702,12 @@ public class Principal {
 				if(tag.equals("numerocasosteste"))
 					numeroCasosTeste = new Integer(valor).intValue();
 
-				if(tag.equals("geracoes")){
+				if(tag.equals("generations")){
 					geracoes = new Integer(valor).intValue();
 				}
-				if(tag.equals("populacao"))
+				if(tag.equals("population"))
 					populacao = new Integer(valor).intValue();
-				if(tag.equals("repositorio"))
+				if(tag.equals("repository"))
 					repositorio = new Integer(valor).intValue();
 				if(tag.equals("numexec"))
 					numExec = new Integer(valor).intValue();
@@ -737,7 +742,7 @@ public class Principal {
 				if(tag.equals("maxobjhiper"))
 					maxobjhiper = new Integer(valor).intValue();
 
-				if(tag.equals("numeroavaliacoes"))
+				if(tag.equals("evalnumber"))
 					numeroavaliacoes = new Integer(valor).intValue();
 				
 				if(tag.equals("pop_swarm"))
@@ -749,7 +754,7 @@ public class Principal {
 				if(tag.equals("split_iterations"))
 					split_iterations = new Integer(valor).intValue();
 
-				if(tag.equals("problema")){
+				if(tag.equals("problem")){
 					prob = valor;
 				}
 
@@ -829,6 +834,15 @@ public class Principal {
 					}
 				}
 				
+				if(tag.equals("eval")){
+					if(valor.equals("false")){
+						eval = false;
+					}
+					else{
+						eval = true;
+					}
+				}
+				
 				if(tag.equals("archiver")){
 					tipoArquivo = valor;
 					/*String tipos = "ag ar br crowd ideal pr_id ex_id eucli sigma tcheb rand ub dom eaps eapp mga mga2 spea2 hyper hyp_r";
@@ -841,7 +855,7 @@ public class Principal {
 				}
 			
 				
-				if(tag.equals("lider")){					
+				if(tag.equals("leader")){					
 					escolhaLider = valor;
 				}
 			}
@@ -850,7 +864,7 @@ public class Principal {
 		if(n == -1)
 			n = m + k - 1;
 		
-		
+		buff.close();
 	}
 	
 	
@@ -858,16 +872,16 @@ public class Principal {
 	
 	public String toString(){
 		StringBuffer buff = new StringBuffer();
-		buff.append("Algoritmo: " + alg + "\n");
-		buff.append("Problema: " + prob + "\n");
+		buff.append("Algorithm: " + alg + "\n");
+		buff.append("Problem: " + prob + "\n");
 		buff.append("m: " + m + "\n");
 		buff.append("n: " + n + "\n");
-		buff.append("Geracoes: " + geracoes + "\n");
-		buff.append("Avaliacoes: " + numeroavaliacoes + "\n");
-		buff.append("Populacao: " + populacao + "\n");
+		buff.append("Generations: " + geracoes + "\n");
+		buff.append("Evaluations: " + numeroavaliacoes + "\n");
+		buff.append("Population: " + populacao + "\n");
 		buff.append("S: " + S + "\n");
-		buff.append("poda: " + tipoArquivo + "\n");
-		buff.append("lider: " + escolhaLider + "\n");
+		buff.append("Archiver: " + tipoArquivo + "\n");
+		buff.append("Leader: " + escolhaLider + "\n");
 		return buff.toString();
 	}
 
