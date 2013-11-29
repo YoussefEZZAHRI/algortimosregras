@@ -214,11 +214,11 @@ public class TreeMultiSwarm extends AlgoritmoAprendizado {
 		for(int i = index_b; i< index_e; i++)
 			used_objectives[i] = true;
 		
-		int popSize = tamanhoPopulacao * num_obj;
+		int popSize = populationSize * num_obj;
 		
 		System.out.println("Swarm " + tree_structure[index] + ": " + archiving_i[index] + "\t|\t" + leaderChoice_i[index] + "\t|\t" + S_i[index]+ "\t|\t" + index_b + "-" + index_e);
 		
-		swarms[index] = new SMPSO(n, problema, geracoes, numeroavalicoes, popSize, S_i[index], maxmim, tamanhoPopulacao, tipoRank, new Double(S_i[index]).doubleValue(), archiving_i[index], leaderChoice_i[index], eps, eval_analysis);
+		swarms[index] = new SMPSO(n, problema, geracoes, numeroavalicoes, popSize, S_i[index], maxmim, populationSize, tipoRank, new Double(S_i[index]).doubleValue(), archiving_i[index], leaderChoice_i[index], eps, eval_analysis);
 		swarms[index].ID = tree_structure[index] + "";
 		swarms[index].used_objectives = used_objectives;
 	}

@@ -171,6 +171,7 @@ public class DistributionReferencePointAll extends Indicador {
 					references.add(reference);
 				}
 			}
+			buff.close();
 		}catch (IOException ex){ex.printStackTrace();}
 		
 		

@@ -2,17 +2,16 @@ package kernel;
 
 
 
+import hyper.HyperplaneReferencePoints;
 import indicadores.Convergence;
 import indicadores.GD;
 import indicadores.IGD;
 import indicadores.LargestDistance;
 import indicadores.PontoFronteira;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
@@ -33,9 +32,7 @@ import archive.RandomArchiver;
 import archive.RankArchiver;
 import archive.SPEA2Archiver;
 import archive.UnboundArchive;
-
 import kernel.mopso.Particula;
-
 import pareto.FronteiraPareto;
 import principal.Principal;
 import problema.Problema;
@@ -54,8 +51,7 @@ import solucao.ComparetorObjetivo;
 import solucao.Solucao;
 import solucao.SolucaoBinaria;
 import solucao.SolucaoNumerica;
-import weka.clusterers.SimpleKMeans;
-import weka.core.Instances;
+
 
 
 public abstract class AlgoritmoAprendizado {
@@ -67,7 +63,7 @@ public abstract class AlgoritmoAprendizado {
 	//Number of iterations
 	public int geracoes;
 	//Population size
-	public int tamanhoPopulacao;
+	public int populationSize;
 	
 	public int numeroavalicoes;
 	
@@ -95,9 +91,7 @@ public abstract class AlgoritmoAprendizado {
 	
 	public PreciseArchiver archiver = null;
 	
-	public final static int PARAMETER_SPACE = 0;
-	public final static int OBJECTIVE_SPACE = 1;
-	
+
 	public GD gd;
 	public IGD igd;
 	public LargestDistance ld;
@@ -130,7 +124,7 @@ public abstract class AlgoritmoAprendizado {
 		this.n = n;
 		problema = p;
 		geracoes = g;
-		tamanhoPopulacao = t;
+		populationSize = t;
 		PROB_MUT_COD = 1.0/(double)n;
 		
 		numeroavalicoes = avaliacoes;
@@ -834,7 +828,7 @@ public abstract class AlgoritmoAprendizado {
 			}
 			ps.println();
 		}
-		
+		ps.close();
 	}
 	
 	public void imprimirFronteira2(ArrayList<SolucaoNumerica> solucoes, int j, String id) throws IOException{
@@ -846,7 +840,7 @@ public abstract class AlgoritmoAprendizado {
 			}
 			ps.println();
 		}
-		
+		ps.close();
 	}
 	
 	public static double log2(double num){
@@ -934,13 +928,13 @@ public abstract class AlgoritmoAprendizado {
 				archiver = new EpsAPS();
 			
 			if(archiveType.equals("hyp_a"))
-				archiver = new HyperPlaneReferenceArchive(problema.m, HyperPlaneReferenceArchive.ALL);
+				archiver = new HyperPlaneReferenceArchive(problema.m, HyperplaneReferencePoints.ALL);
 			if(archiveType.equals("hyp_ed"))
-				archiver = new HyperPlaneReferenceArchive(problema.m, HyperPlaneReferenceArchive.EDGE);
+				archiver = new HyperPlaneReferenceArchive(problema.m, HyperplaneReferencePoints.EDGE);
 			if(archiveType.equals("hyp_m"))
-				archiver = new HyperPlaneReferenceArchive(problema.m, HyperPlaneReferenceArchive.MIDDLE);
+				archiver = new HyperPlaneReferenceArchive(problema.m, HyperplaneReferencePoints.MIDDLE);
 			if(archiveType.equals("hyp_ex"))
-				archiver = new HyperPlaneReferenceArchive(problema.m, HyperPlaneReferenceArchive.EXTREME);
+				archiver = new HyperPlaneReferenceArchive(problema.m, HyperplaneReferencePoints.EXTREME);
 			
 			if(archiveType.equals("hyp_r"))
 				archiver = new HyperPlaneReferenceArchiveRandom(problema.m);
@@ -1049,80 +1043,7 @@ public abstract class AlgoritmoAprendizado {
 		return center_vectors;
 	}
 	
-	/**
-	 * Clusters the solutions into k cluster
-	 * @param front Solutions to be clustered
-	 * @param clusteringSpace Defines the space of the cluser: objective space or parameter space
-	 * @param k Number of clusters
-	 * @return The centroids of each cluster
-	 */
-	public ArrayList<double[]> clustering(ArrayList<Solucao> front, int clusteringSpace, int k, int[] groups){
-		try{
-			
-			String temp = "temp/temp" + System.currentTimeMillis()+".arff";
-			PrintStream front_weka_file = new PrintStream(temp);
-			front_weka_file.println("@RELATION front");
-			front_weka_file.println();
-			if(clusteringSpace == PARAMETER_SPACE){
-				for(int i = 0; i < problema.n; i++){
-					front_weka_file.println("@ATTRIBUTE A" + i + " REAL");
-
-				}
-			} else{
-				for(int i = 0; i < problema.m; i++){
-					front_weka_file.println("@ATTRIBUTE A" + i + " REAL");
-
-				}
-			}
-
-			front_weka_file.println("\n@DATA");
-			for (Iterator<Solucao> iterator = front.iterator(); iterator.hasNext();) {
-				SolucaoNumerica solucao = (SolucaoNumerica) iterator.next();
-				StringBuffer data = new StringBuffer();
-				if(clusteringSpace == PARAMETER_SPACE){
-					for(int i = 0; i<solucao.n; i++)
-						data.append(solucao.getVariavel(i) + ",");
-				} else{
-					for(int i = 0; i<solucao.objetivos.length; i++)
-						data.append(solucao.objetivos[i] + ",");
-				}
-
-				data.deleteCharAt(data.length()-1);
-				front_weka_file.println(data);
-			}
-			front_weka_file.flush();
-			front_weka_file.close();
-			
-			
-			FileReader file_front = new FileReader(temp);
-			Instances front_weka = new Instances(file_front);
-			//System.out.println();
-			
-			SimpleKMeans kmeans = new SimpleKMeans();
-			kmeans.setNumClusters(k);
-			
-			kmeans.buildClusterer(front_weka);
-			
-			//System.out.println(kmeans);
-			
-			for(int i = 0; i<front_weka.numInstances(); i++){
-				groups[i] = kmeans.clusterInstance(front_weka.instance(i));
-			}
-			
-			Instances centroids = kmeans.getClusterCentroids();
-			
-			ArrayList<double[]> front_centroids = new ArrayList<double[]>();
-			
-			for(int i = 0; i< centroids.numInstances(); i++){
-				double[] centroid_i = centroids.instance(i).toDoubleArray();
-				front_centroids.add(centroid_i);
-			}
-			
-			return front_centroids;
-		} catch(Exception ex){ex.printStackTrace(); return null;}
-		
-		
-	}
+	
 	
 	
 	public void initializeEvalAnalysis(String[] maxmim, String ID){
@@ -1325,7 +1246,6 @@ public abstract class AlgoritmoAprendizado {
 
 		
 	}
-
 	
-	
+		
 }

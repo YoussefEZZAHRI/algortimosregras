@@ -190,7 +190,8 @@ public class MultiSwarm extends AlgoritmoAprendizado {
 			}
 
 		}
-
+		
+		comunication.close();
 		return pareto.getFronteira();
 		}catch(IOException ex) {ex.printStackTrace(); return null;}
 	}

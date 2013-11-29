@@ -284,7 +284,7 @@ public class PrepararArquivos {
 
 		for (int j = 0; j < algoritmos.length; j++) {
 
-			String arq = dirEntrada + "resultados/" + metodo[j] + "/" + problema + "/" + objetivo + "/" +			
+			String arq = dirEntrada + "results/" + metodo[j] + "/" + problema + "/" + objetivo + "/" +			
 			algoritmos[j] + "/" + metodo[j] + "_" + problema + "_" + objetivo + "_" + algoritmos[j] + "_" + ind + ".txt";
 			
 			//trucamento dos valores para 8 casas decimais
@@ -865,17 +865,17 @@ public class PrepararArquivos {
 		PrepararArquivos pre = new PrepararArquivos();
 
 		//String dirEntrada = "/media/dados/Andre/ref/medidas/";		
-		String dirEntrada = "/home/andre/gemini/doutorado/experimentos/ref/";
-		String dirSaida = "/media/dados/Andre/ref/";
+		String dirEntrada = "E:\\Andre\\Manyobjective\\";
+		String dirSaida = "E:\\Andre\\Dropbox\\temp\\";
 		//String dir2 = "/home/andre/gemini/doutorado/experimentos/poda/";
 		//int objetivo = 2;
-		String problema  = "DTLZ4";
+		String problema  = "DTLZ6";
 		
 		//String[] algs = {"tb_mga_3_ctd","tb_mga_5_ctd","tb_mga_10_ctd","tb_mga_20_ctd", "tb_mga_30_ctd", "tb_mga_3_ctd_r","tb_mga_5_ctd_r","tb_mga_10_ctd_r","tb_mga_20_ctd_r", "tb_mga_30_ctd_r"};
 		//String[] algs = {"tb_mga_3_ext","tb_mga_5_ext","tb_mga_10_ext", "tb_mga_30_ext"};
 
 		//String[] algs = {"0.5_NWSum_hyp_a","0.5_NWSum_hyp_ed","0.5_NWSum_hyp_ex","0.5_NWSum_hyp_m","0.5_NWSum_ideal","0.5_tb_crowd"};
-		String[] algs = {"0.30_tb_crowd","0.35_tb_crowd","0.40_tb_crowd","0.45_tb_crowd","0.5_NWSum_ideal","0.5_tb_crowd","0.5_sigma_ideal"};
+		String[] algs = {"tb_mga_5_hypp"};
 		//String[] algs = {"0.5_sigma_ideal", "0.5_tb_ideal"};
 
 		//String[] algs = {"0.25_tb_crowd","0.30_tb_crowd","0.35_tb_crowd","0.40_tb_crowd","0.45_tb_crowd","0.5_NWSum_ideal","0.5_tb_crowd"};
@@ -883,14 +883,14 @@ public class PrepararArquivos {
 		//String metodo[] = {"imulti","imulti","imulti","imulti"};
 		//String metodo[] = {"smopso","smopso","smopso","smopso","smopso","smopso"};
 
-		String metodo[] = {"smopso","smopso","smopso","smopso","smopso","smopso","smopso","smopso"};
+		String metodo[] = {"imulti","imulti","imulti","smopso","smopso","smopso","smopso","smopso"};
 		//String metodo = "smopso";
 
 		
 		
 		//int objs[] = {3,5,10,15,20,30};
-		int objs[] = {3,5,10,15,20};
-		int exec = 20;
+		int objs[] = {5};
+		int exec = 10;
 
 		try{
 
@@ -899,8 +899,8 @@ public class PrepararArquivos {
 			
 
 			
-			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "gd", objs);
-			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "igd", objs);
+			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "gd", objs);
+			pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "igd", objs);
 			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "spacing", objs);
 			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "ld", objs);
 			//pre.preparArquivosIndicadoresTodos(dirEntrada, dirSaida, problema, algs, exec, metodo, "con", objs);
@@ -914,14 +914,14 @@ public class PrepararArquivos {
 
 		
 			
-			for (int i = 0; i < objs.length; i++) {
+			/*for (int i = 0; i < objs.length; i++) {
 				System.out.println(objs[i]);
 				
 				System.out.println("Gerando scripts .R");
 				String arquivo = pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "gd");
 				System.out.println("Executando o script");
 				pre.executarComandoLinux(arquivo);
-				//pre.executarFriedman(dirEntrada, dirSaida, problema, objs[i], algs, exec, metodo, "gd", null);
+				pre.executarFriedman(dirEntrada, dirSaida, problema, objs[i], algs, exec, metodo, "gd", null);
 				
 				
 				//pre.preparArquivosComandosFriedman(dirEntrada, dirSaida,  problema, ""+objs[i], algs, exec, metodo, "igd");
@@ -960,7 +960,7 @@ public class PrepararArquivos {
 			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "pnf");
 			//pre.preparArquivosComandosFriedman(dir, dir2,  problema, ""+objetivo, algs, exec, metodo, "np");
 			
-			
+			*/
 
 		} catch (Exception ex){ex.printStackTrace();}
 		

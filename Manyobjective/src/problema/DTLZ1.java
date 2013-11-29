@@ -240,6 +240,7 @@ public class DTLZ1 extends Problema {
 
 
 				}
+				ps.close();
 			} catch (IOException ex){ex.printStackTrace();}
 
 		}

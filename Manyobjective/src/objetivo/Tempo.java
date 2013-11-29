@@ -24,6 +24,7 @@ public class Tempo extends FuncaoObjetivo {
 					
 				}
 			}
+		buff.close();
 		} catch (IOException ex){ex.printStackTrace();}
 	}
 	
